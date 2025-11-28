@@ -1,2 +1,3 @@
-# Industry_accident Project
-Project 
+# 산재 데이터 분석 및 추천 정보제공 플랫폼 제작 프로젝트 
+<프로젝트 산재>
+- 하랑 유니버스
