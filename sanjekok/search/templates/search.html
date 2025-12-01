@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>주변 산재 / 병원 검색</title>
+  <link rel="stylesheet" href="{% static 'CSS/search.css' %}">
+</head>
+<body>
+
+<h2>주변 산재 / 주변 병원 검색</h2>
+
+<div class="search-box">
+  <div class="search-row">
+    <label>주소 입력:</label>
+    <input id="addr_input" type="text" placeholder="주소를 입력하세요">
+    <button id="search_btn">검색</button>
+    <button id="my_loc_btn">내 위치 사용</button>
+  </div>
+
+  <div class="search-row">
+    <label>검색 반경(km):</label>
+    <input id="radius" type="number" value="5" min="1" step="0.5">
+  </div>
+</div>
+
+<div class="map-placeholder">지도 영역 (카카오맵 제외)</div>
+
+<div class="section-box">
+  <div class="section-title">주변 산재 발생 현황</div>
+  <div id="incidents_list"></div>
+</div>
+
+<div class="section-box">
+  <div class="section-title">주변 산재지정 병원</div>
+  <div id="hospitals_list"></div>
+</div>
+
+<script src="{% static 'js/search.js' %}"></script>
+</body>
+</html>
