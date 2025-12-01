@@ -1,6 +1,5 @@
 from django.db import models
 from member.models import Member
-from safe.models import Safe
 
 class Tag(models.Model):
     st_tag = models.CharField(unique=True, max_length=100, verbose_name="태그명")

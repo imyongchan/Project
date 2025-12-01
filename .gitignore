@@ -4,4 +4,9 @@
 .venv
 .env
 .activate.bat
+sj_env
 activate.bat
+m_venv
+myvenv
+venv
+env
