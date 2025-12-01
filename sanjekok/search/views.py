@@ -18,6 +18,6 @@ def search_hospital(request):
 @login_required(login_url="/login/")
 def hospital_detail(request, hospital_id):
     context = {
-        "hospital_id": hospital_id,   # 템플릿에서 id 사용 가능
+        "hospital_id": hospital_id,
     }
     return render(request, "hospital_detail.html", context)
