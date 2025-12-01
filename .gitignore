@@ -1,0 +1,6 @@
+.sj_env
+.myvenv
+.m_venv
+.venv
+.env
+.activate.bat
