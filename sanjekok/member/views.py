@@ -32,7 +32,8 @@ def registers(request):
         return redirect('Member:registerf')
     
     if request.method == "GET":
-        return render(request, 'member_register2.html')
+        form = Step2MemberForm()
+        return render(request, 'member_register2.html', {'form': form})
     
     if request.method == "POST":
         form = Step2MemberForm(request.POST)
@@ -47,10 +48,13 @@ def registers(request):
 
             del request.session["signup_data"]  # 보안상 제거
 
-            return redirect("login")
-
-    else:
-        form = Step2MemberForm()
+            return redirect("Member:login")
+        else:
+            print(form.errors)
 
     return render(request, "member_register2.html", {"form": form})
+
+def login(request):
+    if request.method == "GET":
+        return render(request, 'member_login.html')
 
