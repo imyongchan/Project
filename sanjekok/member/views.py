@@ -1,36 +1,55 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 from .models import Member
+from .forms import Step1MemberForm, Step2MemberForm
+from django.contrib.auth.models import User
 # Create your views here.
 
 
-def register(request):
+def registerf(request):
 
     if request.method == "GET":
-        return render(request, 'member_register.html')
+        return render(request, 'member_register1.html')
     elif request.method == "POST":
-        username = request.POST['username']   # name='username' 값을 받아온다
-        useremail = request.POST['useremail']
-        password = request.POST['password']   # name='password' 값을 받아온다
-        re_password = request.POST['re-password']   # name='re-password' 값을 받아온다
+        
+        form = Step1MemberForm(request.POST)
+        if form.is_valid():
+            # 세션에 저장
+            request.session['signup_data'] = {
+                'm_username': form.cleaned_data['m_username'],
+                # 미리 해싱
+                'm_password': make_password(form.cleaned_data['m_password1']),
+            }
+            # 두번째 폼으로
+            return redirect('registers')
 
-        res_data = {}  # response 에 전달할 데이터 준비
+        return render(request, 'member_register1.html', {'form': form})
+    
+def registers(request):
+    data = request.session.get('signup_data')
+    if not data:
+        return redirect('registerf')
+    
+    if request.method == "GET":
+        return render(request, 'member_register2.html')
+    
+    if request.method == "POST":
+        form = Step2MemberForm(request.POST)
+        if form.is_valid():
+            member = form.save(commit=False)
 
-        # 빈 문자, 값이 없으면 검증 에러
-        if not (username and useremail and password and re_password):
-            res_data['error'] = '모든 값을 입력해야 합니다.'
-
-        # password 와 re_password 가 다르면 검증 에러
-        elif password != re_password:
-            res_data['error'] = '비밀번호가 다릅니다'
-        else:
-
-            member = Member(
-                username=username,
-                useremail=useremail,
-                password=make_password(password)  # 암호화 하여 저장.
-                )
+            # Step1 데이터 적용
+            member.m_username = data["m_username"]
+            member.m_password = data["m_password"]
 
             member.save()
 
-        return render(request, 'member_register.html', res_data)
+            del request.session["signup_member"]  # 보안상 제거
+
+            return redirect("login")
+
+    else:
+        form = Step2MemberForm()
+
+    return render(request, "member_register2.html", {"form": form})
+

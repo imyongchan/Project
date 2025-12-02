@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}회원 가입{% endblock %}
+
+{% block script1 %}
+    <link rel="stylesheet" href="{% static 'CSS/member/member_register.css' %}">
+    <!-- <script src="{% static 'js/member/member_register2.js' %}"></script> -->
+{% endblock %}
+{% block contents %}
+    <div class="card col-md-6 mx-auto mt-5">
+        <div class="card-header text-center">
+            <h2>회원 가입</h2>
+        </div>
+        <div class="card-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                <h4 class="card-title mb-3">회원 정보</h4>
+
+                <div class="mb-3">
+                    <label for="name" class="form-label">*이름 :</label>
+                    <input type="text" class="form-control" placeholder="이름을 입력해주세요." id="name" name="name">
+                </div>
+                <div class="mb-3">
+                    <label for="birth_date" class="form-label">*생년월일 :</label>
+                    <input type="date" class="form-control" placeholder="생년월일을 입력해주세요." id="birth_date" name="birth_date">
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">*집 주소 :</label> 
+                    <input type="text" class="form-control" placeholder="집 주소를 입력해주세요." id="address" name="address">
+                </div>
+                <div class="mb-3">
+                    <label for="jaddress" class="form-label">*직장 주소 :</label> 
+                    <input type="text" class="form-control" placeholder="직장 주소를 입력해주세요." id="jaddress" name="jaddress">
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">전화번호 :</label>
+                    <input type="number" class="form-control" placeholder="전화번호를 입력해주세요." id="phone" name="phone">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">이메일 :</label>
+                    <input type="text" class="form-control" placeholder="이메일을 입력해주세요." id="email" name="email">
+                </div>
+                <div class="mb-3">
+                    <label for="sex" class="form-label">*성별 :</label>
+                    <select class="form-select" id="sex" name="sex">
+                        <option value="" selected>성별을 선택해주세요.</option>
+                        <option value="male">남자</option>
+                        <option value="female">여자</option>
+                </div>
+
+                <button type="submit" class="btn btn-primary subbtn">가입하기</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
