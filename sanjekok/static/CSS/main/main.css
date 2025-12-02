@@ -71,22 +71,19 @@
 }
 
 .footer {
-  position: relative;
+  background: #eceff1;
+  color: #333;
+  padding: 40px 0;
+  margin-top: 150px;
+  border-top: 1px solid #ddd;
+  text-align: center;
 }
 
-.footer .info {
-  position: absolute;
-  left: 17%;
-  margin-top: 10px;
-  color: #b2b0b0;
+.footer-inner {
+  text-align: center;
 }
 
-.footer .logos {
-  position: absolute;
-  left: 47%;
-}
-
-.footer .sns {
-  position: absolute;
-  left: 71%;
+copyright {
+  font-size: 13px;
+  color: #777;
 }
