@@ -42,7 +42,9 @@
 </div>
 
 <div class="map-placeholder" style="width:70%;height:500px;"></div>
-<script src="{% static 'js/apikey.js' %}"></script>
+<script>
+    const KAKAO_MAP_API_KEY = "{{ KAKAO_KEY }}";
+</script>
 <script src="{% static 'js/search/search.js' %}"></script>
 </body>
 </html>

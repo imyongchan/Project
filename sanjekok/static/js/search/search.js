@@ -1,5 +1,3 @@
-// search.js
-
 let map, marker;
 let totalCount = 0;
 
@@ -18,15 +16,18 @@ function loadKakaoMapScript(callback) {
 loadKakaoMapScript(() => {
   kakao.maps.load(() => {
     const mapContainer = document.querySelector(".map-placeholder");
+
     const mapOption = {
       center: new kakao.maps.LatLng(locations.home.lat, locations.home.lng),
       level: 4
     };
+
     map = new kakao.maps.Map(mapContainer, mapOption);
 
     marker = new kakao.maps.Marker({
       position: map.getCenter()
     });
+
     marker.setMap(map);
 
     updateTotalCount(15);
@@ -39,6 +40,7 @@ function updateTotalCount(count) {
 
 function moveToLocation(lat, lng) {
   const position = new kakao.maps.LatLng(lat, lng);
+
   map.setCenter(position);
   marker.setPosition(position);
 
@@ -50,15 +52,24 @@ document.getElementById("home").addEventListener("click", () => {
   moveToLocation(locations.home.lat, locations.home.lng);
 });
 
-document.getElementById("work").addEventListener("click", () => {
+document.getElementById("loc").addEventListener("click", () => {
   moveToLocation(locations.work.lat, locations.work.lng);
 });
 
+const incidentBtn = document.getElementById("incidentBtn");
 const incidentMenu = document.getElementById("incidentMenu");
+
+incidentBtn.addEventListener("click", () => {
+  incidentMenu.style.display =
+    incidentMenu.style.display === "block" ? "none" : "block";
+});
+
 incidentMenu.querySelectorAll("div").forEach(item => {
   item.addEventListener("click", () => {
     const lat = parseFloat(item.dataset.lat);
     const lng = parseFloat(item.dataset.lng);
+
     moveToLocation(lat, lng);
+    incidentMenu.style.display = "none";
   });
 });
