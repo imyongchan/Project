@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>주변 산재 검색</title>
+  <link rel="stylesheet" href="{% static 'CSS/search/search.css' %}">
+</head>
+<body>
+
+<h2>주변 산재 검색</h2>
+
+<div class="search-box">
+
+  <div class="search-row">
+    <label>위치선택:</label>
+    <button id="home">집</button>
+    <button id="loc">근무지</button>
+
+    <div class="dropdown">
+      <button id="incidentBtn">사고지역 ▼</button>
+
+      <div id="incidentMenu" class="dropdown-menu">
+        <div>발칭1</div>
+        <div>발칭2</div>
+        <div>발칭3</div>
+        <div>발칭4</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="count-box">
+    총 발생건수: <span id="totalCount">0</span>
+  </div>
+</div>
+
+<div class="section-box">
+  <div class="section-title">
+    <h3>근무지/산업재해 상황</h3>
+    주변 산업재해 발생 현황을 확인하세요
+  </div>
+</div>
+
+<div class="map-placeholder" style="width:70%;height:500px;"></div>
+<script src="{% static 'js/apikey.js' %}"></script>
+<script src="{% static 'js/search/search.js' %}"></script>
+</body>
+</html>
