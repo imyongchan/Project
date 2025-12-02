@@ -21,14 +21,15 @@ def registerf(request):
                 'm_password': make_password(form.cleaned_data['m_password1']),
             }
             # 두번째 폼으로
-            return redirect('registers')
+            return redirect('Member:registers')
 
         return render(request, 'member_register1.html', {'form': form})
+
     
 def registers(request):
     data = request.session.get('signup_data')
     if not data:
-        return redirect('registerf')
+        return redirect('Member:registerf')
     
     if request.method == "GET":
         return render(request, 'member_register2.html')
@@ -44,7 +45,7 @@ def registers(request):
 
             member.save()
 
-            del request.session["signup_member"]  # 보안상 제거
+            del request.session["signup_data"]  # 보안상 제거
 
             return redirect("login")
 
