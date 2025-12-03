@@ -8,6 +8,7 @@
 }
 
 .menu > ul {
+    position: relative;
     display: flex;
     gap: 40px;
     list-style: none;
@@ -16,13 +17,13 @@
     padding-bottom: 10px;
     margin: 0;
     font-size: 20px;
-    background-color: aqua;
+    z-index: 1000;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .menu > ul > li {
   position: relative;
-  left: 250px;
+  left: 15%;
 }
 
 .menu a {
@@ -68,6 +69,58 @@
 .submenu li a:hover {
   background-color: #f0f0f0;
   color: #333;
+}
+
+.hero-box {
+  position: relative;
+}
+
+.hero-box .blue-block {
+  width: 60%;
+  height: 400px;
+  margin-left: 20%;
+  background-color: #0052a5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+}
+
+.hero-box .text p {
+  position: absolute;
+  left: 32%;
+  top: 25%;
+  font-family: "Pretendard", sans-serif;
+  font-weight: 800;
+  font-size: 250%;
+}
+
+.hero-box .text span {
+  position: absolute;
+  left: 32%;
+  top: 70%;
+}
+
+.hero-box .text span {
+  position: absolute;
+  font-size: 80%;
+}
+
+.hero-box .blue-block img {
+  position: absolute;
+  left: 50%;
+  width: 20%;
+  height: 65%;
+  border-radius: 12px;
+}
+
+.news ul {
+  position: relative;
+}
+
+.news ul .title,
+.news ul .reporter {
+  position: absolute;
 }
 
 .footer {
