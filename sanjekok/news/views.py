@@ -12,8 +12,8 @@ def news_list(request):
 
     while True:
 
-        # 2페이지까지만 크롤링 제한
-        if page > 2:
+        # 1페이지까지만 크롤링 제한(임시)
+        if page > 1:
             break
 
         url = f'http://sanjaenews.co.kr/news/list.php?&mcode=m641vf2&vg=photo&page={page}'
@@ -73,7 +73,7 @@ def news_list(request):
 
         page += 1
 
-    return render(request, "news_list.html", {
+    return render(request, "news/news_list.html", {
         "news": news_list
     })
 
