@@ -13,16 +13,19 @@
 <div class="search-box">
   <div class="search-row">
     <label>위치선택:</label>
-    <button id="home">집</button>
-    <button id="loc">근무지</button>
+    <button id="homeBtn">집</button>
+    <button id="workBtn">근무지</button>
 
     <div class="dropdown">
       <button id="incidentBtn">사고지역 ▼</button>
       <div id="incidentMenu" class="dropdown-menu">
-        <div data-lat="37.561" data-lng="126.985">별칭1</div>
-        <div data-lat="37.558" data-lng="126.975">별칭2</div>
-        <div data-lat="37.571" data-lng="126.982">별칭3</div>
-        <div data-lat="37.563" data-lng="126.989">별칭4</div>
+        {% for a in accident_list %}
+          <div data-x="{{ a.x }}" data-y="{{ a.y }}">
+            {{ a.nickname }} ({{ a.address }})
+          </div>
+        {% empty %}
+          <div>등록된 사고지역 없음</div>
+        {% endfor %}
       </div>
     </div>
   </div>
@@ -42,8 +45,18 @@
 <div class="map-placeholder" style="width:70%;height:500px;"></div>
 
 <script>
-    const KAKAO_KEY = "{{ KAKAO_KEY }}";
+  const KAKAO_KEY = "{{ KAKAO_KEY }}";
+
+  const HOME_TM = {
+    x: Number("{{ home.x|default:'0' }}"),
+    y: Number("{{ home.y|default:'0' }}")
+  };
+  const WORK_TM = {
+    x: Number("{{ work.x|default:'0' }}"),
+    y: Number("{{ work.y|default:'0' }}")
+  };
 </script>
+
 <script src="{% static 'js/search/search.js' %}"></script>
 </body>
 </html>
