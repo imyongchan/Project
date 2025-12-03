@@ -1,5 +1,5 @@
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
 }
 
 h2 {
@@ -29,10 +29,11 @@ h2 {
 .dropdown-menu {
   display: none;
   position: absolute;
-  background: white;
+  background: #fff;
   border: 1px solid #ddd;
   padding: 5px;
-  width: 120px;
+  width: 140px;
+  z-index: 1000;
 }
 
 .dropdown-menu div {
@@ -48,4 +49,10 @@ h2 {
   width: 70%;
   height: 500px;
   border: 1px solid #ccc;
+  margin-top: 10px;
+}
+
+.count-box {
+  margin-top: 10px;
+  font-weight: bold;
 }
