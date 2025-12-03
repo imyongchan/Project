@@ -24,7 +24,7 @@
                     {{ age }}세
                 </p>
 
-                <!--나의 산재 눌렀을때 나오는 추가 상세 정보-->
+                <!-- 나의 산재 눌렀을 때 나오는 추가 상세 정보 -->
                 <div id="injuryDetail"></div>
 
             </div>
@@ -35,7 +35,7 @@
             <!-- 드롭다운 -->
             <ul id="injuryDropdown" class="dropdown hidden">
                 {% for ind in individual_list %}
-                <li data-id="{{ ind.id }}" data-title="{{ ind.i_title }}" 
+                <li data-id="{{ ind.id }}" data-title="{{ ind.i_title }}"
                     data-injury="{{ ind.i_injury }}"
                     data-disease="{{ ind.i_disease_type }}"
                     data-date="{{ ind.i_accident_date }}">
@@ -59,31 +59,42 @@
     <!-- 3. 통계 시각화 영역 -->
     <section id="stats-visual-area" class="stats-visual hidden">
         <div class="visual-grid">
+
+            <!-- 내 업종 재해율 -->
             <div class="visual-card">
                 <h3>내 업종 재해율</h3>
-                <p>내업종 재해자수</p>
+                <p>내업종 재해 현황</p>
+
+                <!-- JS가 채울 요약 문구 -->
                 <p id="accidentSummary"></p>
-                
+
+                <!-- JS에서만 사용하는 원시 데이터 (숨김) -->
                 <ul id="accidentList" hidden>
                     {% for row in stats_by_year %}
                     <li class="accident-item"
-                        data-year="{{ row.PRD_DE }}"
-                        data-count="{{ row.DT }}">
-                        <!-- 화면에 안 보이게 비워둠 -->
+                        data-year="{{ row.year }}"
+                        data-count="{{ row.재해자수 }}"
+                        data-rate="{{ row.재해율 }}">
                     </li>
                     {% endfor %}
                 </ul>
             </div>
-            <div class="visual-card"></div>
+
+            <!-- 내 업종 사망만인율 -->
+            <div class="visual-card">
                 <h3>내 업종 사망만인율</h3>
+                <p>내업종 사망 현황</p>
+
+                <!-- JS가 채울 요약 문구 -->
                 <p id="fatalSummary"></p>
 
+                <!-- JS에서만 사용하는 원시 데이터 (숨김) -->
                 <ul id="fatalList" hidden>
                     {% for row in stats_by_year %}
                     <li class="fatal-item"
                         data-year="{{ row.year }}"
-                        data-count="{{ row.count }}"
-                        data-rate="{{ row.rate }}">
+                        data-count="{{ row.사망자수 }}"
+                        data-rate="{{ row.사망만인율 }}">
                     </li>
                     {% endfor %}
                 </ul>
@@ -102,9 +113,6 @@
     </section>
 
 </div>
-
-
-
 
 <script src="{% static 'js/stats/stats.js' %}"></script>
 {% endblock %}
