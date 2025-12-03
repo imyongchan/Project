@@ -62,13 +62,33 @@
             <div class="visual-card">
                 <h3>내 업종 재해율</h3>
                 <p>내업종 재해자수</p>
-                <ul>
-                    {% for row in accident_list %}
-                    <li>{{ row.PRD_DE }}년 : {{ row.DT }}명</li>
+                <p id="accidentSummary"></p>
+                
+                <ul id="accidentList" hidden>
+                    {% for row in stats_by_year %}
+                    <li class="accident-item"
+                        data-year="{{ row.PRD_DE }}"
+                        data-count="{{ row.DT }}">
+                        <!-- 화면에 안 보이게 비워둠 -->
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
-            <div class="visual-card">내 업종 사망률</div>
+            <div class="visual-card"></div>
+                <h3>내 업종 사망만인율</h3>
+                <p id="fatalSummary"></p>
+
+                <ul id="fatalList" hidden>
+                    {% for row in stats_by_year %}
+                    <li class="fatal-item"
+                        data-year="{{ row.year }}"
+                        data-count="{{ row.count }}"
+                        data-rate="{{ row.rate }}">
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
             <div class="visual-card">재해 유형</div>
             <div class="visual-card">사망 유형</div>
             <div class="visual-card">남/녀 재해 현황</div>

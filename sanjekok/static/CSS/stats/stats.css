@@ -86,3 +86,11 @@
 .dropdown li:hover {
     background: #f0f0f0;
 }
+
+#accidentList {
+  display: none;
+}
+
+#fatalList {
+  display: none;
+}
