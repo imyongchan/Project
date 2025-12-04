@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>주변 산재 검색</title>
 
-  <link rel="stylesheet" href="{% static 'css/search.css' %}">
-<script src="https://t1.daumcdn.net/mapjsapi/js/libs/services/1.0.2/services.js"></script>
-  <!-- Kakao SDK: libraries=services 포함 (coordTrans 사용 위해 필수) -->
-  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey={{ KAKAO_KEY }}&libraries=services"></script>
+  <link rel="stylesheet" href="{% static 'CSS/search/search.css' %}">
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/${VERSION}/kakao.min.js"
+  integrity="${INTEGRITY_VALUE}" crossorigin="anonymous"></script>
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=e7ccfaeecfe1bdfb39c9f3f00e253bdd&libraries=services"></script>
 </head>
 <body>
   <header style="display:flex;align-items:center;gap:12px;padding:8px;">
@@ -63,7 +63,9 @@
 </script>
 
 
-  <!-- 앱 JS: static/js/search.js 에서 DOMContentLoaded에서 초기화함 -->
-  <script src="{% static 'js/search.js' %}"></script>
+  <script>
+  const KAKAO_KEY = "{{ KAKAO_KEY }}";
+  </script>
+  <script src="{% static 'js/search/search.js' %}"></script>
 </body>
 </html>
