@@ -4,24 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const periodButtons = document.querySelectorAll(".period-btn");
     const visualArea    = document.getElementById("stats-visual-area");
     const injuryDetail  = document.getElementById("injuryDetail");
-    const accidentItems   = document.querySelectorAll(".accident-item");
-    const accidentSummary = document.getElementById("accidentSummary");
-    const fatalItems      = document.querySelectorAll(".fatal-item");
-    const fatalSummary    = document.getElementById("fatalSummary");
+    const accidentSummary = document.getElementById("accidentSummary"); // 재해 요약
+    const fatalSummary    = document.getElementById("fatalSummary");    // 사망 요약
+    const genderSummary   = document.getElementById("genderSummary");   // 성비 요약(있으면)
 
     // 산재 선택 여부
     let injurySelected = false;
-
-    // 가장 최신 연도 구하기 (재해 데이터 기준)
-    let maxYear = null;
-    if (accidentItems.length > 0) {
-        const years = Array.from(accidentItems)
-            .map(li => parseInt(li.dataset.year, 10))
-            .filter(y => !isNaN(y));
-        if (years.length > 0) {
-            maxYear = Math.max(...years);
-        }
-    }
 
     // "나의 산재" 버튼 → 드롭다운 열기/닫기
     if (myInjuryBtn && dropdown) {
@@ -51,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     injuryDetail.innerHTML = html;
                 }
 
+                // 산재 선택 완료
                 injurySelected = true;
 
                 // 분석기간 초기화 + 통계 숨김 + 요약 초기화
@@ -58,12 +47,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (visualArea) {
                     visualArea.classList.add("hidden");
                 }
-                if (accidentSummary) {
-                    accidentSummary.textContent = "";
-                }
-                if (fatalSummary) {
-                    fatalSummary.textContent = "";
-                }
+                if (accidentSummary) accidentSummary.textContent = "";
+                if (fatalSummary)    fatalSummary.textContent    = "";
+                if (genderSummary)   genderSummary.textContent   = "";
 
                 dropdown.classList.add("hidden");
             });
@@ -80,82 +66,52 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // 2) 통계 영역은 무조건 열기
+            // 2) 통계 영역 보이기
             if (visualArea) {
                 visualArea.classList.remove("hidden");
             }
 
-            // 데이터가 아예 없으면 안내만 띄우기
-            if (!accidentItems.length || maxYear === null || isNaN(maxYear)) {
-                if (accidentSummary) {
-                    accidentSummary.textContent = "통계 데이터가 없습니다.";
-                }
-                if (fatalSummary) {
-                    fatalSummary.textContent = "";
-                }
-                return;
-            }
-
-            // 버튼 active 표시
+            // 3) 버튼 active 표시
             periodButtons.forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
 
-           
-            const nYear     = parseInt(btn.dataset.year, 10);  // 1, 2, 3
-            const startYear = maxYear - nYear + 1;
+            // 4) 버튼에 박혀 있는 데이터 읽기
+            const label = btn.innerText.trim(); // "최근 1년" / "2년" / "3년"
 
-            // ───────────── 재해자수 + 재해율 집계 ─────────────
-            let accTotalCount = 0;    // 재해자수 합계
-            let accRateSum    = 0;    // 재해율 합
-            let accYearCount  = 0;    // 포함된 연도 개수
+            const accCount    = Number(btn.dataset.accCount    || 0); // 재해자수
+            const accRate     = Number(btn.dataset.accRate     || 0); // 재해율
+            const fatalCount  = Number(btn.dataset.fatalCount  || 0); // 사망자수
+            const fatalRate   = Number(btn.dataset.fatalRate   || 0); // 사망만인율
 
-            accidentItems.forEach(li => {
-                const year  = parseInt(li.dataset.year, 10);
-                const count = parseInt(li.dataset.count, 10);
-                const rate  = parseFloat(li.dataset.rate);
+            const male        = Number(btn.dataset.male        || 0); // 남자
+            const female      = Number(btn.dataset.female      || 0); // 여자
+            const maleRate    = Number(btn.dataset.maleRate    || 0); // 남자비율(%)
+            const femaleRate  = Number(btn.dataset.femaleRate  || 0); // 여자비율(%)
 
-                if (!isNaN(year) && year >= startYear && year <= maxYear) {
-                    accTotalCount += isNaN(count) ? 0 : count;
-                    if (!isNaN(rate)) {
-                        accRateSum   += rate;
-                        accYearCount += 1;
-                    }
-                }
-            });
-
-            const accRateAvg = accYearCount ? accRateSum / accYearCount : 0;
-
+            // 5) (재해)
             if (accidentSummary) {
+                const rateText = isNaN(accRate) ? "-" : accRate.toFixed(2);
                 accidentSummary.textContent =
-                    `재해자수: ${accTotalCount.toLocaleString()}명, ` +
-                    `재해율: ${accRateAvg.toFixed(2)}`;
+                    `재해자수: ${accCount.toLocaleString()}명, ` +
+                    `재해율: ${rateText}`;
             }
 
-            // ───────────── 사망자수 + 사망만인율 집계 ─────────────
-            if (fatalItems.length && fatalSummary) {
-                let fatalTotalCount = 0;   // 사망자수 합계
-                let fatalRateSum    = 0;   // 사망만인율 합
-                let fatalYearCount  = 0;   // 포함된 연도 개수
-
-                fatalItems.forEach(li => {
-                    const year  = parseInt(li.dataset.year, 10);
-                    const count = parseInt(li.dataset.count, 10);
-                    const rate  = parseFloat(li.dataset.rate);
-
-                    if (!isNaN(year) && year >= startYear && year <= maxYear) {
-                        fatalTotalCount += isNaN(count) ? 0 : count;
-                        if (!isNaN(rate)) {
-                            fatalRateSum   += rate;
-                            fatalYearCount += 1;
-                        }
-                    }
-                });
-
-                const fatalRateAvg = fatalYearCount ? fatalRateSum / fatalYearCount : 0;
-
+            // 6)  (사망)
+            if (fatalSummary) {
+                const rateText = isNaN(fatalRate) ? "-" : fatalRate.toFixed(2);
                 fatalSummary.textContent =
-                    `사망자수: ${fatalTotalCount.toLocaleString()}명, ` +
-                    `사망만인율: ${fatalRateAvg.toFixed(2)}`;
+                    `사망자수: ${fatalCount.toLocaleString()}명, ` +
+                    `사망만인율: ${rateText}`;
+            }
+
+            // 7) (성별 재해 비율)
+            if (genderSummary) {
+                const maleRateText   = isNaN(maleRate)   ? "-" : maleRate.toFixed(1);
+                const femaleRateText = isNaN(femaleRate) ? "-" : femaleRate.toFixed(1);
+
+                genderSummary.textContent =
+                    `남자: ${male.toLocaleString()}명 (${maleRateText}%), ` +
+                    `여자: ${female.toLocaleString()}명 (${femaleRateText}%)`;
             }
         });
     });

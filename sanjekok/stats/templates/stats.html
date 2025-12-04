@@ -50,9 +50,51 @@
     <section class="period-section">
         <h3>분석 기간:</h3>
         <div class="period-buttons">
-            <button class="period-btn" data-year="1">최근 1년</button>
-            <button class="period-btn" data-year="2">최근 2년</button>
-            <button class="period-btn" data-year="3">최근 3년</button>
+
+            {# summary1 / summary2 : 0=최근1년, 1=2년, 2=3년 이라고 가정 #}
+
+            <!-- 최근 1년 -->
+            <button class="period-btn"
+                    data-year="1"
+                    data-acc-count="{{ summary1.0.재해자수 }}"
+                    data-acc-rate="{{ summary1.0.재해율 }}"
+                    data-fatal-count="{{ summary1.0.사망자수 }}"
+                    data-fatal-rate="{{ summary1.0.사망만인율 }}"
+                    data-male="{{ summary2.0.남자 }}"
+                    data-female="{{ summary2.0.여자 }}"
+                    data-male-rate="{{ summary2.0.남자비율 }}"
+                    data-female-rate="{{ summary2.0.여자비율 }}">
+                최근 1년
+            </button>
+
+            <!-- 최근 2년 -->
+            <button class="period-btn"
+                    data-year="2"
+                    data-acc-count="{{ summary1.1.재해자수 }}"
+                    data-acc-rate="{{ summary1.1.재해율 }}"
+                    data-fatal-count="{{ summary1.1.사망자수 }}"
+                    data-fatal-rate="{{ summary1.1.사망만인율 }}"
+                    data-male="{{ summary2.1.남자 }}"
+                    data-female="{{ summary2.1.여자 }}"
+                    data-male-rate="{{ summary2.1.남자비율 }}"
+                    data-female-rate="{{ summary2.1.여자비율 }}">
+                최근 2년
+            </button>
+
+            <!-- 최근 3년 -->
+            <button class="period-btn"
+                    data-year="3"
+                    data-acc-count="{{ summary1.2.재해자수 }}"
+                    data-acc-rate="{{ summary1.2.재해율 }}"
+                    data-fatal-count="{{ summary1.2.사망자수 }}"
+                    data-fatal-rate="{{ summary1.2.사망만인율 }}"
+                    data-male="{{ summary2.2.남자 }}"
+                    data-female="{{ summary2.2.여자 }}"
+                    data-male-rate="{{ summary2.2.남자비율 }}"
+                    data-female-rate="{{ summary2.2.여자비율 }}">
+                최근 3년
+            </button>
+
         </div>
     </section>
 
@@ -64,45 +106,27 @@
             <div class="visual-card">
                 <h3>내 업종 재해율</h3>
                 <p>내업종 재해 현황</p>
-
                 <!-- JS가 채울 요약 문구 -->
                 <p id="accidentSummary"></p>
-
-                <!-- JS에서만 사용하는 원시 데이터 (숨김) -->
-                <ul id="accidentList" hidden>
-                    {% for row in stats_by_year %}
-                    <li class="accident-item"
-                        data-year="{{ row.year }}"
-                        data-count="{{ row.재해자수 }}"
-                        data-rate="{{ row.재해율 }}">
-                    </li>
-                    {% endfor %}
-                </ul>
             </div>
 
             <!-- 내 업종 사망만인율 -->
             <div class="visual-card">
                 <h3>내 업종 사망만인율</h3>
                 <p>내업종 사망 현황</p>
-
                 <!-- JS가 채울 요약 문구 -->
                 <p id="fatalSummary"></p>
+            </div>
 
-                <!-- JS에서만 사용하는 원시 데이터 (숨김) -->
-                <ul id="fatalList" hidden>
-                    {% for row in stats_by_year %}
-                    <li class="fatal-item"
-                        data-year="{{ row.year }}"
-                        data-count="{{ row.사망자수 }}"
-                        data-rate="{{ row.사망만인율 }}">
-                    </li>
-                    {% endfor %}
-                </ul>
+            <!-- 남/녀 재해 현황 -->
+            <div class="visual-card">
+                <h3>남/녀 재해 현황</h3>
+                <!-- JS가 채울 요약 문구 -->
+                <p id="genderSummary"></p>
             </div>
 
             <div class="visual-card">재해 유형</div>
             <div class="visual-card">사망 유형</div>
-            <div class="visual-card">남/녀 재해 현황</div>
             <div class="visual-card">남/녀 사망 현황</div>
             <div class="visual-card">연령대별 재해 현황</div>
             <div class="visual-card">연령대별 사망 현황</div>
