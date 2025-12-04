@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import Member
+from .models import Member, Individual, Member_industry
 from .forms import Step1MemberForm, Step2MemberForm
 # Create your views here.
 
@@ -10,7 +10,7 @@ from .forms import Step1MemberForm, Step2MemberForm
 def registerf(request):
 
     if request.method == "GET":
-        return render(request, 'member_register1.html')
+        return render(request, 'member/member_register1.html')
     
     elif request.method == "POST":
         form = Step1MemberForm(request.POST)
@@ -22,7 +22,7 @@ def registerf(request):
             }
             return redirect('Member:registers')
 
-        return render(request, 'member_register1.html', {'form': form})
+        return render(request, 'member/member_register1.html', {'form': form})
 
 # 회원가입 2단계    
 def registers(request):
@@ -34,7 +34,7 @@ def registers(request):
 
     if request.method == "GET":
         form = Step2MemberForm()
-        return render(request, 'member_register2.html', {'form': form})
+        return render(request, 'member/member_register2.html', {'form': form})
     
     elif request.method == "POST":
         form = Step2MemberForm(request.POST)
@@ -51,7 +51,7 @@ def registers(request):
             return redirect('Member:complete')
 
         messages.error(request, "입력값이 올바르지 않습니다. 다시 입력해주세요.")
-        return render(request, "member_register2.html", {"form": form})
+        return render(request, "member/member_register2.html", {"form": form})
     
 # 로그인
 def login(request):
@@ -66,7 +66,7 @@ def login(request):
 
         if not member or not check_password(m_password, member.m_password):
             messages.error(request, "아이디 또는 비밀번호가 일치하지 않습니다.")
-            return render(request, "member_login.html")
+            return render(request, "member/member_login.html")
 
         request.session['member_id'] = member.id
         request.session['member_username'] = member.m_username
@@ -83,7 +83,7 @@ def check_username(request):
     return JsonResponse(data)
 
 def complete(request):
-    return render(request, 'member_complete.html')
+    return render(request, 'member/member_complete.html')
 
 # 마이페이지
 def mypage(request):
@@ -102,9 +102,9 @@ def mypage(request):
             return redirect("Member:mypage_profile")
 
         messages.error(request, "비밀번호가 일치하지 않습니다.")
-        return render(request, 'mypage_checked.html', {'member': member})
+        return render(request, 'member/mypage_checked.html', {'member': member})
 
-    return render(request, 'mypage_checked.html', {'member': member})
+    return render(request, 'member/mypage_checked.html', {'member': member})
 
 # 마이페이지 - 프로필 수정
 def mypage_profile(request):
@@ -119,7 +119,7 @@ def mypage_profile(request):
     
     if request.method == "GET":
         form = Step2MemberForm(instance=member)
-        return render(request, 'mypage_profile.html', {'form': form, 'member': member})
+        return render(request, 'member/mypage_profile.html', {'form': form, 'member': member})
 
     elif request.method == "POST":
         form = Step2MemberForm(request.POST, instance=member)
@@ -130,5 +130,19 @@ def mypage_profile(request):
             return redirect("Member:mypage_profile")
 
         messages.error(request, "입력값이 잘못되었습니다. 다시 확인해주세요.")
-        return render(request, 'mypage_profile.html', {'form': form, 'member': member})
+        return render(request, 'member/mypage_profile.html', {'form': form, 'member': member})
+    
+# 마이페이지 - 산재 관리
+def mypage_individual_list(request):
+    member_id = request.session.get('member_id')
+
+    if not member_id:
+        messages.error(request, "로그인이 필요합니다.")
+        return redirect('Member:login')
+
+    member = get_object_or_404(Member, id=member_id)
+    individuals = get_object_or_404(Individual, id=member_id)
+    industrys = get_object_or_404(Member_industry, id=member_id)
+
+    return render(request, 'member/mypage_individual_list.html', {'member': member, 'individuals': individuals, 'industrys': industrys})
 

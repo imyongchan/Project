@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}산재 관리{% endblock %}
+
+{% block script1 %}
+{% endblock %}
+{% block contents %}
+    <div class="card col-md-6 mx-auto mt-5">
+        <div class="card-header text-center">
+            <h2>산재 정보</h2>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+
+                        <th scope="col">체크</th>
+                        <th scope="col">일련번호</th>
+                        <th scope="col">제목</th>
+                        <th scope="col">재해일자</th>
+                        <th scope="col">업종</th>
+                        <th scope="col">발생형태</th>
+                        <th scope="col">질병</th>
+                        <th scope="col">주소</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for individual in individuals %}
+                    {% for industry in industrys %}
+                    {% for member in members %}
+                    <tr>
+                        <td>{{ individual.i_title }}</td>
+                        <td>{{ individual.i_accident_date }}</td>
+                        <td>{{ industry.i_industry_type2 }}</td>
+                        <td>{{ individual.i_injury }}</td>
+                        <td>{{ individual.i_disease_type }}</td>
+                        <td>{{ individual.i_address }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

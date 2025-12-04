@@ -12,4 +12,6 @@ urlpatterns = [
 
     path('mypage/', views.mypage, name='mypage'),  # 마이페이지
     path('mypage/profile/', views.mypage_profile, name='mypage_profile'),  # 마이페이지 - 프로필 수정
+
+    path('mypage/individual-list/', views.mypage_individual_list, name='mypage_individual_list'),  # 마이페이지 - 산재 관리
 ]
