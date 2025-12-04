@@ -1,79 +1,29 @@
 from django.shortcuts import render
-import requests
-import pandas as pd
-import time
-from bs4 import BeautifulSoup
+from django.core.paginator import Paginator
+from .models import News
 
 
 def news_list(request):
+    posts = News.objects.all().order_by('-id')  # 최신 기사순 ...
+    write_pages = 5    # 페이징 블록에 들어갈 페이지개수  (사용자가 못 바꿈)
+    per_page = 10      # 한페이지당 표시할 기사 개수 (사용자가 못 바꿈)
+    page = int(request.GET.get("page", 1))
 
-    news_list=[]
-    page = 1
+    paginator = Paginator(posts, per_page)
+    page_obj = paginator.get_page(page)
 
-    while True:
+    start_page = ((int((page_obj.number - 1) / write_pages)) * write_pages) + 1
+    end_page = start_page + write_pages - 1
 
-        # 1페이지까지만 크롤링 제한(임시)
-        if page > 1:
-            break
+    if end_page > paginator.num_pages:
+        end_page = paginator.num_pages  # 총 페이지수 넘지 않게
 
-        url = f'http://sanjaenews.co.kr/news/list.php?&mcode=m641vf2&vg=photo&page={page}'
-        response = requests.get(url)
-        response.raise_for_status()
-        
-        soup = BeautifulSoup(response.text, "lxml")
-        items = soup.select("div#contents > div.basicList > ul > li")
-
-        if not items:
-            print(f"더 이상 기사 없음 → 크롤링 종료")
-            break
-
-        for item in items:
-            # 제목
-            title = item.select_one("dt.title a").text.strip()
-            # 내용 요약
-            content = item.select_one("dd.content a").text.strip()
-
-            # 이미지
-            img_tag = item.select_one("a.image img")
-            img_url = img_tag.get("src").lstrip(".") if img_tag else None
-            if img_url and not img_url.startswith("http"):
-                img_url = "http://sanjaenews.co.kr" + img_url
-
-            # 상세 페이지 링크
-            link_tag = item.select_one("a")
-            link = link_tag.get("href").lstrip(".")
-            if link and not link.startswith("http"):
-                link = "http://sanjaenews.co.kr" + link
-
-# ----------------------------------------------------------------------
-
-            # 상세페이지에서 날짜, 작성자 가져오기
-            time.sleep(0.2)
-            
-            detail_response = requests.get(link)
-            detail_response.raise_for_status()
-            detail_soup = BeautifulSoup(detail_response.text, "lxml")
-
-            datetime = detail_soup.select_one("div.titleWrap > div.registModifyDate > ul > li")
-            datetime = datetime.text.strip("기사등록") if datetime else None
-
-            writer = detail_soup.select_one("div.titleWrap > div.else-area > p")
-            writer = writer.text.strip() if writer else None
-
-            news_list.append({
-                "title": title,
-                "content": content,
-                "image_url": img_url,
-                "link": link,
-                "writer": writer,
-                "created_at": datetime,
-            })
-
-            time.sleep(0.2)
-
-        page += 1
-
-    return render(request, "news/news_list.html", {
-        "news": news_list
-    })
-
+    context = {
+        "list": page_obj,
+        "write_pages": write_pages,
+        "start_page": start_page,
+        "end_page": end_page,
+        "page_range": range(start_page, end_page + 1),
+    }
+    
+    return render(request, 'news/news_list.html', context)

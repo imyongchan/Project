@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class News(models.Model):
     n_title = models.CharField(max_length=150, verbose_name='뉴스제목')
@@ -6,7 +7,7 @@ class News(models.Model):
     n_contents = models.CharField(max_length=500, verbose_name='뉴스내용')
     n_link = models.CharField(max_length=1000, verbose_name='뉴스링크')
     n_image_url = models.CharField(max_length=255, verbose_name='뉴스이미지')
-    n_created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name='뉴스작성일')
+    n_created_at = models.DateTimeField(default=timezone.now, verbose_name='뉴스작성일')
 
     class Meta:
         db_table = 't_news'
