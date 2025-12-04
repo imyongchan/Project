@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from datetime import date
 from member.models import Member
-from stats.stats import get_stats1,get_stats2,get_stats3
+from stats.stats import get_stats1,get_stats2,get_stats3,get_stats4,get_stats5
 
 
 def stats_home(request):
@@ -20,11 +20,15 @@ def stats_home(request):
     industry_name1 = industry.i_industry_type2
     industry_name2 = industry.i_industry_type1
     industry_name3 = industry.i_industry_type1
+    industry_name4 = industry.i_industry_type2
+    industry_name5 = industry.i_industry_type2
 
 
     summary1 = get_stats1(industry_name1)
     summary2 = get_stats2(industry_name2)
     summary3 = get_stats3(industry_name3)
+    summary4 = get_stats4(industry_name4)
+    summary5 = get_stats5(industry_name5)
 
     return render(request, "stats.html", {
         "member": member,
@@ -34,4 +38,6 @@ def stats_home(request):
         "summary1": summary1,
         "summary2": summary2,
         "summary3": summary3,
+        "summary4": summary4,
+        "summary5": summary5,
     })
