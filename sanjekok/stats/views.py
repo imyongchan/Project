@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from datetime import date
 from member.models import Member
-from stats.stats import get_industry_accident_stats
+from stats.stats import get_stats1,get_stats2
 
 
 def stats_home(request):
@@ -18,15 +18,18 @@ def stats_home(request):
 
     # stats.py의 피벗테이블 딕셔너리
     # [{year: ..., 재해자수: ..., 재해율: ..., 사망자수: ..., 사망만인율: ...}, ...]
-    industry_name = industry.i_industry_type2
+    industry_name1 = industry.i_industry_type2
+    industry_name2 = industry.i_industry_type1
 
     # 업종별 연도/지표 데이터
-    stats_by_year = get_industry_accident_stats(industry_name)
+    summary1 = get_stats1(industry_name1)
+    summary2 = get_stats2(industry_name2)
 
     return render(request, "stats.html", {
         "member": member,
         "industry": industry,
         "age": age,
         "individual_list": individual_list,
-        "stats_by_year": stats_by_year,
+        "summary1": summary1,
+        "summary2": summary2,
     })
