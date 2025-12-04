@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import Member
 from .forms import Step1MemberForm, Step2MemberForm
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 # Create your views here.
 
 
@@ -24,7 +25,6 @@ def registerf(request):
             return redirect('Member:registers')
 
         return render(request, 'member_register1.html', {'form': form})
-
     
 def registers(request):
     data = request.session.get('signup_data')
@@ -76,4 +76,12 @@ def login(request):
         else:
             # 비밀번호 불일치
             return render(request, 'member_login.html', {'error': '아이디 또는 비밀번호가 일치하지 않습니다.'})
+
+
+def check_username(request):
+    username = request.GET.get('username', None)
+    data = {
+        'is_taken': Member.objects.filter(m_username=username).exists()
+    }
+    return JsonResponse(data)
 

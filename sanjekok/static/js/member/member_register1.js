@@ -1,78 +1,98 @@
+$(document).ready(function () {
 
-document.addEventListener("DOMContentLoaded", function () {
+    const usernameInput = $("#username");
+    const pw1Input = $("#password1");
+    const pw2Input = $("#re-password2");
 
-    const usernameInput = document.getElementById("username");
-    const pw1Input = document.getElementById("password1");
-    const pw2Input = document.getElementById("re-password2");
-
-    const usernameError = document.getElementById("usernameError");
-    const passwordError = document.getElementById("passwordError");
-    const rePasswordError = document.getElementById("rePasswordError");
+    const usernameCheckMsg = $("#usernameCheckMsg");
+    const passwordError = $("#passwordError");
+    const rePasswordError = $("#rePasswordError");
 
     const usernameRegex = /^[a-z0-9]{6,16}$/;
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,16}$/;
 
-    usernameInput.addEventListener("blur", function () {
-        if (!usernameRegex.test(usernameInput.value.trim())) {
-            usernameError.style.display = "block";
-        } else {
-            usernameError.style.display = "none";
-        }
+    let isUsernameAvailable = false; // 아이디 중복 확인 상태
+
+    // 아이디 입력 시 중복 확인 상태 초기화
+    usernameInput.on("input", function () {
+        isUsernameAvailable = false;
+        usernameCheckMsg.text("");
     });
-
-    pw1Input.addEventListener("blur", function () {
-        if (!passwordRegex.test(pw1Input.value)) {
-            passwordError.style.display = "block";
-        } else {
-            passwordError.style.display = "none";
-        }
-    });
-
-    pw2Input.addEventListener("blur", function () {
-        if (pw1Input.value !== pw2Input.value) {
-            rePasswordError.style.display = "block";
-        } else {
-            rePasswordError.style.display = "none";
-        }
-    });
-
-    const form = document.getElementById("registerForm");
-
-    if (form) {
-        form.addEventListener("submit", function (e) {
-
-            let valid = true;
-
-            if (!usernameRegex.test(usernameInput.value.trim())) {
-                usernameError.style.display = "block";
-                valid = false;
-            }
-
-            if (!passwordRegex.test(pw1Input.value)) {
-                passwordError.style.display = "block";
-                valid = false;
-            }
-
-            if (pw1Input.value !== pw2Input.value) {
-                rePasswordError.style.display = "block";
-                valid = false;
-            }
-
-            if (!valid) e.preventDefault();
-        });
-    }
     
-    // 생년월일 입력 필드에 대한 Flatpickr 초기화
-    flatpickr("#birth_date", {
-        dateFormat: "Y-m-d",   // 저장 가능한 형식
-        maxDate: "today",      // 오늘 이전만 선택 가능
+    // 아이디 중복 확인 버튼 클릭 이벤트
+    $("#checkUsernameBtn").on("click", function () {
+        const username = usernameInput.val().trim();
+        const checkUrl = $(this).data("url"); // data-url 속성에서 URL 가져오기
+
+        if (!usernameRegex.test(username)) {
+            usernameCheckMsg.text("아이디 양식을 다시 확인해주세요.").css("color", "red");
+            return;
+        }
+
+        $.ajax({
+            url: checkUrl,
+            data: {
+                'username': username
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    usernameCheckMsg.text("이미 사용중인 아이디입니다.").css("color", "red");
+                    isUsernameAvailable = false;
+                } else {
+                    usernameCheckMsg.text("사용 가능한 아이디입니다.").css("color", "green");
+                    isUsernameAvailable = true;
+                }
+            },
+            error: function() {
+                usernameCheckMsg.text("오류가 발생했습니다. 다시 시도해주세요.").css("color", "red");
+                isUsernameAvailable = false;
+            }
+        });
+    });
+
+    // 비밀번호 blur 검증
+    pw1Input.on("blur", function () {
+        if (!passwordRegex.test(pw1Input.val())) {
+            passwordError.show();
+        } else {
+            passwordError.hide();
+        }
+    });
+
+    // 비밀번호 확인 blur 검증
+    pw2Input.on("blur", function () {
+        if (pw1Input.val() !== pw2Input.val()) {
+            rePasswordError.show();
+        } else {
+            rePasswordError.hide();
+        }
+    });
+
+    // 폼 제출 검증
+    $("#registerForm").on("submit", function (e) {
+        let valid = true;
+
+        if (!usernameRegex.test(usernameInput.val().trim())) {
+            usernameCheckMsg.text("아이디 양식을 다시 확인해주세요.").css("color", "red");
+            valid = false;
+        } else if (!isUsernameAvailable) {
+            usernameCheckMsg.text("아이디 중복 확인을 해주세요.").css("color", "red");
+            valid = false;
+        }
+
+        if (!passwordRegex.test(pw1Input.val())) {
+            passwordError.show();
+            valid = false;
+        }
+
+        if (pw1Input.val() !== pw2Input.val()) {
+            rePasswordError.show();
+            valid = false;
+        }
+
+        if (!valid) {
+            e.preventDefault();
+        }
     });
 });
-// 다음 주소 API 호출 함수
-function searchAddress(targetId) {
-    new daum.Postcode({
-        oncomplete: function(data) {
-            document.getElementById(targetId).value = data.address;
-        }
-    }).open();
-}

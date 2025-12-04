@@ -4,7 +4,6 @@
 
 {% block script1 %}
     <link rel="stylesheet" href="{% static 'CSS/member/member_register.css' %}">
-    <!-- <script src="{% static 'js/member/member_register1.js' %}"></script> -->
 {% endblock %}
 {% block contents %}
     <div class="card col-md-6 mx-auto mt-5">
@@ -20,12 +19,11 @@
                 </div>
                 {% endif %}
                 <div class="mb-3">
-                    <label for="username" class="form-label">*아이디 :</label>
+                    <label for="username" class="form-label">아이디 :</label>
                     <input type="text" class="form-control" placeholder="회원아이디를 입력해 주세요" id="username" name="m_username">
-                    <div class="input-error-username">아이디를 맞는 형식으로 입력해주세요</div>
                 </div>
                 <div class="mb-3">
-                    <label for="password1" class="form-label">*비밀번호 :</label>
+                    <label for="password1" class="form-label">비밀번호 :</label>
                     <input type="password" class="form-control" placeholder="회원비밀번호를 입력해 주세요" id="password1" name="m_password1">
                 </div>
                 <button type="submit" class="btn btn-primary subbtn">로그인</button>

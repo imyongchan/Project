@@ -8,6 +8,12 @@ class Step1MemberForm(forms.Form):
     m_password1 = forms.CharField(widget=forms.PasswordInput)
     m_password2 = forms.CharField(widget=forms.PasswordInput)
     
+    def clean_m_username(self):
+        m_username = self.cleaned_data.get('m_username')
+        if Member.objects.filter(m_username=m_username).exists():
+            raise forms.ValidationError("이미 존재하는 아이디입니다.")
+        return m_username
+
     def clean(self):
         cleaned = super().clean()
         if cleaned.get("m_password1") != cleaned.get("m_password2"):

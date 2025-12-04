@@ -7,13 +7,24 @@ $(document).ready(function () {
         maxDate: "today",
     });
 
-    // 전화번호 숫자만 입력되도록
-    $("#phone").on("beforeinput", function (e) {
-        if (e.originalEvent.data && !/^[0-9]$/.test(e.originalEvent.data)) {
-            e.preventDefault();
-        }
+    // 전화번호 숫자만 입력되도록 설정
+    $("#phone").on("keyup", function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    }); 
+
+    $("#phone").on("input", function () {
+    this.value = this.value.replace(/[^0-9]/g, '');
     });
 
+    $("#email").on("blur", function () {
+        const regemail =/^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
+        const email = $("#email").val();
+        if (!regemail.test(email)) {
+            $("#EmailError").show();
+        } else {
+            $("#EmailError").hide();
+        }
+    });
 });
 
 // 다음 주소 API

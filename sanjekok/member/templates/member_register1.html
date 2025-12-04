@@ -4,6 +4,7 @@
 
 {% block script1 %}
 <link rel="stylesheet" href="{% static 'CSS/member/member_register.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'js/member/member_register1.js' %}"></script>
 {% endblock %}
 
@@ -20,10 +21,11 @@
             <!-- 아이디 -->
             <div class="mb-3">
                 <label for="username" class="form-label">*아이디 :</label>
-                <input type="text" class="form-control" placeholder="6~16자/영문소문자, 숫자만" id="username" name="m_username">
-                <div id="usernameError" class="input-error-username" style="display:none;color:red;">
-                    아이디 양식을 다시 확인해주세요.
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="6~16자/영문소문자, 숫자만" id="username" name="m_username">
+                    <button class="btn btn-outline-secondary" type="button" id="checkUsernameBtn" data-url="{% url 'Member:check_username' %}">중복확인</button>
                 </div>
+                <div id="usernameCheckMsg"></div>
             </div>
 
             <!-- 비밀번호 -->

@@ -4,78 +4,83 @@
 
 {% block script1 %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="{% static 'CSS/member/member_register.css' %}">
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{% static 'js/member/member_register2.js' %}"></script>
+<link rel="stylesheet" href="{% static 'CSS/member/member_register.css' %}">
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/member/member_register2.js' %}"></script>
 {% endblock %}
 {% block contents %}
-    <div class="card col-md-6 mx-auto mt-5">
-        <div class="card-header text-center">
-            <h2>회원 가입</h2>
-        </div>
-        <div class="card-body">
-            <form action="" method="post">
-                {% csrf_token %}
-                <h4 class="card-title mb-3">회원 정보</h4>
-
-                <div class="mb-3">
-                    <label for="name" class="form-label">*이름 :</label>
-                    <input type="text" class="form-control" placeholder="이름을 입력해주세요." id="name" name="m_name">
-                </div>
-                <div class="mb-3">
-                    <label for="birth_date" class="form-label">*생년월일 :</label>
-                    <input 
-                        type="text" 
-                        id="birth_date" 
-                        name="m_birth_date"
-                        class="form-control"
-                        placeholder="YYYY-MM-DD"
-                    >
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">*집 주소 :</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="address" 
-                        name="m_address" 
-                        placeholder="집 주소를 입력해주세요."
-                        readonly
-                        onclick="searchAddress('address')">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">*직장 주소 :</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="jaddress" 
-                        name="m_jaddress" 
-                        placeholder="직장 주소를 입력해주세요."
-                        readonly
-                        onclick="searchAddress('jaddress')">
-                </div>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">전화번호 :</label>
-                    <!-- <input type="text" id="phone" class="form-control" placeholder="전화번호를 입력해주세요." maxlength="11" name="m_phone"> -->
-                    <input type="text" id="phone" maxlength="11" inputmode="numeric" placeholder="전화번호" name="m_phone"/>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">이메일 :</label>
-                    <input type="text" class="form-control" placeholder="이메일을 입력해주세요." id="email" name="m_email">
-                </div>
-                <div class="mb-3">
-                    <label for="sex" class="form-label">*성별 :</label>
-                    남
-                    <input type="radio" class="form-radio" id="sex" name="m_sex" value="male"></input>
-                    여
-                    <input type="radio" class="form-radio" id="sex" name="m_sex" value="female"></input>
-                </div>
-
-                <button type="submit" class="btn btn-primary subbtn">가입하기</button>
-            </form>
-        </div>
+<div class="card col-md-6 mx-auto mt-5">
+    <div class="card-header text-center">
+        <h2>회원 가입</h2>
     </div>
+    <div class="card-body">
+        <form action="" method="post">
+            {% csrf_token %}
+            <h4 class="card-title mb-3">회원 정보</h4>
+
+            <div class="mb-3">
+                <label for="name" class="form-label">*이름 :</label>
+                <input type="text" class="form-control" placeholder="이름을 입력해주세요." id="name" name="m_name">
+            </div>
+            <div class="mb-3">
+                <label for="birth_date" class="form-label">*생년월일 :</label>
+                <input 
+                    type="text" 
+                    id="birth_date" 
+                    name="m_birth_date"
+                    class="form-control"
+                    placeholder="YYYY-MM-DD">
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">*집 주소 :</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="address" 
+                    name="m_address" 
+                    placeholder="집 주소를 입력해주세요."
+                    readonly
+                    onclick="searchAddress('address')">
+            </div>
+            <div class="mb-3">
+                <label for="jaddress" class="form-label">*직장 주소 :</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="jaddress" 
+                    name="m_jaddress" 
+                    placeholder="직장 주소를 입력해주세요."
+                    readonly
+                    onclick="searchAddress('jaddress')">
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">전화번호 :</label>
+                <input type="text" class="form-control" id="phone" maxlength="11" placeholder="전화번호를 입력해주세요." name="m_phone">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">이메일 :</label>
+                <input type="text" class="form-control" placeholder="이메일을 입력해주세요." id="email" name="m_email">
+                <div id="EmailError" style="display:none;color:red;">
+                    이메일 양식이 틀렸습니다.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">*성별 :</label>
+
+                <div>
+                    <input type="radio" id="sex_male" name="m_sex" value="male" checked>
+                    <label for="sex_male">남</label>
+
+                    <input type="radio" id="sex_female" name="m_sex" value="female">
+                    <label for="sex_female">여</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary subbtn">가입하기</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
