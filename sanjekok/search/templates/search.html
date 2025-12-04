@@ -1,62 +1,36 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>주변 산재 검색</title>
-  <link rel="stylesheet" href="{% static 'CSS/search/search.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>지도 검색</title>
+
+    {% load static %}
+
+    <!-- Kakao SDK -->
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey={{ KAKAO_KEY }}&libraries=services"></script>
+
+    <link rel="stylesheet" href="{% static 'css/search.css' %}">
 </head>
 <body>
 
-<h2>주변 산재 검색</h2>
+    <div id="container">
+        <h2>장소 검색</h2>
 
-<div class="search-box">
-  <div class="search-row">
-    <label>위치선택:</label>
-    <button id="homeBtn">집</button>
-    <button id="workBtn">근무지</button>
+        <div id="search-box">
+            <input id="keyword-input" type="text" placeholder="검색어를 입력하세요">
+            <button id="search-btn">검색</button>
+        </div>
 
-    <div class="dropdown">
-      <button id="incidentBtn">사고지역 ▼</button>
-      <div id="incidentMenu" class="dropdown-menu">
-        {% for a in accident_list %}
-          <div data-x="{{ a.x }}" data-y="{{ a.y }}">
-            {{ a.nickname }} ({{ a.address }})
-          </div>
-        {% empty %}
-          <div>등록된 사고지역 없음</div>
-        {% endfor %}
-      </div>
+        <div id="map"></div>
+        <ul id="result-list"></ul>
     </div>
-  </div>
 
-  <div class="count-box">
-    총 발생건수: <span id="totalCount">0</span>
-  </div>
-</div>
+    <script src="{% static 'js/search.js' %}"></script>
 
-<div class="section-box">
-  <div class="section-title">
-    <h3>근무지/산업재해 상황</h3>
-    주변 산업재해 발생 현황을 확인하세요
-  </div>
-</div>
-
-<div class="map-placeholder" style="width:70%;height:500px;"></div>
-
-<script>
-  const KAKAO_KEY = "{{ KAKAO_KEY }}";
-
-  const HOME_TM = {
-    x: Number("{{ home.x|default:'0' }}"),
-    y: Number("{{ home.y|default:'0' }}")
-  };
-  const WORK_TM = {
-    x: Number("{{ work.x|default:'0' }}"),
-    y: Number("{{ work.y|default:'0' }}")
-  };
-</script>
-
-<script src="{% static 'js/search/search.js' %}"></script>
+    <script>
+        const SEARCH_API_URL = "{% url 'search-api' %}";
+    </script>
 </body>
 </html>
