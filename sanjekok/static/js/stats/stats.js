@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const injuryDetail  = document.getElementById("injuryDetail");
     const accidentSummary = document.getElementById("accidentSummary"); // 재해 요약
     const fatalSummary    = document.getElementById("fatalSummary");    // 사망 요약
-    const genderSummary   = document.getElementById("genderSummary");   // 성비 요약(있으면)
+    const genderSummary1   = document.getElementById("genderSummary1");   // 재해 성비 
+    const genderSummary2   = document.getElementById("genderSummary2");   // 재해 사망 성비
 
     // 산재 선택 여부
     let injurySelected = false;
@@ -49,7 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 if (accidentSummary) accidentSummary.textContent = "";
                 if (fatalSummary)    fatalSummary.textContent    = "";
-                if (genderSummary)   genderSummary.textContent   = "";
+                if (genderSummary1)   genderSummary1.textContent   = "";
+                if (genderSummary2)   genderSummary2.textContent   = "";
 
                 dropdown.classList.add("hidden");
             });
@@ -75,9 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
             periodButtons.forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
 
-            // 4) 버튼에 박혀 있는 데이터 읽기
-            const label = btn.innerText.trim(); // "최근 1년" / "2년" / "3년"
-
             const accCount    = Number(btn.dataset.accCount    || 0); // 재해자수
             const accRate     = Number(btn.dataset.accRate     || 0); // 재해율
             const fatalCount  = Number(btn.dataset.fatalCount  || 0); // 사망자수
@@ -87,6 +86,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const female      = Number(btn.dataset.female      || 0); // 여자
             const maleRate    = Number(btn.dataset.maleRate    || 0); // 남자비율(%)
             const femaleRate  = Number(btn.dataset.femaleRate  || 0); // 여자비율(%)
+ 
+            const male2        = Number(btn.dataset.male2        || 0); // 남자
+            const female2     = Number(btn.dataset.female2      || 0); // 여자
+            const maleRate2   = Number(btn.dataset.maleRate2    || 0); // 남자비율(%)
+            const femaleRate2  = Number(btn.dataset.femaleRate2  || 0); // 여자비율(%)
 
             // 5) (재해)
             if (accidentSummary) {
@@ -105,13 +109,23 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // 7) (성별 재해 비율)
-            if (genderSummary) {
+            if (genderSummary1) {
                 const maleRateText   = isNaN(maleRate)   ? "-" : maleRate.toFixed(1);
                 const femaleRateText = isNaN(femaleRate) ? "-" : femaleRate.toFixed(1);
 
-                genderSummary.textContent =
+                genderSummary1.textContent =
                     `남자: ${male.toLocaleString()}명 (${maleRateText}%), ` +
                     `여자: ${female.toLocaleString()}명 (${femaleRateText}%)`;
+            }            
+
+            // 8) (성별 재해사망 비율)
+            if (genderSummary2) {
+                const maleRateText2   = isNaN(maleRate2)   ? "-" : maleRate2.toFixed(1);
+                const femaleRateText2 = isNaN(femaleRate2) ? "-" : femaleRate2.toFixed(1);
+
+                genderSummary2.textContent =
+                    `남자: ${male2.toLocaleString()}명 (${maleRateText2}%), ` +
+                    `여자: ${female2.toLocaleString()}명 (${femaleRateText2}%)`;
             }
         });
     });

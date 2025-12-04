@@ -40,9 +40,9 @@ def get_stats1(industry_name1):
     sub = pivot.loc[[y1]]
     rows.append({
             "기간": "최근 1년",
-            "재해자수": sub["재해자수"].sum(),
+            "재해자수": int(sub["재해자수"].sum()),
             "재해율": sub["재해율"].mean().round(2),
-            "사망자수": sub["사망자수"].sum(),
+            "사망자수": int(sub["사망자수"].sum()),
             "사망만인율": sub["사망만인율"].mean().round(2),
     })
 
@@ -50,9 +50,9 @@ def get_stats1(industry_name1):
     sub = pivot.loc[[y2,y1]]
     rows.append({
             "기간": "2년",
-            "재해자수": sub["재해자수"].sum(),
+            "재해자수": int(sub["재해자수"].sum()),
             "재해율": sub["재해율"].mean().round(2),
-            "사망자수": sub["사망자수"].sum(),
+            "사망자수": int(sub["사망자수"].sum()),
             "사망만인율": sub["사망만인율"].mean().round(2),
     })
 
@@ -60,9 +60,9 @@ def get_stats1(industry_name1):
     sub = pivot.loc[[y3,y2,y1]]
     rows.append({
             "기간": "3년",
-            "재해자수": sub["재해자수"].sum(),
+            "재해자수": int(sub["재해자수"].sum()),
             "재해율": sub["재해율"].mean().round(2),
-            "사망자수": sub["사망자수"].sum(),
+            "사망자수":int(sub["사망자수"].sum()),
             "사망만인율": sub["사망만인율"].mean().round(2),
     })
 
@@ -95,8 +95,8 @@ def get_stats2(industry_name2):
         ))
 
     pivot['전체']=pivot['남자']+pivot['여자']
-    pivot["남자비율"] = (pivot["남자"] / pivot["전체"] * 100).round(1)
-    pivot["여자비율"] = (pivot["여자"] / pivot["전체"] * 100).round(1)
+    pivot["남자비율"] = (pivot["남자"] / pivot["전체"] * 100).round(2)
+    pivot["여자비율"] = (pivot["여자"] / pivot["전체"] * 100).round(2)
 
     pivot = pivot.sort_index()
 
@@ -109,9 +109,9 @@ def get_stats2(industry_name2):
     sub = pivot.loc[[y1]]
     rows.append({
         "기간": "최근 1년",
-        "남자": sub["남자"].sum(),
-        "여자": sub["여자"].sum(),
-        "전체": sub["전체"].sum(),
+        "남자": int(sub["남자"].sum()),
+        "여자": int(sub["여자"].sum()),
+        "전체": int(sub["전체"].sum()),
         "남자비율": sub["남자비율"].mean().round(2),   
         "여자비율": sub["여자비율"].mean().round(2),
     })
@@ -120,9 +120,9 @@ def get_stats2(industry_name2):
     sub = pivot.loc[[y2, y1]]
     rows.append({
         "기간": "2년",
-        "남자": sub["남자"].sum(),
-        "여자": sub["여자"].sum(),
-        "전체": sub["전체"].sum(),
+        "남자": int(sub["남자"].sum()),
+        "여자": int(sub["여자"].sum()),
+        "전체": int(sub["전체"].sum()),
         "남자비율": sub["남자비율"].mean().round(2),  
         "여자비율": sub["여자비율"].mean().round(2),
     })
@@ -131,9 +131,9 @@ def get_stats2(industry_name2):
     sub = pivot.loc[[y3, y2, y1]]
     rows.append({
         "기간": "3년",
-        "남자": sub["남자"].sum(),
-        "여자": sub["여자"].sum(),
-        "전체": sub["전체"].sum(),
+        "남자": int(sub["남자"].sum()),
+        "여자": int(sub["여자"].sum()),
+        "전체": int(sub["전체"].sum()),
         "남자비율": sub["남자비율"].mean().round(2),
         "여자비율": sub["여자비율"].mean().round(2),
     })
@@ -143,3 +143,78 @@ def get_stats2(industry_name2):
     summary2 = summary.to_dict("records")
     return summary2 
     # [{기간: 남자,여자,전체,남자비율,여자비율}]
+
+
+    # 업종별 성별 사망 재해
+def get_stats3(industry_name3):
+    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6+&objL1=15118AI7AA+15118AI7AB+15118AI7AC+15118AI7AC01+15118AI7AD+15118AI7AE+15118AI7AJ+&objL2=11101SSB21+11101SSB22+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N014")
+    
+    response = requests.get(json_URL)
+    data = response.json()
+
+    df = pd.json_normalize(data)
+    df["DT"] = df["DT"].astype(float)
+
+    df_industry = df[df["C1_NM"] == industry_name3]
+
+    pivot = (
+        df_industry .pivot_table(
+            index="PRD_DE",        
+            columns="C2_NM",    
+            values="DT",
+            aggfunc="sum"
+        ))
+
+    pivot['전체']=pivot['남자']+pivot['여자']
+    pivot["남자비율"] = (pivot["남자"] / pivot["전체"] * 100).round(2)
+    pivot["여자비율"] = (pivot["여자"] / pivot["전체"] * 100).round(2)
+
+    pivot = pivot.sort_index()
+
+    years = pivot.index.to_list()   # [2021, 2022, 2023] 
+    y1, y2, y3 = years[-1], years[-2], years[-3]   #y1=2023, y2=2022, y3=2021
+
+    rows = []
+
+    # 1) 최근 1년 : y1만 사용
+    sub = pivot.loc[[y1]]
+    rows.append({
+        "기간": "최근 1년",
+        "남자": int(sub["남자"].sum()),
+        "여자": int(sub["여자"].sum()),
+        "전체": int(sub["전체"].sum()),
+        "남자비율": sub["남자비율"].mean().round(2),   
+        "여자비율": sub["여자비율"].mean().round(2),
+    })
+
+    # 2) 최근 2년 : y1 + y2
+    sub = pivot.loc[[y2, y1]]
+    rows.append({
+        "기간": "2년",
+        "남자": int(sub["남자"].sum()),
+        "여자": int(sub["여자"].sum()),
+        "전체": int(sub["전체"].sum()),
+        "남자비율": sub["남자비율"].mean().round(2),  
+        "여자비율": sub["여자비율"].mean().round(2),
+    })
+
+    # 3) 최근 3년 : y1 + y2 + y3
+    sub = pivot.loc[[y3, y2, y1]]
+    rows.append({
+        "기간": "3년",
+        "남자": int(sub["남자"].sum()),
+        "여자": int(sub["여자"].sum()),
+        "전체": int(sub["전체"].sum()),
+        "남자비율": sub["남자비율"].mean().round(2),
+        "여자비율": sub["여자비율"].mean().round(2),
+    })
+
+    # 원하는 형태의 새 테이블 생성
+    summary = pd.DataFrame(rows).set_index("기간")
+    summary3 = summary.to_dict("records")
+    return summary3
+    # [{기간: 남자,여자,전체,남자비율,여자비율}]
+
+
+
+
