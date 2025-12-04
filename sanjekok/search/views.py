@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.conf import settings
 
 def search_page(request):
-    return render(request, "search.html")
+    return render(request, "search/search.html")
 
 def place_search(request):
     keyword = request.GET.get("q", "")
