@@ -33,8 +33,6 @@ def stats_home(request):
     summary4 = get_stats4(industry_name4)
     summary5 = get_stats5(industry_name5)
     summary6 = get_stats6(industry_name6)        
-
-
     summary6_json = json.dumps(summary6, ensure_ascii=False)
 
     return render(request, "stats/stats.html", {

@@ -12,22 +12,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const ageSummary2     = document.getElementById("ageSummary2");      // 연령별 재해 사망 현황
     const injurySummary1  = document.getElementById("injurySummary1"); 
 
-    // 산재 선택 여부
+    // 산재 선택 여부 + 내가 선택한 발생형태
     let injurySelected = false;
-    let selectedInjuryType = "";
+    let selectedInjuryType = null;
 
-    // ★ 백엔드에서 온 summary6 JSON 파싱
-    let summary6Data = null;
+    // ★ 발생형태 통계(summary6_json) 파싱
+    let injuryStatsByPeriod = null;
     if (visualArea && visualArea.dataset.summary6) {
         try {
-            console.log("raw summary6:", visualArea.dataset.summary6);  // ★추가
+            console.log("raw summary6:", visualArea.dataset.summary6);   // 디버깅용
             injuryStatsByPeriod = JSON.parse(visualArea.dataset.summary6);
+            console.log("parsed summary6:", injuryStatsByPeriod);        // 디버깅용
         } catch (e) {
             console.error("summary6_JSON_파싱_실패:", e);
             injuryStatsByPeriod = null;
         }
     }
-
 
 
     // "나의 산재" 버튼 → 드롭다운 열기/닫기
@@ -189,14 +189,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }     
             // 11) ★ 발생형태 TOP10 + 나의 부상형태 순위
             
-            if (injurySummary1 && summary6Data) {
-                // 버튼의 data-year("1","2","3") → 기간키로 변환
+            if (injurySummary1 && injuryStatsByPeriod) {
+                // data-year("1","2","3") → "최근 1년"/"2년"/"3년" 으로 매핑
                 const yearFlag = btn.dataset.year;
                 let periodKey = "최근 1년";
                 if (yearFlag === "2") periodKey = "2년";
                 else if (yearFlag === "3") periodKey = "3년";
 
-                const periodData = summary6Data[periodKey];
+                const periodData = injuryStatsByPeriod[periodKey];
+                console.log("periodKey:", periodKey, "periodData:", periodData); // 디버깅
 
                 if (!periodData) {
                     injurySummary1.textContent = "발생형태 데이터가 없습니다.";
@@ -211,7 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!topList.length) {
                     html += "발생형태 데이터가 없습니다.";
                 } else {
-                    html += "<strong>업종 발생형태 TOP 10</strong><br>";
                     topList.forEach(item => {
                         const cnt = typeof item.count === "number"
                             ? item.count.toLocaleString()
