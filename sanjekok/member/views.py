@@ -88,3 +88,32 @@ def check_username(request):
 def complete(request):
     return render(request, 'member_complete.html')
 
+# 마이페이지
+def mypage(request):
+    member_id = request.session.get('member_id')
+    if not member_id:
+        return redirect('Member:login')
+    
+    member = Member.objects.get(id=member_id)
+    return render(request, 'mypage_checked.html', {'member': member})
+
+
+def mypage_profile(request):
+    member_id = request.session.get('member_id')
+    if not member_id:
+        return redirect('Member:login')
+    
+    member = Member.objects.get(id=member_id)
+    
+    if request.method == "GET":
+        form = Step2MemberForm(instance=member)
+        return render(request, 'mypage_profile.html', {'form': form})
+    
+    elif request.method == "POST":
+        form = Step2MemberForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            return redirect('Member:mypage')
+        
+        return render(request, 'mypage_profile.html', {'form': form})
+
