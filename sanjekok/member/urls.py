@@ -9,4 +9,7 @@ urlpatterns = [
     path('login/', views.login, name='login'),  # 로그인
     path('check-username/', views.check_username, name='check_username'), # 아이디 중복 확인
     path('complete/', views.complete, name='complete'),  # 회원가입 완료
+
+    path('mypage/', views.mypage, name='mypage'),  # 마이페이지
+    path('mypage/profile/', views.mypage_profile, name='mypage_profile'),  # 마이페이지 - 프로필 수정
 ]
