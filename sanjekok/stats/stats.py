@@ -408,3 +408,52 @@ def get_stats5(industry_name5):
     return summary5
     # [{기간: 18세 미만,10대,20대,30대,40대,50대,60대 이상}]
 
+
+# 발생형태별  
+def get_stats6(industry_name6):
+    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAC+15118AI7AC00+15118AI7AC000+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAE+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAJ+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAZ00+15118AI7ABAX+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AC01+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAC+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AC02+15118AI7AC03+15118AI7AC030+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AC1AM+15118AC1AN+15118AC1AO+15118AC1AP+15118AC1AQ+15118AC1AR+15118AC1AT+15118AC1AF+15118AC1AG+15118AC1AH+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N015")
+    
+    response = requests.get(json_URL)
+    data = response.json()
+
+    df = pd.json_normalize(data)
+    df["DT"] = df["DT"].astype(float)
+
+    df_industry = df[df["C1_NM"] == industry_name6]
+
+    pivot = (
+        df_industry .pivot_table(
+            index="PRD_DE",        
+            columns="C2_NM",    
+            values="DT",
+            aggfunc="sum"
+        ))
+    pivot=pivot.fillna(0) # 2021년 광산사고밖에 null 값 
+    pivot = pivot.sort_index()
+    years = pivot.index.to_list()   # [2021, 2022, 2023] 
+
+    rows = []
+
+    def add_row(n_years: int, label: str):
+        # 마지막 n_years 개 연도 사용 (최근 n년)
+        use_years = years[-n_years:]          # 예: [2023], [2022, 2023], [2021, 2022, 2023]
+        sub = pivot.loc[use_years]           # 해당 연도들만 슬라이싱
+        s = sub.sum(axis=0)                  # 각 사고유형별 합계
+        s["기간"] = label                    # 기간 열 추가
+        rows.append(s)
+
+    # 1) 최근 1년
+    add_row(1, "최근 1년")
+
+    # 2) 최근 2년
+    add_row(2, "2년")
+
+    # 3) 최근 3년
+    add_row(3, "3년")
+
+    # 최종 요약 테이블
+    summary = pd.DataFrame(rows).set_index("기간")
+    summary6 = summary.to_dict("records")
+    return summary6
+    # [{기간: 발생형태들 }]
+    

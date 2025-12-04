@@ -150,55 +150,54 @@
     </section>
 
     <!-- 3. 통계 시각화 영역 -->
-    <section id="stats-visual-area" class="stats-visual hidden">
+    <section id="stats-visual-area"
+             class="stats-visual hidden"
+             data-summary6='{{ summary6_json|escapejs }}'>
         <div class="visual-grid">
 
             <!-- 내 업종 재해율 -->
             <div class="visual-card">
                 <h3>내 업종 재해율</h3>
-                
-                <!-- JS가 채울 요약 문구 -->
                 <p id="accidentSummary"></p>
             </div>
 
             <!-- 내 업종 사망만인율 -->
             <div class="visual-card">
                 <h3>내 업종 사망만인율</h3>
-                <!-- JS가 채울 요약 문구 -->
                 <p id="fatalSummary"></p>
             </div>
 
             <!-- 남/녀 재해 현황 -->
             <div class="visual-card">
                 <h3>남/녀 재해 현황</h3>
-                <!-- JS가 채울 요약 문구 -->
                 <p id="genderSummary1"></p>
             </div>
 
-            <!--남/녀 재해 사망현황-->
+            <!-- 남/녀 재해 사망현황 -->
             <div class="visual-card">
                 <h3>남/녀 재해 사망 현황</h3>
-                <!-- JS가 채울 요약 문구 -->
                 <p id="genderSummary2"></p>
             </div>
 
+            <!-- 연령대별 재해 현황 -->
             <div class="visual-card">
                 <h3>연령대별 재해 현황</h3>
-                <!-- JS가 채울 요약 문구 -->
                 <p id="ageSummary1"></p>
             </div>
 
+            <!-- 연령대별 사망 현황 -->
             <div class="visual-card">
-                <h3>연령대별 재해 현황</h3>
-                <!-- JS가 채울 요약 문구 -->
+                <h3>연령대별 사망 현황</h3>
                 <p id="ageSummary2"></p>
             </div>
 
+            <!-- 발생형태별 재해 TOP 10 -->
+            <div class="visual-card">
+                <h3>재해유형 (발생형태 TOP 10)</h3>
+                <p id="injurySummary1"></p>
+            </div>
 
-
-            <div class="visual-card">재해 유형</div>
             <div class="visual-card">사망 유형</div>
-            <div class="visual-card">연령대별 사망 현황</div>
             <div class="visual-card">재해 질병 유형</div>
             <div class="visual-card">재해 질병 사망 현황</div>
             <div class="visual-card highlight">종합 위험도 평가</div>

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from datetime import date
 from member.models import Member
 from stats.stats import get_stats1,get_stats2,get_stats3,get_stats4,get_stats5
-
+import json 
 
 def stats_home(request):
     member = Member.objects.first()
@@ -24,13 +24,15 @@ def stats_home(request):
     industry_name5 = industry.i_industry_type2
 
 
+
     summary1 = get_stats1(industry_name1)
     summary2 = get_stats2(industry_name2)
     summary3 = get_stats3(industry_name3)
     summary4 = get_stats4(industry_name4)
     summary5 = get_stats5(industry_name5)
 
-    return render(request, "stats.html", {
+
+    return render(request, "stats/stats.html", {
         "member": member,
         "industry": industry,
         "age": age,
