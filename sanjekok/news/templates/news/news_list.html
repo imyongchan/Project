@@ -57,6 +57,18 @@
         </div>
         {% endfor %}
 
+        <form action="{% url 'news_set_write_pages' %}" method="POST" class="mb-3">
+            {% csrf_token %}
+
+            <label>페이징 숫자 표시 개수(write_pages):</label>
+            <select name="write_pages" onchange="this.form.submit()" style="width:120px;">
+                <option value="5" {% if write_pages == 5 %}selected{% endif %}>5</option>
+                <option value="10" {% if write_pages == 10 %}selected{% endif %}>10</option>
+                <option value="15" {% if write_pages == 15 %}selected{% endif %}>15</option>
+                <option value="20" {% if write_pages == 20 %}selected{% endif %}>20</option>
+            </select>
+        </form>
+
     </div>
 
 </body>
