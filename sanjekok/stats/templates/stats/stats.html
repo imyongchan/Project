@@ -152,7 +152,8 @@
     <!-- 3. 통계 시각화 영역 -->
     <section id="stats-visual-area"
             class="stats-visual hidden"
-            data-summary6='{{ summary6_json|escapejs }}'>
+            data-summary6='{{ summary6_json}}'
+            data-summary7='{{ summary7_json}}'>
         <div class="visual-grid">
 
             <!-- 내 업종 재해율 -->
@@ -197,7 +198,12 @@
                 <p id="injurySummary1"></p>
             </div>
 
-            <div class="visual-card">사망 유형</div>
+            <div class="visual-card">
+                <h3>사망재해현황 (발생형태 TOP 10)</h3>
+                <p id="injurySummary2"></p>
+            </div>
+
+
             <div class="visual-card">재해 질병 유형</div>
             <div class="visual-card">재해 질병 사망 현황</div>
             <div class="visual-card highlight">종합 위험도 평가</div>

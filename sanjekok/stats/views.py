@@ -3,8 +3,8 @@ from django.shortcuts import render
 from datetime import date
 from member.models import Member
 from stats.stats import (
-    get_stats1, get_stats2, get_stats3,
-    get_stats4, get_stats5, get_stats6,
+    get_stats1, get_stats2, get_stats3, get_stats4, get_stats5, get_stats6,get_stats7
+
 )
 
 def stats_home(request):
@@ -26,16 +26,21 @@ def stats_home(request):
     industry_name4 = industry.i_industry_type2
     industry_name5 = industry.i_industry_type2
     industry_name6 = industry.i_industry_type2   
+    industry_name7 = industry.i_industry_type2   
+
 
     summary1 = get_stats1(industry_name1)
     summary2 = get_stats2(industry_name2)
     summary3 = get_stats3(industry_name3)
     summary4 = get_stats4(industry_name4)
     summary5 = get_stats5(industry_name5)
-    summary6 = get_stats6(industry_name6)        
+    summary6 = get_stats6(industry_name6)
+    summary7 = get_stats7(industry_name7)
 
 
     summary6_json = json.dumps(summary6, ensure_ascii=False)
+    summary7_json = json.dumps(summary7, ensure_ascii=False)
+   
 
     return render(request, "stats/stats.html", {
         "member": member,
@@ -47,5 +52,7 @@ def stats_home(request):
         "summary3": summary3,
         "summary4": summary4,
         "summary5": summary5,
-        "summary6_json": summary6_json,         
+        "summary6_json": summary6_json,
+        "summary7_json": summary7_json,
+  
     })

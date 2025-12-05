@@ -472,3 +472,67 @@ def get_stats6(industry_name6):
 
     return result
             
+
+# 발생형태 사망별  
+def get_stats7(industry_name7):
+    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAB0+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAJ+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AJAI00+15118AI7AJAI01+15118AI7AJAI010+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AJ401+15118AJ402+15118AJ403+15118AJ404+15118AJ405+15118AJ406+15118AJ407+15118AJ408+15118AJ409+15118AJ410+15118AJ411+15118AJ412+15118AJ413+15118AJ414+15118AJ415+15118AJ416+15118AJ417+15118AJ418+15118AJ422+15118AJ423+15118AJ419+15118AJ420+15118AJ421+15118AJ424+15118AJ425+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N022")
+    
+    response = requests.get(json_URL)
+    data = response.json()
+
+    df = pd.json_normalize(data)
+    df["DT"] = df["DT"].astype(float)
+
+    df_industry = df[df["C1_NM"] == industry_name7]
+
+    pivot = (
+        df_industry .pivot_table(
+            index="PRD_DE",        
+            columns="C2_NM",    
+            values="DT",
+            aggfunc="sum"
+        ))
+    
+    pivot = pivot.fillna(0).sort_index()
+    years = pivot.index.to_list()   # 예: ['2021', '2022', '2023']
+
+    rows = []
+
+    def add_row(n_years: int, label: str):
+            use_years = years[-n_years:]       # 마지막 n_years개 연도
+            sub = pivot.loc[use_years]
+            s = sub.sum(axis=0)                # 발생형태별 합계
+            s["기간"] = label
+            rows.append(s)
+
+        
+    add_row(1, "최근 1년")
+    add_row(2, "2년")
+    add_row(3, "3년")
+
+    summary = pd.DataFrame(rows).set_index("기간")
+    result = {}
+
+    for period, row in summary.iterrows():
+        sorted_row = row.sort_values(ascending=False)
+
+        top10 = sorted_row.head(10)
+
+        top10_list = []
+        for rank, (name, cnt) in enumerate(top10.items(), start=1):
+            top10_list.append({
+                "rank": rank,
+                "name": name,
+                "count": int(cnt),
+            })
+
+        rank_series = row.rank(ascending=False, method="min")
+        rank_map = {name: int(r) for name, r in rank_series.items()}
+
+        result[period] = {
+            "top10": top10_list,
+            "rank_map": rank_map,
+        }
+
+    return result
+            
