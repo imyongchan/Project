@@ -19,13 +19,13 @@
     <link rel="stylesheet" href="{% static 'CSS/news/news_list.css' %}">
 </head>
 
-<body style="background:#f8f9fa; margin-bottom:50px;">
+<body>
 
     <div class="container py-4">
 
         <h2 class="mb-4">산재 뉴스</h2>
 
-        {% for n in news %}
+        {% for n in list %}
         <div class="news-card">
 
             <div class="news-img">
@@ -63,10 +63,10 @@
           <div class="container mt-4">
             <ul class="pagination justify-content-center">
                 {# << 표시 여부 #} 
-                {% if page_obj.number > 1 %}
+                {% if list.number > 1 %}
                 <li class="page-item">
-                    <a class="page-link" href="?page=1" title="처음">
-                        <i class="fas fa-angle-double-left"></i>
+                    <a class="page-link" href="?page=" title="처음">
+                        처음 <<
                     </a>
                 </li>
                 {% endif %}
@@ -75,7 +75,7 @@
                 {% if start_page > 1 %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ start_page|add:-1 }}" title="이전">
-                        <i class="fas fa-angle-left"></i>
+                        이전 < 
                     </a>
                 </li>
                 {% endif %}
@@ -83,7 +83,7 @@
 
                 {# 페이징 안의 '숫자' 표시 #}
                 {% for i in page_range %}
-                    {% if page_obj.number == i %} 
+                    {% if list.number == i %} 
                     <li class="page-item active"><span class="page-link">{{ i }}</span></li>
                     {% else %}
                     <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
@@ -91,20 +91,20 @@
                 {% endfor %}
 
                 {# > 표시 #}
-                {% if end_page < paginator.num_pages %}
+                {% if list.paginator.num_pages > end_page %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ end_page|add:1 }}" title="다음">
-                        <i class="fas fa-angle-right"></i>
+                        다음 >
                     </a>
                 </li>
                 {% endif %}
 
 
                 {# >> 표시 #}
-                {% if page_obj.number < paginator.num_pages %}
+                {% if list.number < list.paginator.num_pages %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ paginator.num_pages }}" title="맨끝">
-                        <i class="fas fa-angle-double-right"></i>
+                    <a class="page-link" href="?page={{ list.paginator.num_pages }}" title="맨끝">
+                        맨끝 >>
                     </a>
                 </li>
                 {% endif %}

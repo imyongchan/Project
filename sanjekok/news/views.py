@@ -8,10 +8,11 @@ def crawl_news_view(request):
     return redirect("News:news_list")
 
 def news_list(request):
-    posts = News.objects.all().order_by('-id')  # 최신 기사순 ...
+    posts = News.objects.all().order_by('id')  # 최신 기사순 ...
     write_pages = 5    # 페이징 블록에 들어갈 페이지개수  (사용자가 못 바꿈)
     per_page = 10      # 한페이지당 표시할 기사 개수 (사용자가 못 바꿈)
-    page = int(request.GET.get("page", 1))
+    page = request.GET.get("page") or 1
+    page = int(page)
 
     paginator = Paginator(posts, per_page)
     page_obj = paginator.get_page(page)
@@ -25,7 +26,7 @@ def news_list(request):
     page_range = range(start_page, end_page + 1)
 
     context = {
-        "news": page_obj,
+        "list": page_obj,
         "write_pages": write_pages,
         "start_page": start_page,
         "end_page": end_page,

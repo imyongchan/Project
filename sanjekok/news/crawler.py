@@ -9,7 +9,7 @@ from .models import News  # DB Model
 
 def crawl_news():
 
-    for page in range(1, 3):  # 1~2 페이지(임시)
+    for page in range(1, 6):  # 1~5 페이지(임시)
         print(f"{page} 페이지... 크롤링 중") 
 
         url = f"http://sanjaenews.co.kr/news/list.php?&mcode=m641vf2&vg=photo&page={page}"
