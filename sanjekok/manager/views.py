@@ -11,11 +11,11 @@ def login(request):
 
     elif request.method == "POST":
         m_username = request.POST.get("username")
-        m_password = request.POST.get("password1")
+        m_password = request.POST.get("password")
 
         member = Member.objects.filter(m_username=m_username).first()
 
-        if not member or not check_password(m_password, member.m_password) or member.m_status == 0:
+        if not member or not check_password(m_password, member.m_password) and member.m_status!=0:
             messages.error(request, "아이디 또는 비밀번호가 일치하지 않습니다.")
             return render(request, "manager_login.html")
 
@@ -23,8 +23,7 @@ def login(request):
         request.session['member_username'] = member.m_username
 
         messages.success(request, f"{member.m_username}님 환영합니다!")
-        return redirect("Main:main")
-    return render(request, "manager_login.html")
+    return render(request, "manager_main.html")
 
 def main(request):
     
