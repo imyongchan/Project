@@ -144,9 +144,52 @@ def mypage_individual_list(request):
 
     return render(request, 'member/mypage_individual_list.html', {'member': member, 'individuals': individuals})
 
+
+# 마이페이지 - 산재 삭제
+def mypage_individual_delete(request, individual_id):
+    member_id = request.session.get('member_id')
+    if not member_id:
+        messages.error(request, "로그인이 필요합니다.")
+        return redirect('Member:login')
+
+    individual = get_object_or_404(Individual, id=individual_id)
+    
+    if individual.member.id != member_id:
+        messages.error(request, "삭제할 권한이 없습니다.")
+        return redirect('Member:mypage_individual_list')
+
+    if request.method == "POST":
+        individual.delete()
+        messages.success(request, "산재 정보가 삭제되었습니다.")
+    
+    return redirect('Member:mypage_individual_list')
+
+
 # 로그아웃
 def logout(request):
     request.session.flush()
     messages.success(request, "성공적으로 로그아웃되었습니다.", extra_tags='logout-alert')
     return redirect("Main:main")
+
+# 마이페이지 - 회원 탈퇴
+def mypage_withdrawal(request):
+    member_id = request.session.get('member_id')
+
+    if not member_id:
+        messages.error(request, "로그인이 필요합니다.")
+        return redirect('Member:login')
+
+    member = get_object_or_404(Member, id=member_id)
+    
+    if request.method == "POST":
+        member_id = request.session.get('member_id')
+        member = get_object_or_404(Member, id=member_id)
+        member.m_status = 99
+        member.save()
+        
+        request.session.flush()
+        messages.success(request, "회원 탈퇴가 완료되었습니다.", extra_tags='withdrawal-alert')
+        return redirect("Main:main")
+
+    return render(request, 'mypage_withdrawal.html', {'member': member})
 

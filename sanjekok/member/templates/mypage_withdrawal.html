@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}회원 탈퇴{% endblock %}
+
+{% block script1 %}
+{% endblock %}
+{% block contents %}
+
+    <h1>정말 탈퇴하시겠습니까?</h1>
+    <form method="post" action="{% url 'Member:mypage_withdrawal' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">탈퇴하기</button>
+    </form>
+{% endblock %}

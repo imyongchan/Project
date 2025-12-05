@@ -16,5 +16,7 @@ urlpatterns = [
     path('mypage/profile/', views.mypage_profile, name='mypage_profile'),  # 마이페이지 - 프로필 수정
 
     path('mypage/individual-list/', views.mypage_individual_list, name='mypage_individual_list'),  # 마이페이지 - 산재 관리
+    path('mypage/individual/delete/<int:individual_id>/', views.mypage_individual_delete, name='mypage_individual_delete'), # 마이페이지 - 산재 삭제
+    path('mypage/withdrawal/', views.mypage_withdrawal, name='mypage_withdrawal'),  # 마이페이지 - 회원 탈퇴
 
 ]
