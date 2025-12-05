@@ -64,11 +64,11 @@ def login(request):
 
         member = Member.objects.filter(m_username=m_username).first()
 
-        if not member or not check_password(m_password, member.m_password):
+        if not member or not check_password(m_password, member.m_password) or member.m_status == 99:
             messages.error(request, "아이디 또는 비밀번호가 일치하지 않습니다.")
             return render(request, "member/member_login.html")
 
-        request.session['member_id'] = member.id
+        request.session['member_id'] = int(member.member_id)
         request.session['member_username'] = member.m_username
 
         messages.success(request, f"{member.m_username}님 환영합니다!")
@@ -93,7 +93,7 @@ def mypage(request):
         messages.error(request, "로그인이 필요합니다.")
         return redirect('Member:login')
 
-    member = get_object_or_404(Member, id=member_id)
+    member = get_object_or_404(Member, member_id=member_id)
 
     if request.method == "POST":
         password = request.POST.get("m_password1")
@@ -114,7 +114,7 @@ def mypage_profile(request):
         messages.error(request, "로그인이 필요합니다.")
         return redirect('Member:login')
     
-    member = get_object_or_404(Member, id=member_id)
+    member = get_object_or_404(Member, member_id=member_id)
     
     if request.method == "GET":
         form = Step2MemberForm(instance=member)
@@ -139,8 +139,9 @@ def mypage_individual_list(request):
         messages.error(request, "로그인이 필요합니다.")
         return redirect('Member:login')
 
-    member = get_object_or_404(Member, id=member_id)
-    individuals = Individual.objects.filter(member=member)
+    member = get_object_or_404(Member, member_id=member_id)
+    member_industries = member.industries.all()
+    individuals = Individual.objects.filter(member_industry__in=member_industries)
 
     return render(request, 'member/mypage_individual_list.html', {'member': member, 'individuals': individuals})
 
@@ -152,9 +153,9 @@ def mypage_individual_delete(request, individual_id):
         messages.error(request, "로그인이 필요합니다.")
         return redirect('Member:login')
 
-    individual = get_object_or_404(Individual, id=individual_id)
+    individual = get_object_or_404(Individual, accident_id=individual_id)
     
-    if individual.member.id != member_id:
+    if individual.member_industry.member.member_id != member_id:
         messages.error(request, "삭제할 권한이 없습니다.")
         return redirect('Member:mypage_individual_list')
 
@@ -167,6 +168,11 @@ def mypage_individual_delete(request, individual_id):
 
 # 로그아웃
 def logout(request):
+    member_id = request.session.get('member_id')
+    if not member_id:
+        messages.error(request, "로그인이 필요합니다.")
+        return redirect('Member:login')
+
     request.session.flush()
     messages.success(request, "성공적으로 로그아웃되었습니다.", extra_tags='logout-alert')
     return redirect("Main:main")
@@ -179,11 +185,9 @@ def mypage_withdrawal(request):
         messages.error(request, "로그인이 필요합니다.")
         return redirect('Member:login')
 
-    member = get_object_or_404(Member, id=member_id)
+    member = get_object_or_404(Member, member_id=member_id)
     
     if request.method == "POST":
-        member_id = request.session.get('member_id')
-        member = get_object_or_404(Member, id=member_id)
         member.m_status = 99
         member.save()
         
@@ -191,5 +195,5 @@ def mypage_withdrawal(request):
         messages.success(request, "회원 탈퇴가 완료되었습니다.", extra_tags='withdrawal-alert')
         return redirect("Main:main")
 
-    return render(request, 'mypage_withdrawal.html', {'member': member})
+    return render(request, 'member/mypage_withdrawal.html', {'member': member})
 

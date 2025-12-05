@@ -38,7 +38,7 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ individual.i_title }}</td>
                         <td>{{ individual.i_accident_date }}</td>
-                        <td>{% if individual.member.industries.first %}{{ individual.member.industries.first.i_industry_type2 }}{% endif %}</td>
+                        <td>{% if individual.member.industries %}{{ individual.member.industries.i_industry_type2 }}{% endif %}</td>
                         <td>{{ individual.i_injury }}</td>
                         <td>{{ individual.i_disease_type }}</td>
                         <td>{{ individual.i_address }}</td>

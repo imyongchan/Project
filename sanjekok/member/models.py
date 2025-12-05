@@ -24,7 +24,7 @@ class Member(models.Model):
     m_address = models.CharField(max_length=150, verbose_name='회원 거주지 주소')
     m_jaddress = models.CharField(max_length=150, verbose_name='회원 근무지 주소')
     m_email = models.EmailField(max_length=100, null=True, verbose_name='회원 이메일')
-    m_provider = models.CharField(max_length=100, null=True, verbose_name='oauth 제공자')
+    m_provider = models.CharField(max_length=100, null=True, verbose_name='oauth 제공자', default='local')
     m_provider_id = models.CharField(max_length=100, null=True, verbose_name='oauth 아이디')
     m_created_at = models.DateTimeField(auto_now_add=True, verbose_name='회원 가입일')
     m_status = models.IntegerField(choices=STATUS_CHOICES, default=1, verbose_name='회원 상태')
