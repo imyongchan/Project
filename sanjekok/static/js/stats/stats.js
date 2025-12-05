@@ -302,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     + `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.`;
                             } else {
                                 html += `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 `
-                                    + `사망 재해 기준으로 <strong>${myRank}위</strong>이며, TOP 10에는 포함되지 않습니다.`;
+                                    + `사망 재해 기준으로 <strong>${myRank}위</strong>입니다..`;
                             }
                         } else {
                             html += `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 `
