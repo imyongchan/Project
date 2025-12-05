@@ -2,13 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 import time
 from datetime import datetime
+from django.utils import timezone
 
 from .models import News  # DB Model
 
 
-def crawl_and_save():
+def crawl_news():
 
-    for page in range(1, 11):  # 1~10 페이지
+    for page in range(1, 3):  # 1~2 페이지(임시)
         print(f"{page} 페이지... 크롤링 중") 
 
         url = f"http://sanjaenews.co.kr/news/list.php?&mcode=m641vf2&vg=photo&page={page}"
@@ -45,12 +46,14 @@ def crawl_and_save():
             if News.objects.filter(n_link=link).exists():
                 continue
 
-            # 작성일자
+            # 작성일자 
             date_tag = item.select_one("dd.registDate")
             created_at_raw = date_tag.text.strip() if date_tag else None
             # 문자열 → datetime 변환
-            created_at = datetime.strptime(created_at_raw.strip(), "%Y-%m-%d")
-            
+            try:
+                created_at = datetime.strptime(created_at_raw.strip(), "%Y-%m-%d")
+            except:
+                created_at = timezone.now()
             
             # 상세페이지 요청 --------------------------------------------------------
             time.sleep(0.15)
@@ -62,7 +65,7 @@ def crawl_and_save():
             writer_tag = detail_soup.select_one("div.titleWrap > div.else-area > p")
             writer = writer_tag.text.strip() if writer_tag else None
 
-            # DB 저장
+            # DB 저장 ---------------------------------------------------------------
             News.objects.create(
                 n_title=title,
                 n_writer=writer,
@@ -72,6 +75,6 @@ def crawl_and_save():
                 n_created_at=created_at
             )
 
-            print(f"[저장 완료] {title}")
+        
 
     print("=== 크롤링 전체 완료 ===")

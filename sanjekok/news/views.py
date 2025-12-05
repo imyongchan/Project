@@ -1,7 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.core.paginator import Paginator
 from .models import News
+from .crawler import crawl_news
 
+def crawl_news_view(request):
+    crawl_news()    # crawler.py 실행
+    return redirect("News:news_list")
 
 def news_list(request):
     posts = News.objects.all().order_by('-id')  # 최신 기사순 ...
@@ -12,18 +16,20 @@ def news_list(request):
     paginator = Paginator(posts, per_page)
     page_obj = paginator.get_page(page)
 
-    start_page = ((int((page_obj.number - 1) / write_pages)) * write_pages) + 1
+    start_page = ((page_obj.number - 1) // write_pages) * write_pages + 1
     end_page = start_page + write_pages - 1
 
     if end_page > paginator.num_pages:
         end_page = paginator.num_pages  # 총 페이지수 넘지 않게
+        
+    page_range = range(start_page, end_page + 1)
 
     context = {
-        "list": page_obj,
+        "news": page_obj,
         "write_pages": write_pages,
         "start_page": start_page,
         "end_page": end_page,
-        "page_range": range(start_page, end_page + 1),
+        "page_range": page_range,
     }
     
     return render(request, 'news/news_list.html', context)

@@ -1,4 +1,4 @@
-
+/* 링크 스타일 */
 .news-card a {
     text-decoration: none;
     color: inherit;
@@ -8,7 +8,7 @@
 .news-card a:hover {
     text-decoration: underline;
 }
-
+/* 뉴스카드 */
 .news-card {
     background: #dbe6ff;
     padding: 18px;
@@ -17,7 +17,7 @@
     margin-bottom: 18px;
     align-items: flex-start;
 }
-
+/* 이미지 */
 .news-img {
     width: 130px;
     height: 110px;
@@ -34,7 +34,7 @@
     object-fit: cover;
 }
 
-
+/* 뉴스 정보 */
 .news-info {
     flex-grow: 1;
 }
@@ -54,4 +54,36 @@
 .news-content {
     font-size: 14px;
     color: #333;
+}
+
+/* 페이지네이션 */
+.pagination {
+    margin-top: 20px;
+}
+
+/* 기본 페이지 버튼 */
+.pagination .page-link {
+    color: #4a4a4a;
+    border-radius: 6px;
+    font-size: 14px;
+    padding: 6px 12px;
+}
+
+.pagination .page-link:hover {
+    background-color: #e6ecff;
+    color: #1a1a1a;
+}
+
+/* active (현재 페이지) */
+.pagination .page-item.active .page-link {
+    background-color: #5a76ff;
+    border-color: #5a76ff;
+    color: white !important;
+}
+
+
+/* 아이콘 크기 조정 */
+.pagination i {
+    font-size: 14px;
+    vertical-align: middle;
 }

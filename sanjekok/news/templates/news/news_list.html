@@ -7,13 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>산재 뉴스</title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap & Font-Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
-    <!-- YOUR CSS -->
+    <!-- News CSS -->
     <link rel="stylesheet" href="{% static 'CSS/news/news_list.css' %}">
 </head>
 
@@ -27,9 +29,9 @@
         <div class="news-card">
 
             <div class="news-img">
-                {% if n.image_url %}
-                <a href="{{ n.link }}" target="_blank">
-                    <img src="{{ n.image_url }}" alt="썸네일">
+                {% if n.n_image_url %}
+                <a href="{{ n.n_link }}" target="_blank">
+                    <img src="{{ n.n_image_url }}" alt="썸네일">
                 </a>
                 {% else %}
                 <div class="d-flex align-items-center justify-content-center"
@@ -41,33 +43,79 @@
 
             <div class="news-info">
                 <div class="news-title">
-                    <a href="{{ n.link }}" target="_blank">{{ n.title }}</a>
+                    <a href="{{ n.n_link }}" target="_blank">{{ n.n_title }}</a>
                 </div>
 
                 <div class="news-content">
-                    <a href="{{ n.link }}" target="_blank">{{ n.content }}</a>
+                    <a href="{{ n.n_link }}" target="_blank">{{ n.n_contents }}</a>
                 </div>
 
                 <div class="news-meta">
-                    <span>작성자: {{ n.writer }}</span> |
-                    <span>작성일: {{ n.created_at|slice:":11" }}</span>
+                    <span>작성자: {{ n.n_writer }}</span> |
+                    <span>작성일: {{ n.n_created_at|slice:":11" }}</span>
                 </div>
             </div>
 
         </div>
         {% endfor %}
 
-        <form action="{% url 'news_set_write_pages' %}" method="POST" class="mb-3">
-            {% csrf_token %}
+        <!--페이지네이션-->
+          <div class="container mt-4">
+            <ul class="pagination justify-content-center">
+                {# << 표시 여부 #} 
+                {% if page_obj.number > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" title="처음">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+                {% endif %}
 
-            <label>페이징 숫자 표시 개수(write_pages):</label>
-            <select name="write_pages" onchange="this.form.submit()" style="width:120px;">
-                <option value="5" {% if write_pages == 5 %}selected{% endif %}>5</option>
-                <option value="10" {% if write_pages == 10 %}selected{% endif %}>10</option>
-                <option value="15" {% if write_pages == 15 %}selected{% endif %}>15</option>
-                <option value="20" {% if write_pages == 20 %}selected{% endif %}>20</option>
-            </select>
-        </form>
+                {# < 표시 여부 #}
+                {% if start_page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ start_page|add:-1 }}" title="이전">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+
+
+                {# 페이징 안의 '숫자' 표시 #}
+                {% for i in page_range %}
+                    {% if page_obj.number == i %} 
+                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                    {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {# > 표시 #}
+                {% if end_page < paginator.num_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ end_page|add:1 }}" title="다음">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+
+
+                {# >> 표시 #}
+                {% if page_obj.number < paginator.num_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ paginator.num_pages }}" title="맨끝">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+    </div>
+
+
+
+
 
     </div>
 
