@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}산재콕-관리자페이지{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'CSS/manager/manager.css' %}">
+    {% block script1 %}{% endblock %}
+</head>
+<body>
+    
+    <div>{관리자}님 환영합니다!</div>
+
+    <main class="menu">
+        <li><a href="#" class="dash">대시보드</a></li>
+        <li><a href="#" class="manage">회원관리</a></li>
+        <li><a href="#" class="acc">회원 산재 조회</a></li>
+        <li><a href="review_manage.html" class="review_manage">리뷰 관리</a></li>
+        <li><a href="#" class="logout">로그아웃</a></li>
+    </main>
+
+    {% block contents %}
+    {% endblock %}
+
+</body>
+</html>

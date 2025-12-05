@@ -1,0 +1,23 @@
+.menu {
+    margin-top: 50px;
+    background-color: blueviolet;
+    width: 105px;
+    height: 850px;
+}
+
+.menu li {
+    margin-top: 10px;
+    width: 100px;
+    height: 100px;
+    justify-content: center;
+    border: 2px solid blue;
+}
+
+.menu li a {
+    min-height: 10vh;
+    text-decoration: none;
+    color: black;
+    align-items: center;
+    display: flex;
+    justify-content: center
+}
