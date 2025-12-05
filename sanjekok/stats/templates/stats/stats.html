@@ -112,7 +112,7 @@
                     data-age50sa="{{ summary5.1.50대 }}"
                     data-age60pa="{{ summary5.1.60대이상 }}"                    
                     >
-                최근 2년
+                2년
             </button>
 
             <!-- 최근 3년 -->
@@ -143,7 +143,7 @@
                     data-age50sa="{{ summary5.2.50대 }}"
                     data-age60pa="{{ summary5.2.60대이상 }}"
                     >
-                최근 3년
+                3년
             </button>
 
         </div>
@@ -153,7 +153,9 @@
     <section id="stats-visual-area"
             class="stats-visual hidden"
             data-summary6='{{ summary6_json}}'
-            data-summary7='{{ summary7_json}}'>
+            data-summary7='{{ summary7_json}}'
+            data-summary8='{{ summary8_json}}'
+            data-summary9='{{ summary9_json}}'>
         <div class="visual-grid">
 
             <!-- 내 업종 재해율 -->
@@ -193,19 +195,31 @@
             </div>
 
             <!-- 발생형태별 재해 TOP 10 -->
-            <div class="visual-card">
-                <h3>재해유형 (발생형태 TOP 10)</h3>
+            <div class="visual-card" id="card-injury">
+                <h3>재해유형 </h3>
                 <p id="injurySummary1"></p>
             </div>
 
-            <div class="visual-card">
-                <h3>사망재해현황 (발생형태 TOP 10)</h3>
+            <!-- 사망재해현황 (발생형태 TOP 10) -->
+            <div class="visual-card" id="card-injury-fatal">
+                <h3>사망재해현황 </h3>
                 <p id="injurySummary2"></p>
             </div>
 
+            <!-- 재해 질병유형 (TOP 10) -->
+            <div class="visual-card" id="card-disease">
+                <h3>재해 질병유형 </h3>
+                <p id="diseaseSummary1"></p>
+            </div>
 
-            <div class="visual-card">재해 질병 유형</div>
-            <div class="visual-card">재해 질병 사망 현황</div>
+            <!-- 재해 질병 사망 현황 -->
+            <div class="visual-card" id="card-disease-fatal">
+                <h3>재해 질병 사망 현황</h3>
+                <p id="diseaseSummary2"></p>
+            </div>
+
+
+
             <div class="visual-card highlight">종합 위험도 평가</div>
         </div>
     </section>

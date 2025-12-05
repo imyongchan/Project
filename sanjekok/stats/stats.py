@@ -450,25 +450,31 @@ def get_stats6(industry_name6):
     result = {}
 
     for period, row in summary.iterrows():
-        sorted_row = row.sort_values(ascending=False)
-
-        top10 = sorted_row.head(10)
-
+        
+       
+        filtered_row = row[row > 0].sort_values(ascending=False)
+        top10 = filtered_row.head(10)
+        
         top10_list = []
-        for rank, (name, cnt) in enumerate(top10.items(), start=1):
+   
+        filtered_rank_series = filtered_row.rank(ascending=False, method="min")
+        
+        for name, cnt in top10.items():
             top10_list.append({
-                "rank": rank,
+                "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
             })
+        
 
         rank_series = row.rank(ascending=False, method="min")
         rank_map = {name: int(r) for name, r in rank_series.items()}
-
+        
         result[period] = {
             "top10": top10_list,
             "rank_map": rank_map,
         }
+
 
     return result
             
@@ -514,21 +520,97 @@ def get_stats7(industry_name7):
     result = {}
 
     for period, row in summary.iterrows():
-        sorted_row = row.sort_values(ascending=False)
-
-        top10 = sorted_row.head(10)
-
+        
+       
+        filtered_row = row[row > 0].sort_values(ascending=False)
+        top10 = filtered_row.head(10)
+        
         top10_list = []
-        for rank, (name, cnt) in enumerate(top10.items(), start=1):
+   
+        filtered_rank_series = filtered_row.rank(ascending=False, method="min")
+        
+        for name, cnt in top10.items():
             top10_list.append({
-                "rank": rank,
+                "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
             })
+        
 
         rank_series = row.rank(ascending=False, method="min")
         rank_map = {name: int(r) for name, r in rank_series.items()}
+        
+        result[period] = {
+            "top10": top10_list,
+            "rank_map": rank_map,
+        }
 
+
+    return result
+
+
+
+# 질병 유형별  
+def get_stats8(industry_name8):
+    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAE1+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAC+15118AI7AC00+15118AI7AC000+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAE+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAJ+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAZ00+15118AI7ABAX+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AC01+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAC+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AC02+15118AI7AC03+15118AI7AC030+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AC3BM+15118AC3BMAA+15118AC3BMAB+15118AC3BMAC+15118AC3BMAD+15118AC3BMAE+15118AC3BMAF+15118AC3BMAG+15118AC3BMAH+15118AC3BMAI+15118AC3BMAJ+15118AC3BMAJ0+15118AC3BMAL+15118AC3BMAM+15118AC3BMAN+15118AC3BMAO+15118AC3BMAP+15118AC3BMAQ+15118AC3BMAR+15118AC3BMAS+15118AC3BMAT+15118AC3BMAV01+15118AC3BMAU+15118AC3BMAV00+15118AC3BMAV+15118AC3BN+15118AC3BNAA+15118AC3BNAC+15118AC3BNAB+15118AC3BNAD+15118AC3BNAE+15118AC3BNAG+15118AC3BNAL+15118AC3BNAI+15118AC3BNAJ+15118AC3BNAK+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N038")
+    
+    response = requests.get(json_URL)
+    data = response.json()
+
+    df = pd.json_normalize(data)
+    df["DT"] = df["DT"].astype(float)
+
+    df_industry = df[df["C1_NM"] == industry_name8]
+
+    pivot = (
+        df_industry .pivot_table(
+            index="PRD_DE",        
+            columns="C2_NM",    
+            values="DT",
+            aggfunc="sum"
+        ))
+    
+    pivot = pivot.fillna(0).sort_index()
+    years = pivot.index.to_list()   # 예: ['2021', '2022', '2023']
+
+    rows = []
+
+    def add_row(n_years: int, label: str):
+            use_years = years[-n_years:]       # 마지막 n_years개 연도
+            sub = pivot.loc[use_years]
+            s = sub.sum(axis=0)                # 발생형태별 합계
+            s["기간"] = label
+            rows.append(s)
+
+        
+    add_row(1, "최근 1년")
+    add_row(2, "2년")
+    add_row(3, "3년")
+
+    summary = pd.DataFrame(rows).set_index("기간")
+    result = {}
+
+    for period, row in summary.iterrows():
+        
+       
+        filtered_row = row[row > 0].sort_values(ascending=False)
+        top10 = filtered_row.head(10)
+        
+        top10_list = []
+   
+        filtered_rank_series = filtered_row.rank(ascending=False, method="min")
+        
+        for name, cnt in top10.items():
+            top10_list.append({
+                "rank": int(filtered_rank_series[name]),
+                "name": name,
+                "count": int(cnt),
+            })
+        
+
+        rank_series = row.rank(ascending=False, method="min")
+        rank_map = {name: int(r) for name, r in rank_series.items()}
+        
         result[period] = {
             "top10": top10_list,
             "rank_map": rank_map,
@@ -536,3 +618,70 @@ def get_stats7(industry_name7):
 
     return result
             
+# 질병 사망유형별  
+def get_stats9(industry_name9):
+    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAE1+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAC+15118AI7AC00+15118AI7AC000+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAE+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAJ+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAZ00+15118AI7ABAX+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AC01+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAP+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAC+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AC02+15118AI7AC03+15118AI7AC030+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AC3BM+15118AC3BMAA+15118AC3BMAB+15118AC3BMAC+15118AC3BMAD+15118AC3BMAE+15118AC3BMAF+15118AC3BMAG+15118AC3BMAH+15118AC3BMAI+15118AC3BMAJ+15118AC3BMAJ0+15118AC3BMAL+15118AC3BMAM+15118AC3BMAN+15118AC3BMAO+15118AC3BMAP+15118AC3BMAQ+15118AC3BMAR+15118AC3BMAS+15118AC3BMAT+15118AC3BMAV01+15118AC3BMAU+15118AC3BMAV00+15118AC3BMAV+15118AC3BN+15118AC3BNAA+15118AC3BNAC+15118AC3BNAB+15118AC3BNAD+15118AC3BNAE+15118AC3BNAG+15118AC3BNAL+15118AC3BNAI+15118AC3BNAJ+15118AC3BNAK+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N055")
+    
+    response = requests.get(json_URL)
+    data = response.json()
+
+    df = pd.json_normalize(data)
+    df["DT"] = df["DT"].astype(float)
+
+    df_industry = df[df["C1_NM"] == industry_name9]
+
+    pivot = (
+        df_industry .pivot_table(
+            index="PRD_DE",        
+            columns="C2_NM",    
+            values="DT",
+            aggfunc="sum"
+        ))
+    
+    pivot = pivot.fillna(0).sort_index()
+    years = pivot.index.to_list()   # 예: ['2021', '2022', '2023']
+
+    rows = []
+
+    def add_row(n_years: int, label: str):
+            use_years = years[-n_years:]       # 마지막 n_years개 연도
+            sub = pivot.loc[use_years]
+            s = sub.sum(axis=0)                # 발생형태별 합계
+            s["기간"] = label
+            rows.append(s)
+
+        
+    add_row(1, "최근 1년")
+    add_row(2, "2년")
+    add_row(3, "3년")
+
+    summary = pd.DataFrame(rows).set_index("기간")
+    result = {}
+
+    for period, row in summary.iterrows():
+        
+       
+        filtered_row = row[row > 0].sort_values(ascending=False)
+        top10 = filtered_row.head(10)
+        
+        top10_list = []
+   
+        filtered_rank_series = filtered_row.rank(ascending=False, method="min")
+        
+        for name, cnt in top10.items():
+            top10_list.append({
+                "rank": int(filtered_rank_series[name]),
+                "name": name,
+                "count": int(cnt),
+            })
+        
+
+        rank_series = row.rank(ascending=False, method="min")
+        rank_map = {name: int(r) for name, r in rank_series.items()}
+        
+        result[period] = {
+            "top10": top10_list,
+            "rank_map": rank_map,
+        }
+
+    return result
