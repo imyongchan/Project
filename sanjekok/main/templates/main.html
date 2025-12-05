@@ -1,50 +1,9 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>산재콕</title>
-    <link rel="stylesheet" href="{% static 'CSS/main/main.css' %}">
-</head>
-<body>
-    
-    <header class="header">
-        <div class="loginbox">
-            <a href="#">로그인</a>
-            /
-            <a href="#">회원가입</a>
-        </div>
-        <nav class="menu">
-            <ul>
-                <li>
-                    <div><a href="#">소개</a></div>
-                    <ul class="submenu">
-                        <li><a href="#">서비스 소개</a></li>
-                        <li><a href="#">핵심 기능</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <div><a href="#">산재 통계</a></div>
-                </li>
-                <li>
-                    <div><a href="#">산재 뉴스</a></div>
-                    </div>
-                </li>
-                <li>
-                    <div><a href="#">지도 검색</a></div>
-                    <ul class="submenu">
-                        <li><a href="#">주변 산재 검색</a></li>
-                        <li><a href="#">주변 병원 검색</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <div><a href="#">안전 자료실</a></div>
-                </li>
-            </ul>
-        </nav>
-    </header>
 
+{% block title %}산재콕 | 메인{% endblock %}
+
+{% block contents %}
     <main class="hero-box">
         <div class="text">
             <p style="color: yellow;">안전한 일터!</p>
@@ -61,18 +20,4 @@
 
         </ul>
     </article>
-
-
-    <footer class="footer">
-    <div class="info">
-        <p><strong>산재콕</strong> | 프로젝트 팀: 하랑유니버스</p>
-        <p>주소: 서울 강남구 테헤란로26길 12</p>
-        <p>전화문의: 1588-0000 | 이메일: help@safety.or.kr</p>
-        </div>
-        <p class="copyright">© 2025 Sanjae Prevention Center. All rights reserved.</p>
-    </div>
-    </footer>
-
-
-</body>
-</html>
+{% endblock %}

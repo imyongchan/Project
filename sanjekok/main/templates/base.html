@@ -10,6 +10,17 @@
     {% block script1 %}{% endblock %}
 </head>
 <body>
+    {% if messages %}
+        <div class="container pt-3">
+            {% for message in messages %}
+                {% if 'logout-alert' not in message.tags %}
+                    <div class="alert alert-{% if 'error' in message.tags %}danger{% else %}{{ message.tags }}{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
     
     <header class="header">
         <div class="loginbox">
@@ -60,6 +71,14 @@
     </div>
     </footer>
 
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for message in messages %}
+                {% if 'logout-alert' in message.tags %}
+                    alert("{{ message }}");
+                {% endif %}
+            {% endfor %}
+        });
+    </script>
 </body>
 </html>

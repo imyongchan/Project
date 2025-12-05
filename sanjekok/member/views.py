@@ -56,7 +56,7 @@ def registers(request):
 # 로그인
 def login(request):
     if request.method == "GET":
-        return render(request, "member_login.html")
+        return render(request, "member/member_login.html")
 
     elif request.method == "POST":
         m_username = request.POST.get("m_username")
@@ -101,8 +101,7 @@ def mypage(request):
         if check_password(password, member.m_password):
             return redirect("Member:mypage_profile")
 
-        messages.error(request, "비밀번호가 일치하지 않습니다.")
-        return render(request, 'member/mypage_checked.html', {'member': member})
+        return render(request, 'member/mypage_checked.html', {'member': member, 'error': '비밀번호가 일치하지 않습니다.'})
 
     return render(request, 'member/mypage_checked.html', {'member': member})
 
@@ -144,4 +143,10 @@ def mypage_individual_list(request):
     individuals = Individual.objects.filter(member=member)
 
     return render(request, 'member/mypage_individual_list.html', {'member': member, 'individuals': individuals})
+
+# 로그아웃
+def logout(request):
+    request.session.flush()
+    messages.success(request, "성공적으로 로그아웃되었습니다.", extra_tags='logout-alert')
+    return redirect("Main:main")
 
