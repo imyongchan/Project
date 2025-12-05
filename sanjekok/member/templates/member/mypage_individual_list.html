@@ -13,7 +13,8 @@
             <table class="table">
                 <thead>
                     <tr>
-
+                        
+                        <th scope="col"></th>
                         <th scope="col">일련번호</th>
                         <th scope="col">제목</th>
                         <th scope="col">재해일자</th>
@@ -26,7 +27,15 @@
                 <tbody>
                     {% for individual in individuals %}
                     <tr>
-                        <td>{{ individual.id }}</td>
+                        <!-- individual.id에 일치하는 산재 정보 삭제하는 버튼 -->
+                        <td>
+                            <form method="post" action="{% url 'Member:mypage_individual_delete' individual.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                            </form>
+                        </td>
+                        <!-- 1~ 리스트 개수만큼 일련번호 -->
+                        <td>{{ forloop.counter }}</td>
                         <td>{{ individual.i_title }}</td>
                         <td>{{ individual.i_accident_date }}</td>
                         <td>{% if individual.member.industries.first %}{{ individual.member.industries.first.i_industry_type2 }}{% endif %}</td>
