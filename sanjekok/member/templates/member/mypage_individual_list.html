@@ -27,12 +27,9 @@
                 <tbody>
                     {% for individual in individuals %}
                     <tr>
-                        <!-- individual.id에 일치하는 산재 정보 삭제하는 버튼 -->
+                        <!-- individual.id에 일치하는 산재 정보 삭제하는 체크박스 -->
                         <td>
-                            <form method="post" action="{% url 'Member:mypage_individual_delete' individual.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm">삭제</button>
-                            </form>
+                            <input type="checkbox" name="delete_individuals" value="{{ individual.id }}">
                         </td>
                         <!-- 1~ 리스트 개수만큼 일련번호 -->
                         <td>{{ forloop.counter }}</td>
@@ -46,6 +43,10 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <!-- 산재 정보 추가하기 버튼 -->
+            <a href="{% url 'Member:mypage_individual_add' %}" class="btn btn-primary">산재 정보 추가하기</a>
+            <!-- 체크된 산재정보 삭제하기 버튼 -->
+            <button id="delete-selected" class="btn btn-danger">선택된 산재 정보 삭제하기</button>
         </div>
     </div>
 {% endblock %}

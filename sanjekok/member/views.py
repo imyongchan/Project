@@ -147,23 +147,57 @@ def mypage_individual_list(request):
 
 
 # 마이페이지 - 산재 삭제
-def mypage_individual_delete(request, individual_id):
+def mypage_individual_delete(request):
     member_id = request.session.get('member_id')
+
     if not member_id:
         messages.error(request, "로그인이 필요합니다.")
         return redirect('Member:login')
 
-    individual = get_object_or_404(Individual, accident_id=individual_id)
-    
-    if individual.member_industry.member.member_id != member_id:
-        messages.error(request, "삭제할 권한이 없습니다.")
+    if request.method == "POST":
+        delete_ids = request.POST.getlist('delete_individuals')
+        Individual.objects.filter(accident_id__in=delete_ids).delete()
+        messages.success(request, "선택한 산재 정보가 삭제되었습니다.")
         return redirect('Member:mypage_individual_list')
 
-    if request.method == "POST":
-        individual.delete()
-        messages.success(request, "산재 정보가 삭제되었습니다.")
-    
+    messages.error(request, "잘못된 접근입니다.")
     return redirect('Member:mypage_individual_list')
+
+# 마이페이지 - 산재 추가
+def mypage_individual_add(request):
+    member_id = request.session.get('member_id')
+
+    if not member_id:
+        messages.error(request, "로그인이 필요합니다.")
+        return redirect('Member:login')
+
+    member = get_object_or_404(Member, member_id=member_id)
+    member_industries = member.industries.all()
+
+    if request.method == "GET":
+        return render(request, 'member/mypage_individual_add.html', {'member': member, 'member_industries': member_industries})
+
+    elif request.method == "POST":
+        
+        i_accident_date = request.POST.get('i_accident_date')
+        i_injury = request.POST.get('i_injury')
+        i_disease_type = request.POST.get('i_disease_type')
+        i_address = request.POST.get('i_address')
+        i_title = request.POST.get('i_title')
+
+        member_industry = get_object_or_404(Member_industry, member=member)
+
+        Individual.objects.create(
+            member_industry=member_industry,
+            i_accident_date=i_accident_date,
+            i_injury=i_injury,
+            i_disease_type=i_disease_type,
+            i_address=i_address,
+            i_title=i_title
+        )
+
+        messages.success(request, "산재 정보가 성공적으로 추가되었습니다.")
+        return redirect('Member:mypage_individual_list')
 
 
 # 로그아웃
