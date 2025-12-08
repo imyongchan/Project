@@ -191,14 +191,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (accidentSummary) {
                 const rateText = isNaN(accRate) ? "-" : accRate.toFixed(2);
                 accidentSummary.innerHTML =
-                    `<strong style="font-size:24px;color:#ef4444;">${rateText}</strong>` +
+                    `<strong style="font-size:24px;color:#14b6f6;">${rateText}</strong>` +
                     `<span style="font-size:13px;color:#64748b;margin-left:6px;">‰ / 재해자수 ${accCount.toLocaleString()}명</span>`;
             }
 
             if (fatalSummary) {
                 const rateText = isNaN(fatalRate) ? "-" : fatalRate.toFixed(2);
                 fatalSummary.innerHTML =
-                    `<strong style="font-size:24px;color:#0f172a;">${rateText}</strong>` +
+                    `<strong style="font-size:24px;color:#14b6f6;">${rateText}</strong>` +
                     `<span style="font-size:13px;color:#64748b;margin-left:6px;">명 / 사망자수 ${fatalCount.toLocaleString()}명</span>`;
             }
 
@@ -236,38 +236,17 @@ document.addEventListener("DOMContentLoaded", () => {
              *  2-3. 연령대별 현황 + 차트
              * ========================= */
 
-            if (ageSummary1) {
-                ageSummary1.innerHTML =
-                    `18세 미만: ${ageU18.toLocaleString()}명<br>` +
-                    `20대: ${age20s.toLocaleString()}명<br>` +
-                    `30대: ${age30s.toLocaleString()}명<br>` +
-                    `40대: ${age40s.toLocaleString()}명<br>` +
-                    `50대: ${age50s.toLocaleString()}명<br>` +
-                    `60대 이상: ${age60p.toLocaleString()}명`;
-            }
-
             if (window.AgeChart1) {
                 window.AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p);
             }
 
-            if (ageSummary2) {
-                ageSummary2.innerHTML =
-                    `18세 미만: ${ageU18a.toLocaleString()}명<br>` +
-                    `20대: ${age20sa.toLocaleString()}명<br>` +
-                    `30대: ${age30sa.toLocaleString()}명<br>` +
-                    `40대: ${age40sa.toLocaleString()}명<br>` +
-                    `50대: ${age50sa.toLocaleString()}명<br>` +
-                    `60대 이상: ${age60pa.toLocaleString()}명`;
-            }
+
 
             if (window.AgeChart2) {
                 window.AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa);
             }
 
-            /* =========================
-             *  2-4. 발생형태 TOP10 + 나의 순위 + 차트
-             * ========================= */
-
+            // 11) 발생형태 TOP10 + 나의 부상형태 순위 + 바차트
             if (injurySummary1 && injuryStatsByPeriod) {
                 const periodData = injuryStatsByPeriod[periodKey];
 
@@ -281,42 +260,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 const rankMap = periodData.rank_map || {};
 
                 let html = "";
-
                 if (!topList.length) {
-                    html += "발생형태 데이터가 없습니다.";
-                } else {
-                    topList.forEach(item => {
-                        const cnt = typeof item.count === "number"
-                            ? item.count.toLocaleString()
-                            : item.count;
-                        html += `${item.rank}위: ${item.name} (${cnt}명)<br>`;
-                    });
-                }
-
-                if (selectedInjuryType) {
+                    html = "발생형태 데이터가 없습니다.";
+                } else if (selectedInjuryType) {
                     const myRank = rankMap[selectedInjuryType];
-                    html += "<br>";
                     if (myRank) {
                         if (myRank <= 10) {
-                            html += `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                    `<strong>${myRank}위</strong> 입니다.`;
+                            html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                `<strong>${myRank}위</strong> 입니다.`;
                         } else {
-                            html += `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                    `<strong>${myRank}위</strong>로, TOP 10에는 포함되지 않습니다.`;
+                            html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                `<strong>${myRank}위</strong>로, TOP 10에는 포함되지 않습니다.`;
                         }
                     } else {
-                        html += `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                `해당 업종 통계에 집계되어 있지 않습니다.`;
+                        html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                            `해당 업종 통계에 집계되어 있지 않습니다.`;
                     }
+                } else {
+                    html = "나의 산재를 선택하면 발생형태 순위를 확인할 수 있습니다.";
                 }
 
                 injurySummary1.innerHTML = html;
 
+                // 바 차트 (TOP10 막대만)
                 if (window.InjuryChart1) {
-                    window.InjuryChart1(topList);
+                    window.InjuryChart1(topList,selectedInjuryType);
                 }
             }
 
+            // 12) 사망 발생형태 + 나의 순위 + 바차트
             if (injurySummary2 && fatalStatsByPeriod) {
                 const periodData = fatalStatsByPeriod[periodKey];
 
@@ -331,44 +303,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 let html = "";
                 if (!topList.length) {
-                    html += "사망 발생형태 데이터가 없습니다.";
-                } else {
-                    topList.forEach(item => {
-                        const cnt = typeof item.count === "number"
-                            ? item.count.toLocaleString()
-                            : item.count;
-                        html += `${item.rank}위: ${item.name} (${cnt}명)<br>`;
-                    });
-                }
-
-                if (selectedInjuryType) {
+                    html = "사망 발생형태 데이터가 없습니다.";
+                } else if (selectedInjuryType) {
                     const myRank = rankMap[selectedInjuryType];
-                    html += "<br>";
                     if (myRank) {
                         if (myRank <= 10) {
-                            html += `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                    `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.`;
+                            html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.`;
                         } else {
-                            html += `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                    `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.,`;
+                            html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                `사망 재해 기준으로 <strong>${myRank}위</strong>이며, ` +
+                                `TOP 10에는 포함되지 않습니다.`;
                         }
                     } else {
-                        html += `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                `사망 재해 통계에 집계되어 있지 않습니다.`;
+                        html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                            `사망 재해 통계에 집계되어 있지 않습니다.`;
                     }
+                } else {
+                    html = "나의 산재를 선택하면 사망 발생형태 순위를 확인할 수 있습니다.";
                 }
 
                 injurySummary2.innerHTML = html;
 
                 if (window.InjuryChart2) {
-                    window.InjuryChart2(topList);
+                    window.InjuryChart2(topList,selectedInjuryType);
                 }
             }
 
-            /* =========================
-             *  2-5. 질병형태 + 나의 순위 + 차트
-             * ========================= */
-
+            // 13) 질병형태별 + 나의 질병 순위 + 바차트
             if (diseaseSummary1 && diseaseStatsByPeriod) {
                 const periodData = diseaseStatsByPeriod[periodKey];
 
@@ -383,40 +345,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 let html = "";
                 if (!topList.length) {
-                    html += "질병형태 데이터가 없습니다.";
-                } else {
-                    topList.forEach(item => {
-                        const cnt = typeof item.count === "number"
-                            ? item.count.toLocaleString()
-                            : item.count;
-                        html += `${item.rank}위: ${item.name} (${cnt}명)<br>`;
-                    });
-                }
-
-                if (selectedDiseaseType) {
+                    html = "질병형태 데이터가 없습니다.";
+                } else if (selectedDiseaseType) {
                     const myRank = rankMap[selectedDiseaseType];
-                    html += "<br>";
                     if (myRank) {
                         if (myRank <= 10) {
-                            html += `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                    `<strong>${myRank}위</strong> 입니다.`;
+                            html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                `<strong>${myRank}위</strong> 입니다.`;
                         } else {
-                            html += `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                    `<strong>${myRank}위</strong>로, TOP 10에는 포함되지 않습니다.`;
+                            html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                `<strong>${myRank}위</strong>로, TOP 10에는 포함되지 않습니다.`;
                         }
                     } else {
-                        html += `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                `해당 업종 질병 통계에 집계되어 있지 않습니다.`;
+                        html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                            `해당 업종 질병 통계에 집계되어 있지 않습니다.`;
                     }
+                } else {
+                    html = "나의 산재를 선택하면 질병형태 순위를 확인할 수 있습니다.";
                 }
 
                 diseaseSummary1.innerHTML = html;
 
                 if (window.DiseaseChart1) {
-                    window.DiseaseChart1(topList);
+                    window.DiseaseChart1(topList,selectedDiseaseType);
                 }
             }
 
+            // 14) 질병 사망형태 + 나의 순위 + 바차트
             if (diseaseSummary2 && diseaseFatalStatsByPeriod) {
                 const periodData = diseaseFatalStatsByPeriod[periodKey];
 
@@ -431,37 +386,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 let html = "";
                 if (!topList.length) {
-                    html += "질병 사망유형 데이터가 없습니다.";
-                } else {
-                    topList.forEach(item => {
-                        const cnt = typeof item.count === "number"
-                            ? item.count.toLocaleString()
-                            : item.count;
-                        html += `${item.rank}위: ${item.name} (${cnt}명)<br>`;
-                    });
-                }
-
-                if (selectedDiseaseType) {
+                    html = "질병 사망유형 데이터가 없습니다.";
+                } else if (selectedDiseaseType) {
                     const myRank = rankMap[selectedDiseaseType];
-                    html += "<br>";
                     if (myRank) {
                         if (myRank <= 10) {
-                            html += `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                    `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.`;
+                            html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.`;
                         } else {
-                            html += `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                    `사망 재해 기준으로 <strong>${myRank}위</strong>이며, TOP 10에는 포함되지 않습니다.`;
+                            html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                `사망 재해 기준으로 <strong>${myRank}위</strong>이며, ` +
+                                `TOP 10에는 포함되지 않습니다.`;
                         }
                     } else {
-                        html += `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                `질병 사망 통계에 집계되어 있지 않습니다.`;
+                        html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                            `질병 사망 통계에 집계되어 있지 않습니다.`;
                     }
+                } else {
+                    html = "나의 산재를 선택하면 질병 사망형태 순위를 확인할 수 있습니다.";
                 }
 
                 diseaseSummary2.innerHTML = html;
 
                 if (window.DiseaseChart2) {
-                    window.DiseaseChart2(topList);
+                    window.DiseaseChart2(topList,selectedDiseaseType);
                 }
             }
         });

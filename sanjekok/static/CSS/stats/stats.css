@@ -1,8 +1,15 @@
+/* =========================
+   1. 레이아웃 기본
+   ========================= */
 .stats-container {
     width: 100%;
-    margin: 20px auto;
+    max-width: 1200px;
+    margin: 24px auto 40px;
+    padding: 0 16px;
+    box-sizing: border-box;
 }
 
+/* 프로필 영역 */
 .profile-box {
     background: #e7f9ff;
     padding: 20px;
@@ -23,6 +30,7 @@
     margin-right: 15px;
 }
 
+/* 분석 기간 버튼 */
 .period-section {
     margin-bottom: 20px;
 }
@@ -34,6 +42,7 @@
     border: none;
     background: #ddd;
     cursor: pointer;
+    font-size: 14px;
 }
 
 .period-buttons .active {
@@ -41,94 +50,52 @@
     color: white;
 }
 
+/* 통계 영역 hidden 처리 */
 .stats-visual.hidden {
     display: none;
 }
 
-.visual-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-}
-
-.visual-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-    padding: 25px;
-    min-height: 150px;
-}
-
-.visual-card.highlight {
-    border: 2px solid #ff7a7a;
-}
-
-.dropdown {
-    margin-top: 10px;
-    background: white;
-    border: 1px solid #ddd;
-    width: 150px;
-    border-radius: 6px;
-    list-style: none;
-    padding: 5px;
-    position: absolute;
-}
-
-.dropdown.hidden {
-    display: none;
-}
-
-.dropdown li {
-    padding: 8px;
-    cursor: pointer;
-}
-
-.dropdown li:hover {
-    background: #f0f0f0;
-}
-
-
-.visual-card canvas {
-    width:50%;
-    max-width: 360px;     
-    height: 260px !important; 
-    margin: 0 auto;       
-    display: block;
-}
-
-/* 전체 컨테이너 여백 */
-.stats-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px 16px 40px;
-    box-sizing: border-box;
-}
+/* =========================
+   2. 카드/그리드 레이아웃
+   ========================= */
 
 /* 카드들이 배치되는 그리드 */
 .visual-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));  /* 기본 2열 */
     gap: 24px;
     margin-top: 24px;
+}
+
+/* 화면이 좁을 때는 1열 */
+@media (max-width: 1024px) {
+    .visual-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* 기본 카드 스타일 */
 .visual-card {
     background: #ffffff;
-    border-radius: 18px;
+    border-radius: 16px;
     padding: 20px 22px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05); /* 너무 대시보드 느낌 안 나게 부드럽게 */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+}
+
+/* 강조 카드 */
+.visual-card.highlight {
+    border: 2px solid #ff7a7a;
 }
 
 /* 카드 제목 */
 .visual-card h3 {
     font-size: 16px;
     font-weight: 700;
-    margin: 0;
+    margin: 0 0 4px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -141,7 +108,6 @@
     color: #64748b;
 }
 
-
 /* 상단 재해율 / 사망만인율 카드 조금 더 컴팩트하게 */
 .visual-card.small {
     min-height: 120px;
@@ -149,4 +115,53 @@
 
 .visual-card.small p {
     font-size: 14px;
+}
+
+/* =========================
+   3. 드롭다운
+   ========================= */
+.dropdown {
+    margin-top: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    width: 150px;
+    border-radius: 6px;
+    list-style: none;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+}
+
+.dropdown.hidden {
+    display: none;
+}
+
+.dropdown li {
+    padding: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown li:hover {
+    background: #f0f0f0;
+}
+
+/* =========================
+   4. 차트 크기 조정
+   ========================= */
+
+/* 모든 카드 안의 차트 */
+.visual-card canvas {
+    width: 100%;                  /* 폭 전체 사용 */
+    height: 280px !important;     /* 기본 높이 크게 */
+    margin-top: 10px;
+    display: block;
+}
+
+/* 발생형태 / 질병형태 카드 차트는 조금 더 높게 */
+#card-injury canvas,
+#card-injury-fatal canvas,
+#card-disease canvas,
+#card-disease-fatal canvas {
+    height: 320px !important;
 }
