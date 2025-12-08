@@ -22,8 +22,7 @@ def absolute_url(path: str):
     if not path:
         return None 
 
-    # 이미 절대경로면 그대로 반환
-    if path.startswith("http"):
+    if path.startswith("http"):     # 이미 절대경로면 그대로 반환
         return path
 
     return BASE_URL + path.lstrip(".")  # 상대경로 → 절대경로로 변환
