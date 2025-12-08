@@ -5,6 +5,7 @@ let infoOverlay = null;
 
 const ctx = window.SEARCH_CONTEXT;
 
+// 지도 형태
 function initMap() {
     map = new kakao.maps.Map(document.getElementById("map"), {
         center: new kakao.maps.LatLng(37.5665, 126.9780),
