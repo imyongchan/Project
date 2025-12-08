@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "member/mypage_base.html" %}
 {% load static %}
 {% block title %}회원 정보 수정{% endblock %}
 
@@ -12,7 +12,7 @@
 
 
 {% endblock %}
-{% block contents %}
+{% block mypage_contents %}
 
 <div class="card col-md-6 mx-auto mt-5">
     <div class="card-header text-center">
@@ -99,4 +99,4 @@
         </form>
     </div>
 </div>
-{% endblock %}
+{% endblock mypage_contents %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "member/mypage_base.html" %}
 {% load static %}
 {% block title %}산재 정보 추가{% endblock %}
 
@@ -9,24 +9,10 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-{% endblock %}
-
-{% block script2 %}
-<script>
-    const industries = [
-        {% for ind in member_industries %}
-        {
-            id: "{{ ind.member_industry }}",
-            type1: "{{ ind.i_industry_type1 }}",
-            type2: "{{ ind.i_industry_type2 }}"
-        },
-        {% endfor %}
-    ];
-</script>
 <script src="{% static 'js/member/mypage_individual_add.js' %}"></script>
 {% endblock %}
-{% block contents %}
+
+{% block mypage_contents %}
 
 <form action="" method="post">
 {% csrf_token %}
@@ -41,14 +27,24 @@
     <input type="text" class="form-control" placeholder="제목을 입력하세요." id="i_title" name="i_title">
 </div>
 
-<select id="category1" class="form-control"></select>
+<!-- 🔥 업종 대분류 -->
+<div class="mb-3">
+    <label for="i_industry_type1">업종(대분류)</label>
+    <select id="i_industry_type1" name="i_industry_type1" class="form-select" required>
+        <option value="">대분류 선택</option>
+    </select>
+</div>
 
-<select id="category2" name="industry_type2" class="form-control mt-2">
-    <option value="">중분류 선택</option>
-</select>
+<!-- 🔥 업종 중분류 -->
+<div class="mb-3">
+    <label for="i_industry_type2">업종(중분류)</label>
+    <select id="i_industry_type2" name="i_industry_type2" class="form-select" required>
+        <option value="">중분류 선택</option>
+    </select>
+</div>
 
 <!-- 실제 POST 되는 업종 PK -->
-<input type="hidden" name="industry_id" id="industry_id">
+
 
 <div class="mb-3">
     <label for="i_accident_date" class="form-label">*재해일자 :</label>
@@ -75,9 +71,9 @@
 <input type="radio" name="mode" value="dis"> 질병
 <input type="radio" name="mode" value="all"> 모두
 
-<input id="occInput" type="text" placeholder="발생형태" disabled">
+<input id="occInput" name="i_injury" type="text" placeholder="발생형태" disabled">
 <br>
-<input id="disInput" type="text" placeholder="질병" disabled">
+<input id="disInput" name="i_disease_type" type="text" placeholder="질병" disabled">
 
 
 <button type="submit" class="btn btn-primary">등록하기</button>
@@ -97,4 +93,4 @@
 </div>
 
 
-{% endblock %}
+{% endblock mypage_contents %}

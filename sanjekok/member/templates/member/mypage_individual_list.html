@@ -1,53 +1,81 @@
-{% extends "base.html" %}
+{% extends "member/mypage_base.html" %}
 {% load static %}
 {% block title %}산재 관리{% endblock %}
 
 {% block script1 %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const selectAllCheckbox = document.getElementById('select-all');
+    if (!selectAllCheckbox) return;
+
+    const itemCheckboxes = document.querySelectorAll('input[name="selected_ids"]');
+
+    selectAllCheckbox.addEventListener('change', function() {
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (!this.checked) {
+                selectAllCheckbox.checked = false;
+            } else {
+                // 모든 개별 체크박스가 선택되었는지 확인
+                const allChecked = Array.from(itemCheckboxes).every(item => item.checked);
+                if (allChecked) {
+                    selectAllCheckbox.checked = true;
+                }
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
-{% block contents %}
+{% block mypage_contents %}
     <div class="card col-md-6 mx-auto mt-5">
         <div class="card-header text-center">
             <h2>산재 정보</h2>
         </div>
         <div class="card-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        
-                        <th scope="col"></th>
-                        <th scope="col">일련번호</th>
-                        <th scope="col">제목</th>
-                        <th scope="col">재해일자</th>
-                        <th scope="col">업종</th>
-                        <th scope="col">발생형태</th>
-                        <th scope="col">질병</th>
-                        <th scope="col">주소</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for individual in individuals %}
-                    <tr>
-                        <!-- individual.id에 일치하는 산재 정보 삭제하는 버튼 -->
-                        <td>
-                            <form method="post" action="{% url 'Member:mypage_individual_delete' individual.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm">삭제</button>
-                            </form>
-                        </td>
-                        <!-- 1~ 리스트 개수만큼 일련번호 -->
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ individual.i_title }}</td>
-                        <td>{{ individual.i_accident_date }}</td>
-                        <td>{% if individual.member.industries %}{{ individual.member.industries.i_industry_type2 }}{% endif %}</td>
-                        <td>{{ individual.i_injury }}</td>
-                        <td>{{ individual.i_disease_type }}</td>
-                        <td>{{ individual.i_address }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <div class="text-center">
-                <a href="{% url 'Member:mypage_individual_add' %}" class="btn btn-primary">산재 정보 추가</a>
+            <form method="post" action="{% url 'Member:mypage_individual_bulk_delete' %}">
+                {% csrf_token %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"><input type="checkbox" id="select-all" title="전체 선택"></th>
+                            <th scope="col">일련번호</th>
+                            <th scope="col">제목</th>
+                            <th scope_col="col">재해일자</th>
+                            <th scope="col">업종</th>
+                            <th scope="col">발생형태</th>
+                            <th scope="col">질병</th>
+                            <th scope="col">주소</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for individual in individuals %}
+                        <tr>
+                            <!-- individual.accident_id에 일치하는 산재 정보 삭제할려고 체크하는 체크박스  -->
+                            <td><input type="checkbox" name="selected_ids" value="{{ individual.accident_id }}"></td>
+                            <!-- 1~ 리스트 개수만큼 일련번호 -->
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ individual.i_title }}</td>
+                            <td>{{ individual.i_accident_date }}</td>
+                            <td>{{ individual.member_industry.i_industry_type2 }}</td>
+                            <td>{{ individual.i_injury|default:"-" }}</td>
+                            <td>{{ individual.i_disease_type|default:"-" }}</td>
+                            <td>{{ individual.i_address }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="text-center">
+                    <a href="{% url 'Member:mypage_individual_add' %}" class="btn btn-primary">산재 정보 추가</a>
+                    <!-- 체크된 산재정보 삭제 -->
+                    <button type="submit" class="btn btn-danger">선택 항목 삭제</button>
+                </div>
+            </form>
         </div>
     </div>
-{% endblock %}
+{% endblock mypage_contents %}

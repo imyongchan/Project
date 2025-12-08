@@ -153,12 +153,10 @@ def mypage_individual_add(request):
         return redirect('Member:login')
 
     member = get_object_or_404(Member, member_id=member_id)
-    member_industries = member.industries.all()
 
     if request.method == "GET":
         return render(request, 'member/mypage_individual_add.html', {
             'member': member,
-            'member_industries': member_industries
         })
 
     elif request.method == "POST":
@@ -167,12 +165,21 @@ def mypage_individual_add(request):
         i_accident_date = request.POST.get("i_accident_date")
         i_injury = request.POST.get("i_injury")
         i_disease_type = request.POST.get("i_disease_type")
-        industry_id = request.POST.get("industry_id")
+        i_industry_type1 = request.POST.get("i_industry_type1")
+        i_industry_type2 = request.POST.get("i_industry_type2")
 
-        if not industry_id:
-            return HttpResponseBadRequest("업종 선택 오류")
+        if not i_industry_type1 or not i_industry_type2:
+            return HttpResponseBadRequest("업종을 선택해주세요.")
 
-        member_industry = get_object_or_404(Member_industry, member_industry=industry_id)
+        member_industry, created = Member_industry.objects.get_or_create(
+            member=member,
+            i_industry_type1=i_industry_type1,
+            i_industry_type2=i_industry_type2
+        )
+        
+        # i_accident_date가 빈 문자열인 경우 None으로 변환
+        if not i_accident_date:
+            i_accident_date = None
 
         Individual.objects.create(
             member_industry=member_industry,
@@ -205,6 +212,36 @@ def mypage_individual_delete(request, individual_id):
         messages.success(request, "산재 정보가 삭제되었습니다.")
     
     return redirect('Member:mypage_individual_list')
+
+
+# 마이페이지 - 산재 다중 삭제
+def mypage_individual_bulk_delete(request):
+    member_id = request.session.get('member_id')
+    if not member_id:
+        messages.error(request, "로그인이 필요합니다.")
+        return redirect('Member:login')
+
+    if request.method == "POST":
+        selected_ids = request.POST.getlist('selected_ids')
+        if not selected_ids:
+            messages.warning(request, "삭제할 항목을 선택해주세요.")
+            return redirect('Member:mypage_individual_list')
+
+        # Ensure the user only deletes their own records
+        individuals_to_delete = Individual.objects.filter(
+            accident_id__in=selected_ids,
+            member_industry__member__member_id=member_id
+        )
+        
+        count = individuals_to_delete.count()
+        if count > 0:
+            individuals_to_delete.delete()
+            messages.success(request, f"{count}개의 산재 정보가 삭제되었습니다.")
+        else:
+            messages.error(request, "삭제할 항목이 없거나 권한이 없습니다.")
+
+    return redirect('Member:mypage_individual_list')
+
 
 
 # 로그아웃

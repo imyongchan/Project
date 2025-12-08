@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block contents %}
+<header class="my-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'Member:mypage' %}">마이페이지</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mypageNavbar" aria-controls="mypageNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mypageNavbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Member:mypage_profile' %}">회원정보 수정</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Member:mypage_individual_list' %}">산재 관리</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{% url 'Member:mypage_withdrawal' %}">회원 탈퇴</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main>
+    {% block mypage_contents %}
+    {% endblock mypage_contents %}
+</main>
+{% endblock contents %}
