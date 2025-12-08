@@ -1,11 +1,6 @@
-body {
-    background-color: rgb(166, 163, 163);
-}
-
 .loginbox {
     background-color: rgb(216, 213, 213);
     height: 300px;
-    margin: 60px;
     border-radius: 15px;
 }
 
