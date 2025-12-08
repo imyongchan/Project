@@ -67,7 +67,7 @@ def incidents_api(request):
     try:
         center_lat = float(request.GET.get("lat"))
         center_lng = float(request.GET.get("lng"))
-        radius_km = 5  # ← 요청에 따라 반경 고정 5km
+        radius_km = 5  # 반경 5km
 
         # SAFEMAP API 호출
         safemap = requests.get(
@@ -84,7 +84,6 @@ def incidents_api(request):
         items = safemap.get("body", {}).get("items", {}).get("item", [])
         results = []
 
-        # 카카오 REST 키 설정
         headers = {"Authorization": f"KakaoAK {settings.KAKAO_REST_KEY}"}
 
         for it in items:
@@ -92,7 +91,7 @@ def incidents_api(request):
             if not address:
                 continue
 
-            # locplc → 위경도 변환
+            # 위/경도 변환
             geo = requests.get(
                 "https://dapi.kakao.com/v2/local/search/address.json",
                 params={"query": address},
@@ -109,7 +108,7 @@ def incidents_api(request):
             # 중심점과 거리 계산
             dist = haversine(center_lat, center_lng, item_lat, item_lng)
 
-            # 5km 이내만 포함
+            # 반경 이내만 포함
             if dist <= radius_km:
                 results.append({
                     "lat": item_lat,
