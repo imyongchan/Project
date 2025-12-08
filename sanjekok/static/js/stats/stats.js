@@ -304,6 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 injurySummary1.innerHTML = html;
+            }
             
 
                 // 12) 사망 발생형태  + 나의 순위
@@ -403,7 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     diseaseSummary1.innerHTML = html;
                 }
-            }
+            
 
            if (diseaseSummary2 && diseaseFatalStatsByPeriod) {
                 const yearFlag = btn.dataset.year;
@@ -413,23 +414,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const periodData = diseaseFatalStatsByPeriod[periodKey];
 
-                if (!periodData) {
-                    diseaseSummary2.textContent = "질병 사망유형 데이터가 없습니다.";
-                } else {
-                    const topList = periodData.top10 || [];
-                    const rankMap = periodData.rank_map || {};
+                    if (!periodData) {
+                        diseaseSummary2.textContent = "질병 사망유형 데이터가 없습니다.";
+                        } else {
+                        const topList = periodData.top10 || [];
+                        const rankMap = periodData.rank_map || {};
 
-                    let html = "";
-                    if (!topList.length) {
-                        html += "질병 사망유형 데이터가 없습니다.";
-                    } else {
-                        topList.forEach(item => {
-                            const cnt = typeof item.count === "number"
-                                ? item.count.toLocaleString()
-                                : item.count;
-                            html += `${item.rank}위: ${item.name} (${cnt}명)<br>`;
-                        });
-                    }
+                        let html = "";
+                        if (!topList.length) {
+                            html += "질병 사망유형 데이터가 없습니다.";
+                        } else {
+                            topList.forEach(item => {
+                                const cnt = typeof item.count === "number"
+                                    ? item.count.toLocaleString()
+                                    : item.count;
+                                html += `${item.rank}위: ${item.name} (${cnt}명)<br>`;
+                            });
+                        }
 
                     if (selectedDiseaseType) {
                         const myRank = rankMap[selectedDiseaseType];
@@ -442,7 +443,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 html += `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
                                         `사망 재해 기준으로 <strong>${myRank}위</strong>이며, TOP 10에는 포함되지 않습니다.`;
                             }
-                        } else {
+                        } 
+                        else {
                             html += `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
                                     `질병 사망 통계에 집계되어 있지 않습니다.`;
                         }

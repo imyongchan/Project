@@ -47,8 +47,7 @@ def stats_home(request):
     # 해당 회원의 산재 리스트 (개인 산재 기록)
     individual_list = Individual.objects.filter(member_industry__member=member)
 
-    # ✅ 여기서부터는 반드시 `industry`에서 업종 이름을 꺼내야 함
-    #    (member가 아니라!)
+  
     industry_name1 = industry.i_industry_type2
     industry_name2 = industry.i_industry_type1
     industry_name3 = industry.i_industry_type1

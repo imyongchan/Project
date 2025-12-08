@@ -2,7 +2,6 @@ let genderChart1 = null;
 let genderChart2 = null;
 
 
-
 function GenderChart1(male, female) {
     const ctx = document.getElementById("genderChart1");
     if (!ctx) return;
@@ -73,3 +72,4 @@ function GenderChart2(maleFatal, femaleFatal) {
 // 다른 JS 파일에서도 쓸 수 있게 전역에 붙이기
 window.GenderChart1 = GenderChart1;
 window.GenderChart2 = GenderChart2;
+
