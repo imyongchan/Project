@@ -73,7 +73,7 @@ def incidents_api(request):
         safemap = requests.get(
             "https://www.safemap.go.kr/openapi2/IF_0060",
             params={
-                "serviceKey": settings.SAFEMAP_API_KEY,
+                "serviceKey": settings.SAFEMAP_KEY,
                 "pageNo": 1,
                 "numOfRows": 200,
                 "returnType": "json"
