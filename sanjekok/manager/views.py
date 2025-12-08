@@ -3,8 +3,7 @@ from django.contrib import messages
 from member.models import Member, Individual, Member_industry
 from reviews.models import Review
 from django.contrib.auth.hashers import check_password
-from django.utils import timezone
-from datetime import timedelta
+from datetime import date, timedelta
 from django.core.paginator import Paginator
 
 def login(request):
@@ -40,11 +39,11 @@ def dash(request):
 
 
     # 오늘 신규 가입
-    today = timezone.localdate()  # 오늘 날짜
-    days_ago = today - timedelta(days=6) # 최근 6일 상태
+    today = date.today()  # timezone 사용 안함
+    days_ago = today - timedelta(days=6)
 
     new_members_today = Member.objects.filter(
-        m_created_at=today
+        m_created_at__date=today
     ).count()
 
 	# 전체 산재 수
