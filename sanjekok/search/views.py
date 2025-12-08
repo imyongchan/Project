@@ -7,7 +7,7 @@ import traceback
 from math import radians, sin, cos, sqrt, atan2
 
 
-# Haversine 거리 계산
+# 위 경도 거리 계산
 def haversine(lat1, lng1, lat2, lng2):
     R = 6371
     dlat = radians(lat2 - lat1)
@@ -15,10 +15,9 @@ def haversine(lat1, lng1, lat2, lng2):
     a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlng/2)**2
     return 2 * R * atan2(sqrt(a), sqrt(1 - a))
 
-
+# 주소 검색
 def search_page(request):
 
-    # ★ 현재 로그인되어 있는 회원 정보 가져오기
     user = request.user if request.user.is_authenticated else None
 
     home_address = ""
@@ -31,7 +30,7 @@ def search_page(request):
             home_address = member.m_address
             work_address = member.m_jaddress
 
-            # ★ 사고지역 가져오기(관련된 모든 Individual)
+            # 사고지역 가져오기
             accidents = Individual.objects.filter(member_industry__member=member)
 
         except Member.DoesNotExist:
@@ -45,7 +44,7 @@ def search_page(request):
     })
 
 
-# 주소 → 좌표 변환
+# 주소 좌표 변환
 def geocode_api(request):
     query = request.GET.get("query")
     headers = {"Authorization": f"KakaoAK {settings.KAKAO_REST_KEY}"}
