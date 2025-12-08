@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from .models import Member, Individual, Member_industry
 from .forms import Step1MemberForm, Step2MemberForm
 # Create your views here.
@@ -144,6 +144,47 @@ def mypage_individual_list(request):
     individuals = Individual.objects.filter(member_industry__in=member_industries)
 
     return render(request, 'member/mypage_individual_list.html', {'member': member, 'individuals': individuals})
+
+# 마이페이지 - 산재 추가
+def mypage_individual_add(request):
+    member_id = request.session.get('member_id')
+    if not member_id:
+        messages.error(request, "로그인이 필요합니다.")
+        return redirect('Member:login')
+
+    member = get_object_or_404(Member, member_id=member_id)
+    member_industries = member.industries.all()
+
+    if request.method == "GET":
+        return render(request, 'member/mypage_individual_add.html', {
+            'member': member,
+            'member_industries': member_industries
+        })
+
+    elif request.method == "POST":
+        i_title = request.POST.get("i_title")
+        i_address = request.POST.get("i_address")
+        i_accident_date = request.POST.get("i_accident_date")
+        i_injury = request.POST.get("i_injury")
+        i_disease_type = request.POST.get("i_disease_type")
+        industry_id = request.POST.get("industry_id")
+
+        if not industry_id:
+            return HttpResponseBadRequest("업종 선택 오류")
+
+        member_industry = get_object_or_404(Member_industry, member_industry=industry_id)
+
+        Individual.objects.create(
+            member_industry=member_industry,
+            i_title=i_title,
+            i_address=i_address,
+            i_accident_date=i_accident_date,
+            i_injury=i_injury,
+            i_disease_type=i_disease_type
+        )
+
+        messages.success(request, "산재 정보가 성공적으로 추가되었습니다.")
+        return redirect('Member:mypage_individual_list')
 
 
 # 마이페이지 - 산재 삭제
