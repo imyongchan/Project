@@ -1,0 +1,40 @@
+{% extends "manager_base.html" %}
+{% load static %}
+
+{% block contents %}
+
+    <main>
+        <div class="info">
+            <div>
+                <p>전체 회원수</p>
+                <p>{{ member_count }}명</p>
+            </div>
+            <div>
+                <p>오늘 신규 가입</p>
+                <p>{{ new_members_today }}명</p>
+            </div>
+            <div >
+                <p>전체 산재 등록 수</p>
+                <p>{{ total_individual }}명</p>
+            </div>
+            <div>
+                <p>전체 리뷰 수</p>
+                <p>{{ review_count }}명</p>
+            </div>
+        </div>
+        <div class="chart">
+            <canvas id="memberChart""></canvas>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const NEW_MEMBERS_TODAY = {{ new_members_today }};
+	    const TOTAL_INDIVIDUAL = {{ total_individual }};
+        const DAYS = {{ days|safe }};
+        const COUNTS = {{ counts|safe }};
+    </script>
+
+    <script src="{% static 'js/manager/manager.js' %}"></script>
+{% endblock %}
