@@ -174,13 +174,14 @@
             <div class="visual-card">
                 <h3>남/녀 재해 현황</h3>
                 <p id="genderSummary1"></p>
-                <canvas id="genderChart1"></canvas>
+                <canvas id="genderChart1" width="200" height="200"></canvas>
             </div>
 
             <!-- 남/녀 재해 사망현황 -->
             <div class="visual-card">
                 <h3>남/녀 재해 사망 현황</h3>
                 <p id="genderSummary2"></p>
+                <canvas id="genderChart2" width="200" height="200"></canvas>
             </div>
 
             <!-- 연령대별 재해 현황 -->
@@ -226,7 +227,10 @@
     </section>
 
 </div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/stats/chart.js' %}"></script>
 <script src="{% static 'js/stats/stats.js' %}"></script>
 {% endblock %}
 </body>

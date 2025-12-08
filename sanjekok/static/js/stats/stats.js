@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let injuryStatsByPeriod = null;
 
-    let genderChart1 = null;
+  
 
 
     // 발생형태 디버깅용 중간 삭제 꼭 
@@ -134,38 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function renderGenderChart(male, female) {
-        const ctx = document.getElementById("genderChart1");
-        if (!ctx) return;  // 캔버스 없으면 그냥 종료
 
-        // 이미 차트를 한 번 만든 적 있으면 데이터만 갱신
-        if (genderChart1) {
-            genderChart1.data.datasets[0].data = [male, female];
-            genderChart1.update();
-            return;
-        }
-
-        // 처음 클릭 시 신규 생성
-        genderChart1 = new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                labels: ["남자", "여자"],
-                datasets: [{
-                    data: [male, female],
-                    // 색은 간단하게 두 개만 지정 (원하면 나중에 바꾸면 됨)
-                    backgroundColor: ["#4F46E5", "#F97316"],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        position: "bottom"
-                    }
-                }
-            }
-        });
-    }
 
     // 분석 기간 버튼 클릭
     periodButtons.forEach(btn => {
@@ -239,8 +208,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 genderSummary1.textContent =
                     `남자: ${male.toLocaleString()}명 (${maleRateText}%), ` +
                     `여자: ${female.toLocaleString()}명 (${femaleRateText}%)`;
-            renderGenderChart(male, female);
-            }            
+            
+                
+                //GenderChart 시각화 호출 
+                if(window.GenderChart1){
+                    window.GenderChart1(male, female);
+                } 
+            }        
 
             // 8) (성별 재해사망 비율)
             if (genderSummary2) {
@@ -250,6 +224,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 genderSummary2.textContent =
                     `남자: ${male2.toLocaleString()}명 (${maleRateText2}%), ` +
                     `여자: ${female2.toLocaleString()}명 (${femaleRateText2}%)`;
+                
+                //GenderChart 시각화 호출     
+                if(window.GenderChart2){
+                    window.GenderChart2(male2, female2);
+                } 
             }
 
             // 9) (연령별 재해 현황)
