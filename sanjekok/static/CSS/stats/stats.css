@@ -95,3 +95,58 @@
     margin: 0 auto;       
     display: block;
 }
+
+/* 전체 컨테이너 여백 */
+.stats-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+    box-sizing: border-box;
+}
+
+/* 카드들이 배치되는 그리드 */
+.visual-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+/* 기본 카드 스타일 */
+.visual-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 20px 22px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* 카드 제목 */
+.visual-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 카드 상단 설명 텍스트 */
+.visual-card p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
+
+/* 상단 재해율 / 사망만인율 카드 조금 더 컴팩트하게 */
+.visual-card.small {
+    min-height: 120px;
+}
+
+.visual-card.small p {
+    font-size: 14px;
+}
