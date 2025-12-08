@@ -49,6 +49,7 @@ def crawl_news():
             # 작성일자 
             date_tag = item.select_one("dd.registDate")
             created_at_raw = date_tag.text.strip() if date_tag else None
+            
             # 문자열 → datetime 변환
             try:
                 created_at = datetime.strptime(created_at_raw.strip(), "%Y-%m-%d")
