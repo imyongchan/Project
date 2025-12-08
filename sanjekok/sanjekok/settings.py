@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_crontab',
+    # 'django_crontab',
     'main',
     'manager',
     'member',
@@ -163,6 +163,5 @@ LOGGING = {
 }
 
 CRONJOBS = [
-    # 매일 새벽 3시에 크롤링 실행
-    ('0 3 * * *', 'news.crawler.run.crawl_news'),
+    ('*/5 * * * *', 'news.crawler.run.crawl_news'),  
 ]
