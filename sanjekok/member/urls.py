@@ -11,9 +11,9 @@ urlpatterns = [
     path('complete/', views.complete, name='complete'),  # 회원가입 완료
     path('logout/', views.logout, name='logout'),  # 로그아웃
 
-
-    path('mypage/', views.mypage, name='mypage'),  # 마이페이지
-    path('mypage/profile/', views.mypage_profile, name='mypage_profile'),  # 마이페이지 - 프로필 수정
+    path('mypage/', views.mypage, name='mypage'),  # 마이페이지 - 비밀번호 확인
+    path('mypage_profile/', views.mypage_profile, name='mypage_profile'),  # 마이페이지
+    path('mypage/profile-modify/', views.mypage_profile_modify, name='mypage_profile_modify'),  # 마이페이지 - 프로필 수정
 
     path('mypage/individual-list/', views.mypage_individual_list, name='mypage_individual_list'),  # 마이페이지 - 산재 관리
     path('mypage/individual/add/', views.mypage_individual_add, name='mypage_individual_add'),  # 마이페이지 - 산재 추가

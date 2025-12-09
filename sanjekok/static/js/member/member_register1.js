@@ -96,10 +96,10 @@ $(document).ready(function () {
         }
     });
 
-    // Auto-focus on the first error field if available
+    
     if (window.firstErrorField) {
-        const elementToFocus = $('#' + window.firstErrorField); // jQuery selector
-        if (elementToFocus && elementToFocus.length) { // Check if element exists
+        const elementToFocus = $('#' + window.firstErrorField); 
+        if (elementToFocus && elementToFocus.length) { 
             elementToFocus.focus();
         }
     }

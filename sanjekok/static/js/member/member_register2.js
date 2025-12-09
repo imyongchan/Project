@@ -26,17 +26,17 @@ $(document).ready(function () {
         }
     });
 
-    // Auto-focus on the first error field if available
+    
     if (window.firstErrorField) {
         let elementToFocus;
         if (window.firstErrorField === 'm_sex') {
-            // For radio buttons, focus the first one.
-            elementToFocus = $('#sex_male'); // jQuery selector
+            
+            elementToFocus = $('#sex_male'); 
         } else {
-            elementToFocus = $('#' + window.firstErrorField); // jQuery selector
+            elementToFocus = $('#' + window.firstErrorField); 
         }
         
-        if (elementToFocus && elementToFocus.length) { // Check if element exists
+        if (elementToFocus && elementToFocus.length) { 
             elementToFocus.focus();
         }
     }

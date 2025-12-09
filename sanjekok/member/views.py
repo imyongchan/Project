@@ -97,7 +97,7 @@ def check_username(request):
 def complete(request):
     return render(request, 'member/member_complete.html')
 
-# 마이페이지
+# 마이페이지 - 비밀번호 확인
 @login_required
 def mypage(request):
     member_id = request.session.get('member_id')
@@ -113,15 +113,24 @@ def mypage(request):
 
     return render(request, 'member/mypage_checked.html', {'member': member})
 
-# 마이페이지 - 프로필 수정
+# 마이페이지 - 프로필
 @login_required
 def mypage_profile(request):
+    member_id = request.session.get('member_id')
+    member = get_object_or_404(Member, member_id=member_id)
+    return render(request, 'member/mypage_profile.html', {'member': member})
+
+
+
+# 마이페이지 - 프로필 수정
+@login_required
+def mypage_profile_modify(request):
     member_id = request.session.get('member_id')
     member = get_object_or_404(Member, member_id=member_id)
     
     if request.method == "GET":
         form = Step2MemberForm(instance=member)
-        return render(request, 'member/mypage_profile.html', {'form': form, 'member': member})
+        return render(request, 'member/mypage_profile_modify.html', {'form': form, 'member': member})
 
     elif request.method == "POST":
         form = Step2MemberForm(request.POST, instance=member)
@@ -138,7 +147,7 @@ def mypage_profile(request):
             'first_error_field': first_error_field
         }
         messages.error(request, "입력값이 잘못되었습니다. 다시 확인해주세요.")
-        return render(request, 'member/mypage_profile.html', context)
+        return render(request, 'member/mypage_profile_modify.html', context)
     
 # 마이페이지 - 산재 관리
 @login_required

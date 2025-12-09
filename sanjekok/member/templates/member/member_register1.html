@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="{% static 'CSS/member/member_register.css' %}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Set a global variable for the error field, accessible by external JS
+    
     window.firstErrorField = '{{ first_error_field|default_if_none:"" }}';
 </script>
 <script src="{% static 'js/member/member_register1.js' %}"></script>
