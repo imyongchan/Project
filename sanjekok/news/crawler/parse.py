@@ -10,10 +10,10 @@ def parse_list_page(soup):
     for item in items:
         
         # 제목
-        title = item.select_one("dt.title a").get_text(strip=True)
+        title = item.select_one("dt.title a").text.strip()
         
         # 내용(요약X)
-        content = item.select_one("dd.content a").get_text(strip=True)
+        content = item.select_one("dd.content a").text.strip()
 
         # 이미지
         img_tag = item.select_one("a.image img")

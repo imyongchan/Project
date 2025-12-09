@@ -6,14 +6,14 @@ import traceback
 
 def crawl_news():
     """
-    뉴스 전체 크롤링 (1~3페이지)(임시)
+    뉴스 전체 크롤링 (1~5페이지)(임시)
     fetch → parse → detail fetch → detail parse → save
     """
     print(f"🧡 크롤링 시작")
-    for page in range(1, 4):
+    for page in range(1, 2):
 
         try:
-            list_url = f"http://sanjaenews.co.kr/news/list.php?mcode=m641vf2&vg=photo&page={page}"
+            list_url = f"http://sanjaenews.co.kr/news/list.php?&mcode=m641vf2&vg=&page={page}"
 
             # 1) 목록 HTML 수집
             list_soup = fetch_html(list_url)
