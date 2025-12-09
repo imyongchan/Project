@@ -43,28 +43,6 @@
     </select>
 </div>
 
-<!-- 재해일자 -->
-<div class="mb-3">
-    <label for="i_accident_date" class="form-label">*재해일자 :</label>
-    <input 
-        type="text" 
-        id="i_accident_date" 
-        name="i_accident_date"
-        class="form-control"
-        placeholder="YYYY-MM-DD" required>
-</div>
-<!-- 발생주소 -->
-<div class="mb-3">
-    <label for="i_address" class="form-label">*발생 주소 :</label>
-    <input 
-        type="text" 
-        class="form-control" 
-        id="i_address" 
-        name="i_address" 
-        placeholder="발생 주소를 입력해주세요."
-        readonly
-        onclick="searchAddress('i_address')" required>
-</div>
 <!-- 발생형태/질병 모달 버튼 -->
 <div class="mb-3">
     <label class="form-label">*발생형태/질병 :</label>
@@ -79,6 +57,32 @@
         <input id="disInput" name="i_disease_type" type="text" class="form-control" placeholder="질병" disabled>
     </div>
 </div>
+
+<!-- 재해일자 -->
+<div class="mb-3">
+    <label for="i_accident_date" class="form-label">*재해일자 :</label>
+    <input 
+        type="text" 
+        id="i_accident_date" 
+        name="i_accident_date"
+        class="form-control"
+        placeholder="YYYY-MM-DD" required>
+    <div id="accidentDateError" class="text-danger" style="display: none; font-size: 0.875em;">재해일자를 입력해주세요.</div>
+</div>
+<!-- 발생주소 -->
+<div class="mb-3">
+    <label for="i_address" class="form-label">*발생 주소 :</label>
+    <input 
+        type="text" 
+        class="form-control" 
+        id="i_address" 
+        name="i_address" 
+        placeholder="발생 주소를 입력해주세요."
+        readonly
+        onclick="searchAddress('i_address')" required>
+    <div id="addressError" class="text-danger" style="display: none; font-size: 0.875em;">발생 주소를 입력해주세요.</div>
+</div>
+
 
 
 <button type="submit" class="btn btn-primary">등록하기</button>

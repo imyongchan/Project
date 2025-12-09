@@ -19,6 +19,7 @@ urlpatterns = [
     path('mypage/individual/add/', views.mypage_individual_add, name='mypage_individual_add'),  # 마이페이지 - 산재 추가
     path('mypage/individual/delete/<int:individual_id>/', views.mypage_individual_delete, name='mypage_individual_delete'), # 마이페이지 - 산재 삭제
     path('mypage/individual/bulk-delete/', views.mypage_individual_bulk_delete, name='mypage_individual_bulk_delete'), # 마이페이지 - 산재 다중 삭제
+    path('mypage/password-change/', views.mypage_password_change, name='mypage_password_change'),  # 마이페이지 - 비밀번호 변경
     path('mypage/withdrawal/', views.mypage_withdrawal, name='mypage_withdrawal'),  # 마이페이지 - 회원 탈퇴
 
 ]

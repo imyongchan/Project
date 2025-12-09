@@ -121,29 +121,64 @@ $(document).ready(function () {
 
     // Form submission validation
     $("#add-info-form").on("submit", function (e) {
+        e.preventDefault(); // Stop submission immediately
+
+        // Reset all error messages
+        $("#accidentDateError").hide();
+        $("#addressError").hide();
+        $("#mode-error").hide();
+
+        // Check date
+        if ($("#i_accident_date").val().trim() === "") {
+            $("#accidentDateError").show();
+            const dateInput = $("#i_accident_date");
+            dateInput.focus();
+            if (dateInput[0] && dateInput[0]._flatpickr) {
+                dateInput[0]._flatpickr.close();
+            }
+            return; // Stop validation
+        }
+
+        // Check address
+        if ($("#i_address").val().trim() === "") {
+            $("#addressError").show();
+            $("#i_address").focus();
+            return; // Stop validation
+        }
+
+        // Check mode and corresponding inputs
         const mode = $("input[name='mode']:checked").val();
         const occValue = $("#occInput").val().trim();
         const disValue = $("#disInput").val().trim();
-        const errorDiv = $("#mode-error");
+        let modeIsValid = true;
 
-        let isValid = true;
-
-        if (!mode) { // 라디오 버튼이 선택되지 않은 경우
-            isValid = false;
+        if (!mode) {
+            modeIsValid = false;
         } else if (mode === "occ" && occValue === "") {
-            isValid = false;
+            modeIsValid = false;
         } else if (mode === "dis" && disValue === "") {
-            isValid = false;
+            modeIsValid = false;
         } else if (mode === "all" && (occValue === "" || disValue === "")) {
-            isValid = false;
+            modeIsValid = false;
         }
 
-        if (!isValid) {
-            errorDiv.show();
-            e.preventDefault();
-        } else {
-            errorDiv.hide();
+        if (!modeIsValid) {
+            $("#mode-error").show();
+            // Focus on the relevant input
+            if (!mode) {
+                 $("input[name='mode']").first().focus();
+            } else if (mode === 'occ') {
+                 $("#occInput").focus();
+            } else if (mode === 'dis') {
+                 $("#disInput").focus();
+            } else if (mode === 'all') {
+                occValue === "" ? $("#occInput").focus() : $("#disInput").focus();
+            }
+            return; // Stop validation
         }
+        
+        // If all validation passes, submit the form
+        this.submit();
     });
 });
 

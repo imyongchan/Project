@@ -5,6 +5,10 @@
 {% block script1 %}
 <link rel="stylesheet" href="{% static 'CSS/member/member_register.css' %}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Set a global variable for the error field, accessible by external JS
+    window.firstErrorField = '{{ first_error_field|default_if_none:"" }}';
+</script>
 <script src="{% static 'js/member/member_register1.js' %}"></script>
 {% endblock %}
 
@@ -20,9 +24,9 @@
 
             <!-- 아이디 -->
             <div class="mb-3">
-                <label for="username" class="form-label">*아이디 :</label>
+                <label for="m_username" class="form-label">*아이디 :</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="6~16자/영문소문자, 숫자만" id="username" name="m_username">
+                    <input type="text" class="form-control" placeholder="6~16자/영문소문자, 숫자만" id="m_username" name="m_username" value="{{ form.m_username.value|default_if_none:'' }}">
                     <button class="btn btn-outline-secondary" type="button" id="checkUsernameBtn" data-url="{% url 'Member:check_username' %}">중복확인</button>
                 </div>
                 <div id="usernameCheckMsg"></div>
@@ -30,8 +34,8 @@
 
             <!-- 비밀번호 -->
             <div class="mb-3">
-                <label for="password1" class="form-label">*비밀번호 :</label>
-                <input type="password" class="form-control" placeholder="8~16자/문자+숫자+특수문자 필수" id="password1" name="m_password1">
+                <label for="m_password1" class="form-label">*비밀번호 :</label>
+                <input type="password" class="form-control" placeholder="8~16자/문자+숫자+특수문자 필수" id="m_password1" name="m_password1">
                 <div id="passwordError" style="display:none;color:red;">
                     비밀번호 양식이 틀렸습니다.
                 </div>
@@ -39,8 +43,8 @@
 
             <!-- 비밀번호 확인 -->
             <div class="mb-3">
-                <label for="re-password2" class="form-label">*비밀번호 확인 :</label>
-                <input type="password" class="form-control" placeholder="비밀번호 다시 입력해주세요" id="re-password2" name="m_password2">
+                <label for="m_password2" class="form-label">*비밀번호 확인 :</label>
+                <input type="password" class="form-control" placeholder="비밀번호 다시 입력해주세요" id="m_password2" name="m_password2">
                 <div id="rePasswordError" style="display:none;color:red;">
                     비밀번호가 일치하지 않습니다.
                 </div>
