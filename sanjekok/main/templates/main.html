@@ -10,30 +10,17 @@
         <img src="{% static 'img/mobile_hero.png' %}" alt="" class="mobile">
     </main>
 
-    <h2>산재 뉴스</h2>
-    <hr style="opacity: 30%;">
+<h2>산재 뉴스</h2>
     <article class="news">
-        <div class="news1">
-            <img src="http://sanjaenews.co.kr/data/cheditor4/2512/thumb/350x270_100/efdc7a50e79acdff4050154d2560ef91b43d7018.jpg" alt="">
-                <div class="text">
-                    <a href="http://sanjaenews.co.kr/news/1400?mcode=m641vf2" class="news_title">[게시판] 대법 양형연구회, 15일 '중대재해 처벌과 양형' 심포지엄</a>
-                    <p>민동식 기자</p>
-                </div>
-        </div>
-        <div class="news2">
-            <img src="http://sanjaenews.co.kr/data/cheditor4/2512/thumb/350x270_100/5cccd878652f91a47d5b7494604b74b481cb2a30.jpg" alt="">
-                <div class="text">
-                    <a href="http://sanjaenews.co.kr/news/1397?mcode=m641vf2" class="news_title">내년 2천명 늘어나는 근로 감독관, 별도법으로 근거 마련 추진</a>
-                    <p class="news_content">이재우 기자</p>
-                </div>
-        </div>
-        <div class="news3">
-            <img src="http://sanjaenews.co.kr/data/cheditor4/2512/thumb/350x270_100/9f48a9baf693716c81bea4468960bd578794d074.jpg" alt="">
-                <div class="text">
-                    <a href="http://sanjaenews.co.kr/news/1393?mcode=m641vf2" class="news_title">서울시, 사고 잦은 동절기 1천개 건설 공사장서 안전 캠페인</a>
-                    <p class="news_content">김연욱 기자</p>
-                </div>
-        </div>
+        {% for news in list %}
+            <div class="news-item">
+                <a href="{{ news.n_link }}" target="_blank">
+                    <img src="{{ news.n_image_url }}" alt="뉴스 이미지" class="news-img">
+                </a>
+                <p class="news_title"><a href="{{ news.n_link }}" target="_blank">{{ news.n_title }}</a></p>
+                <p>{{ news.n_writer }}</p>
+            </div>
+        {% endfor %}
     </article>
-    <hr style="opacity: 30%;">
+    <p style="text-align: right;"><a href="#">더보기</a></p>
 {% endblock %}

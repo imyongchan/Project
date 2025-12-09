@@ -1,81 +1,140 @@
-header .loginbox {
-  font-size: 10px;
-  margin-left: 10px;
-  padding-top: 10px;
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    background: #f8f9fa;
+    color: #222;
 }
 
-header .loginbox a{
+/* 로그인 영역 */
+header .loginbox {
+    font-size: 14px;
+    margin-left: 10px;
+    padding-top: 8px;
+}
+
+header .loginbox a {
     text-decoration: none;
+    color: #555;
+}
+
+header .loginbox a:hover {
     color: #000;
 }
 
-
+/* 상단 메뉴 */
 header .menu {
-    font-size: 1vw;
+    font-size: 1rem;
     display: flex;
     justify-content: center;
+    padding: 12px 0;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .menu > ul {
     display: flex;
     list-style: none;
-    gap: 70px;
-
+    gap: 50px;
+    padding: 0;
 }
 
 .menu > ul > li {
     position: relative;
-    width: 120px;
 }
 
 .menu a {
     text-decoration: none;
-    color: #000;
+    color: #333;
+    font-weight: 500;
+    padding: 6px 8px;
 }
 
+.menu a:hover {
+    color: #0d6efd;
+}
+
+/* 서브메뉴 */
 .submenu {
     top: 100%;
+    left: 0;
+    position: absolute;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 8px 0;
     visibility: hidden;
+    opacity: 0;
+    transition: 0.25s;
+    z-index: 50;
     list-style: none;
+}
+
+.submenu li {
     white-space: nowrap;
+    padding: 8px 16px;
 }
 
-.menu ul li:hover > .submenu {
+.submenu li a {
+    color: #555;
+}
+
+.submenu li a:hover {
+    color: #0d6efd;
+}
+
+.menu ul li:hover .submenu {
     visibility: visible;
+    opacity: 1;
 }
 
+/* PC 메인 이미지 */
 main img {
     width: 100%;
+    border-radius: 12px;
 }
 
+/* 모바일 이미지 */
 main .mobile {
-    visibility: hidden;
-    width: 0;
+    display: none;
 }
 
 .stat img {
     width: 80%;
     height: 200px;
     border-radius: 12px;
-    margin-left: 8%;
+    object-fit: cover;
+    margin-left: 10%;
 }
 
+/* 뉴스 영역 */
 .news {
-    position: relative;
     display: flex;
-    background-color: rgb(255, 239, 218);
+    gap: 20px;
+    justify-content: center;
+    padding: 40px 0;
+    background: #f8f9fa;
+    padding-bottom: 0;
+    padding-top: 10px;
 }
 
 .news img {
+    width: 60%;
+    border-radius: 10px;
+    margin-left: 5vw;
+}
+
+.news > div {
     width: 30%;
+    background: #fff;
+    border-radius: 14px;
+    padding: 15px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
 }
 
-.news1, .news2, .news3 {
-    width: 33%;
-}
-
-.news_title {
+.news .news_title a {
     text-decoration: none;
+    color: #222;
 }
 
 footer{
