@@ -3,7 +3,7 @@
    ========================= */
 .stats-container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 24px auto 40px;
     padding: 0 16px;
     box-sizing: border-box;
@@ -62,7 +62,7 @@
 /* 카드들이 배치되는 그리드 */
 .visual-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));  /* 기본 2열 */
+    grid-template-columns: repeat(2, 1fr);  /* 2열 고정 */
     gap: 24px;
     margin-top: 24px;
 }
@@ -79,7 +79,7 @@
     background: #ffffff;
     border-radius: 16px;
     padding: 20px 22px;
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05); /* 너무 대시보드 느낌 안 나게 부드럽게 */
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -118,6 +118,35 @@
 }
 
 /* =========================
+   2-1. 특정 카드들 1열 전체 사용
+   ========================= */
+
+/* 연령대별, 발생형태, 질병형태 카드들은 1열 전체 사용 */
+#card-age {
+    grid-column: 1 / 3 !important;  /* 1번부터 3번 열까지 (2열 전체) */
+}
+
+#card-age-fatal {
+    grid-column: 1 / 3 !important;
+}
+
+#card-injury {
+    grid-column: 1 / 3 !important;
+}
+
+#card-injury-fatal {
+    grid-column: 1 / 3 !important;
+}
+
+#card-disease {
+    grid-column: 1 / 3 !important;
+}
+
+#card-disease-fatal {
+    grid-column: 1 / 3 !important;
+}
+
+/* =========================
    3. 드롭다운
    ========================= */
 .dropdown {
@@ -152,16 +181,18 @@
 
 /* 모든 카드 안의 차트 */
 .visual-card canvas {
-    width: 100%;                  /* 폭 전체 사용 */
-    height: 280px !important;     /* 기본 높이 크게 */
+    width: 100%;
+    height: 280px !important;
     margin-top: 10px;
     display: block;
 }
 
-/* 발생형태 / 질병형태 카드 차트는 조금 더 높게 */
+/* 1열 전체를 사용하는 카드의 차트는 더 높게 */
+#card-age canvas,
+#card-age-fatal canvas,
 #card-injury canvas,
 #card-injury-fatal canvas,
 #card-disease canvas,
 #card-disease-fatal canvas {
-    height: 320px !important;
+    height: 500px !important;
 }

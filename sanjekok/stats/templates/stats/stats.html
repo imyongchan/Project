@@ -1,42 +1,37 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>맞춤 산재 통계</title>
-  <link rel="stylesheet" href="{% static 'CSS/stats/stats.css' %}">
+    <meta charset="UTF-8">
+    <title>맞춤 산재 통계</title>
+    <link rel="stylesheet" href="{% static 'CSS/stats/stats.css' %}">
+    <style>
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
 {% block content %}
-
 <div class="stats-container">
-
     <!-- 1. 프로필 영역 -->
     <section class="profile-box">
         <div class="profile-left">
             <div class="profile-icon">👤</div>
             <div class="profile-info">
                 <h2>{{ member.m_name }} 님의 프로필</h2>
-
                 <p>
-                    {{ industry.i_industry_type2 }} /
-                    {{ member.m_sex }} /
-                    {{ age }}세
+                    {{ industry.i_industry_type2 }} / {{ member.m_sex }} / {{ age }}세
                 </p>
-
                 <!-- 나의 산재 눌렀을 때 나오는 추가 상세 정보 -->
                 <div id="injuryDetail"></div>
-
             </div>
         </div>
-
         <div class="profile-edit-btn">
             <button id="myInjuryBtn">나의 산재 ▼</button>
             <!-- 드롭다운 -->
             <ul id="injuryDropdown" class="dropdown hidden">
                 {% for ind in individual_list %}
-                <li data-id="{{ ind.id }}" data-title="{{ ind.i_title }}"
+                <li data-id="{{ ind.id }}"
+                    data-title="{{ ind.i_title }}"
                     data-injury="{{ ind.i_injury }}"
                     data-disease="{{ ind.i_disease_type }}"
                     data-date="{{ ind.i_accident_date }}">
@@ -51,114 +46,103 @@
     <section class="period-section">
         <h3>분석 기간:</h3>
         <div class="period-buttons">
-
-            {# summary1 / summary2 : 0=최근1년, 1=2년, 2=3년 이라고 가정 #}
-
             <!-- 최근 1년 -->
-            <button class="period-btn"
-                    data-year="1"
-                    data-acc-count="{{ summary1.0.재해자수 }}"
-                    data-acc-rate="{{ summary1.0.재해율 }}"
-                    data-fatal-count="{{ summary1.0.사망자수 }}"
-                    data-fatal-rate="{{ summary1.0.사망만인율 }}"
-                    data-male="{{ summary2.0.남자 }}"
-                    data-female="{{ summary2.0.여자 }}"
-                    data-male-rate="{{ summary2.0.남자비율 }}"
-                    data-female-rate="{{ summary2.0.여자비율 }}"
-                    data-male2="{{ summary3.0.남자 }}"
-                    data-female2="{{ summary3.0.여자 }}"
-                    data-male-rate2="{{ summary3.0.남자비율 }}"
-                    data-female-rate2="{{ summary3.0.여자비율 }}"
-                    data-ageu18="{{ summary4.0.18세미만 }}"
-                    data-age20s="{{ summary4.0.20대 }}"
-                    data-age30s="{{ summary4.0.30대 }}"
-                    data-age40s="{{ summary4.0.40대 }}"
-                    data-age50s="{{ summary4.0.50대 }}"
-                    data-age60p="{{ summary4.0.60대이상 }}"
-                    data-ageu18a="{{ summary5.0.18세미만 }}"
-                    data-age20sa="{{ summary5.0.20대 }}"
-                    data-age30sa="{{ summary5.0.30대 }}"
-                    data-age40sa="{{ summary5.0.40대 }}"
-                    data-age50sa="{{ summary5.0.50대 }}"
-                    data-age60pa="{{ summary5.0.60대이상 }}"
-                    >
+            <button class="period-btn" data-year="1"
+                data-acc-count="{{ summary1.0.재해자수 }}"
+                data-acc-rate="{{ summary1.0.재해율 }}"
+                data-fatal-count="{{ summary1.0.사망자수 }}"
+                data-fatal-rate="{{ summary1.0.사망만인율 }}"
+                data-male="{{ summary2.0.남자 }}"
+                data-female="{{ summary2.0.여자 }}"
+                data-male-rate="{{ summary2.0.남자비율 }}"
+                data-female-rate="{{ summary2.0.여자비율 }}"
+                data-male2="{{ summary3.0.남자 }}"
+                data-female2="{{ summary3.0.여자 }}"
+                data-male-rate2="{{ summary3.0.남자비율 }}"
+                data-female-rate2="{{ summary3.0.여자비율 }}"
+                data-ageu18="{{ summary4.0.18세미만 }}"
+                data-age20s="{{ summary4.0.20대 }}"
+                data-age30s="{{ summary4.0.30대 }}"
+                data-age40s="{{ summary4.0.40대 }}"
+                data-age50s="{{ summary4.0.50대 }}"
+                data-age60p="{{ summary4.0.60대이상 }}"
+                data-ageu18a="{{ summary5.0.18세미만 }}"
+                data-age20sa="{{ summary5.0.20대 }}"
+                data-age30sa="{{ summary5.0.30대 }}"
+                data-age40sa="{{ summary5.0.40대 }}"
+                data-age50sa="{{ summary5.0.50대 }}"
+                data-age60pa="{{ summary5.0.60대이상 }}">
                 최근 1년
             </button>
 
             <!-- 최근 2년 -->
-            <button class="period-btn"
-                    data-year="2"
-                    data-acc-count="{{ summary1.1.재해자수 }}"
-                    data-acc-rate="{{ summary1.1.재해율 }}"
-                    data-fatal-count="{{ summary1.1.사망자수 }}"
-                    data-fatal-rate="{{ summary1.1.사망만인율 }}"
-                    data-male="{{ summary2.1.남자 }}"
-                    data-female="{{ summary2.1.여자 }}"
-                    data-male-rate="{{ summary2.1.남자비율 }}"
-                    data-female-rate="{{ summary2.1.여자비율 }}"
-                    data-male2="{{ summary3.1.남자 }}"
-                    data-female2="{{ summary3.1.여자 }}"
-                    data-male-rate2="{{ summary3.1.남자비율 }}"
-                    data-female-rate2="{{ summary3.1.여자비율 }}"
-                    data-ageu18="{{ summary4.1.18세미만 }}"
-                    data-age20s="{{ summary4.1.20대 }}"
-                    data-age30s="{{ summary4.1.30대 }}"
-                    data-age40s="{{ summary4.1.40대 }}"
-                    data-age50s="{{ summary4.1.50대 }}"
-                    data-age60p="{{ summary4.1.60대이상 }}"
-                    data-ageu18a="{{ summary5.1.18세미만 }}"
-                    data-age20sa="{{ summary5.1.20대 }}"
-                    data-age30sa="{{ summary5.1.30대 }}"
-                    data-age40sa="{{ summary5.1.40대 }}"
-                    data-age50sa="{{ summary5.1.50대 }}"
-                    data-age60pa="{{ summary5.1.60대이상 }}"                    
-                    >
+            <button class="period-btn" data-year="2"
+                data-acc-count="{{ summary1.1.재해자수 }}"
+                data-acc-rate="{{ summary1.1.재해율 }}"
+                data-fatal-count="{{ summary1.1.사망자수 }}"
+                data-fatal-rate="{{ summary1.1.사망만인율 }}"
+                data-male="{{ summary2.1.남자 }}"
+                data-female="{{ summary2.1.여자 }}"
+                data-male-rate="{{ summary2.1.남자비율 }}"
+                data-female-rate="{{ summary2.1.여자비율 }}"
+                data-male2="{{ summary3.1.남자 }}"
+                data-female2="{{ summary3.1.여자 }}"
+                data-male-rate2="{{ summary3.1.남자비율 }}"
+                data-female-rate2="{{ summary3.1.여자비율 }}"
+                data-ageu18="{{ summary4.1.18세미만 }}"
+                data-age20s="{{ summary4.1.20대 }}"
+                data-age30s="{{ summary4.1.30대 }}"
+                data-age40s="{{ summary4.1.40대 }}"
+                data-age50s="{{ summary4.1.50대 }}"
+                data-age60p="{{ summary4.1.60대이상 }}"
+                data-ageu18a="{{ summary5.1.18세미만 }}"
+                data-age20sa="{{ summary5.1.20대 }}"
+                data-age30sa="{{ summary5.1.30대 }}"
+                data-age40sa="{{ summary5.1.40대 }}"
+                data-age50sa="{{ summary5.1.50대 }}"
+                data-age60pa="{{ summary5.1.60대이상 }}">
                 2년
             </button>
 
             <!-- 최근 3년 -->
-            <button class="period-btn"
-                    data-year="3"
-                    data-acc-count="{{ summary1.2.재해자수 }}"
-                    data-acc-rate="{{ summary1.2.재해율 }}"
-                    data-fatal-count="{{ summary1.2.사망자수 }}"
-                    data-fatal-rate="{{ summary1.2.사망만인율 }}"
-                    data-male="{{ summary2.2.남자 }}"
-                    data-female="{{ summary2.2.여자 }}"
-                    data-male-rate="{{ summary2.2.남자비율 }}"
-                    data-female-rate="{{ summary2.2.여자비율 }}"
-                    data-male2="{{ summary3.2.남자 }}"
-                    data-female2="{{ summary3.2.여자 }}"
-                    data-male-rate2="{{ summary3.2.남자비율 }}"
-                    data-female-rate2="{{ summary3.2.여자비율 }}"
-                    data-ageu18="{{ summary4.2.18세미만 }}"
-                    data-age20s="{{ summary4.2.20대 }}"
-                    data-age30s="{{ summary4.2.30대 }}"
-                    data-age40s="{{ summary4.2.40대 }}"
-                    data-age50s="{{ summary4.2.50대 }}"
-                    data-age60p="{{ summary4.2.60대이상 }}"
-                    data-ageu18a="{{ summary5.2.18세미만 }}"
-                    data-age20sa="{{ summary5.2.20대 }}"
-                    data-age30sa="{{ summary5.2.30대 }}"
-                    data-age40sa="{{ summary5.2.40대 }}"
-                    data-age50sa="{{ summary5.2.50대 }}"
-                    data-age60pa="{{ summary5.2.60대이상 }}"
-                    >
+            <button class="period-btn" data-year="3"
+                data-acc-count="{{ summary1.2.재해자수 }}"
+                data-acc-rate="{{ summary1.2.재해율 }}"
+                data-fatal-count="{{ summary1.2.사망자수 }}"
+                data-fatal-rate="{{ summary1.2.사망만인율 }}"
+                data-male="{{ summary2.2.남자 }}"
+                data-female="{{ summary2.2.여자 }}"
+                data-male-rate="{{ summary2.2.남자비율 }}"
+                data-female-rate="{{ summary2.2.여자비율 }}"
+                data-male2="{{ summary3.2.남자 }}"
+                data-female2="{{ summary3.2.여자 }}"
+                data-male-rate2="{{ summary3.2.남자비율 }}"
+                data-female-rate2="{{ summary3.2.여자비율 }}"
+                data-ageu18="{{ summary4.2.18세미만 }}"
+                data-age20s="{{ summary4.2.20대 }}"
+                data-age30s="{{ summary4.2.30대 }}"
+                data-age40s="{{ summary4.2.40대 }}"
+                data-age50s="{{ summary4.2.50대 }}"
+                data-age60p="{{ summary4.2.60대이상 }}"
+                data-ageu18a="{{ summary5.2.18세미만 }}"
+                data-age20sa="{{ summary5.2.20대 }}"
+                data-age30sa="{{ summary5.2.30대 }}"
+                data-age40sa="{{ summary5.2.40대 }}"
+                data-age50sa="{{ summary5.2.50대 }}"
+                data-age60pa="{{ summary5.2.60대이상 }}">
                 3년
             </button>
-
         </div>
     </section>
 
     <!-- 3. 통계 시각화 영역 -->
-    <section id="stats-visual-area"
-            class="stats-visual hidden"
-            data-summary6='{{ summary6_json}}'
-            data-summary7='{{ summary7_json}}'
-            data-summary8='{{ summary8_json}}'
-            data-summary9='{{ summary9_json}}'>
+    <section id="stats-visual-area" class="stats-visual hidden"
+        data-summary6='{{ summary6_json}}'
+        data-summary7='{{ summary7_json}}'
+        data-summary8='{{ summary8_json}}'
+        data-summary9='{{ summary9_json}}'>
+        
         <div class="visual-grid">
-
             <!-- 내 업종 재해율 -->
             <div class="visual-card small">
                 <h3>내 업종 재해율</h3>
@@ -185,57 +169,52 @@
                 <canvas id="genderChart2"></canvas>
             </div>
 
-
-            <div class="visual-card">
+            <!-- 연령대별 재해 현황 (1열 전체 사용) -->
+            <div class="visual-card" id="card-age">
                 <h3>연령대별 재해 현황</h3>
                 <p id="ageSummary1"></p>
                 <canvas id="ageChart1"></canvas>
             </div>
 
-            <!-- 연령대별 사망 현황 -->
-            <div class="visual-card">
+            <!-- 연령대별 사망 현황 (1열 전체 사용) -->
+            <div class="visual-card" id="card-age-fatal">
                 <h3>연령대별 재해 사망 현황</h3>
                 <p id="ageSummary2"></p>
                 <canvas id="ageChart2"></canvas>
             </div>
 
-            <!-- 발생형태별 재해 TOP 10 -->
-            <div class="visual-card" id="card-injury">
+            <!-- 발생형태별 재해 TOP 10 (초기 숨김) -->
+            <div class="visual-card" id="card-injury" style="display:none;">
                 <h3>재해유형 </h3>
                 <p id="injurySummary1"></p>
                 <canvas id="injuryChart1"></canvas>
             </div>
 
-            <!-- 사망재해현황 (발생형태 TOP 10) -->
-            <div class="visual-card" id="card-injury-fatal">
+            <!-- 사망재해현황 (발생형태 TOP 10) (초기 숨김) -->
+            <div class="visual-card" id="card-injury-fatal" style="display:none;">
                 <h3>사망재해현황 </h3>
                 <p id="injurySummary2"></p>
                 <canvas id="injuryChart2"></canvas>
             </div>
 
-            <!-- 재해 질병유형 (TOP 10) -->
-            <div class="visual-card" id="card-disease">
+            <!-- 재해 질병유형 (TOP 10) (초기 숨김) -->
+            <div class="visual-card" id="card-disease" style="display:none;">
                 <h3>재해 질병유형 </h3>
                 <p id="diseaseSummary1"></p>
                 <canvas id="diseaseChart1"></canvas>
             </div>
 
-            <!-- 재해 질병 사망 현황 -->
-            <div class="visual-card" id="card-disease-fatal">
+            <!-- 재해 질병 사망 현황 (초기 숨김) -->
+            <div class="visual-card" id="card-disease-fatal" style="display:none;">
                 <h3>재해 질병 사망 현황</h3>
                 <p id="diseaseSummary2"></p>
                 <canvas id="diseaseChart2"></canvas>
             </div>
 
-
-
-
             <div class="visual-card highlight">종합 위험도 평가</div>
         </div>
     </section>
-
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>

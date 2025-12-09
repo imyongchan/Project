@@ -1,616 +1,576 @@
 import pandas as pd
-import requests
-from django.conf import settings
 
-API_KEY = settings.KOSIS_API_KEY
+from .models import (
+    Stats1, Stats2, Stats3, Stats4, Stats5,
+    Stats6, Stats7, Stats8, Stats9,
+)
+
+
 
 # 업종별 재해자수, 재해율, 사망자수, 사망만인율
 def get_stats1(industry_name1):
-    
-    json_URL = (
-        f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6_15118AI8AC+16118AAD6_15118AI8ACAC+16118AAD6_15118AI8ACAB+16118AAD6_15118AI8ACAD+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAC+15118AI7ABAC00+15118AI7ABAC000+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAE+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAJ+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAZ00+15118AI7ABAX+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7ACAA00+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAC+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7ACAA01+15118AI7ACAA02+15118AI7ACAA03+15118AI7AJAJ+15118AI7AJAD+&objL2=&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=NM+ITM_NM+PRD_DE+LST_CHN_DE+&orgId=118&tblId=DT_11806_N000"
+    # DB에서 해당 업종 데이터만 가져오기
+    qs = Stats1.objects.filter(c1_nm=industry_name1)
+
+    if not qs.exists():
+        return []
+
+    df = pd.DataFrame.from_records(
+        qs.values("prd_de", "itm_nm", "dt")
     )
 
-    response = requests.get(json_URL)
-    data = response.json()
-
-    df = pd.json_normalize(data)
-    df["DT"] = df["DT"].astype(float)
-
-    # 업종으로 필터 
-    df_industry = df[df["C1_NM"] == industry_name1]
-
-
     pivot = (
-                df_industry.pivot_table(
-                    index="PRD_DE",        
-                    columns="ITM_NM",      # 재해자수 / 사망자수 / 재해율 / 사망만인율
-                    values="DT",
-                    aggfunc="sum"
-                ))
+        df.pivot_table(
+            index="prd_de",         # 연도
+            columns="itm_nm",       # 재해자수 / 사망자수 / 재해율 / 사망만인율
+            values="dt",
+            aggfunc="sum",
+        )
+        .sort_index()
+    )
 
-    pivot = pivot.sort_index()
-
-    years = pivot.index.to_list()   # [2021, 2022, 2023] 
-    y1, y2, y3 = years[-1], years[-2], years[-3]   #y1=2023, y2=2022, y3=2021
-
+    years = sorted(pivot.index.to_list())  # 예: [2021, 2022, 2023]
     rows = []
 
-    #최근 1년 : y1만 사용
-    sub = pivot.loc[[y1]]
-    rows.append({
+    # 최근 1년
+    if len(years) >= 1:
+        y1 = years[-1]
+        sub = pivot.loc[[y1]]
+        rows.append({
             "기간": "최근 1년",
             "재해자수": int(sub["재해자수"].sum()),
-            "재해율": sub["재해율"].mean().round(2),
+            "재해율": float(sub["재해율"].mean().round(2)),
             "사망자수": int(sub["사망자수"].sum()),
-            "사망만인율": sub["사망만인율"].mean().round(2),
-    })
+            "사망만인율": float(sub["사망만인율"].mean().round(2)),
+        })
 
-    #최근 2년 : y2,y1만 사용
-    sub = pivot.loc[[y2,y1]]
-    rows.append({
+    # 최근 2년
+    if len(years) >= 2:
+        y1, y2 = years[-1], years[-2]
+        sub = pivot.loc[[y2, y1]]
+        rows.append({
             "기간": "2년",
             "재해자수": int(sub["재해자수"].sum()),
-            "재해율": sub["재해율"].mean().round(2),
+            "재해율": float(sub["재해율"].mean().round(2)),
             "사망자수": int(sub["사망자수"].sum()),
-            "사망만인율": sub["사망만인율"].mean().round(2),
-    })
+            "사망만인율": float(sub["사망만인율"].mean().round(2)),
+        })
 
-    #최근 3년 : y3,y2,y1만 사용
-    sub = pivot.loc[[y3,y2,y1]]
-    rows.append({
+    # 최근 3년
+    if len(years) >= 3:
+        y1, y2, y3 = years[-1], years[-2], years[-3]
+        sub = pivot.loc[[y3, y2, y1]]
+        rows.append({
             "기간": "3년",
             "재해자수": int(sub["재해자수"].sum()),
-            "재해율": sub["재해율"].mean().round(2),
-            "사망자수":int(sub["사망자수"].sum()),
-            "사망만인율": sub["사망만인율"].mean().round(2),
-    })
+            "재해율": float(sub["재해율"].mean().round(2)),
+            "사망자수": int(sub["사망자수"].sum()),
+            "사망만인율": float(sub["사망만인율"].mean().round(2)),
+        })
 
-    summary = pd.DataFrame(rows).set_index("기간")
-    summary1 = summary.to_dict("records")
-    return summary1 
-    # [{기간: ..., 재해자수: ..., 재해율: ..., 사망자수: ..., 사망만인율: ...}, ...]
-
+    summary1 = pd.DataFrame(rows).set_index("기간")
+    return summary1.to_dict("records")
 
 
 
 # 업종별 성별 재해
 def get_stats2(industry_name2):
-    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6+&objL1=15118AI7AA+15118AI7AB+15118AI7AC+15118AI7AC00+15118AI7AD+15118AI7AE+15118AI7AJ+&objL2=11101SSB21+11101SSB22+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N002")
-    
-    response = requests.get(json_URL)
-    data = response.json()
+    qs = Stats2.objects.filter(c1_nm=industry_name2)
 
-    df = pd.json_normalize(data)
-    df["DT"] = df["DT"].astype(float)
+    if not qs.exists():
+        return []
 
-    df_industry = df[df["C1_NM"] == industry_name2]
+    df = pd.DataFrame.from_records(
+        qs.values("prd_de", "c2_nm", "dt")
+    )
 
     pivot = (
-        df_industry .pivot_table(
-            index="PRD_DE",        
-            columns="C2_NM",    
-            values="DT",
-            aggfunc="sum"
-        ))
+        df.pivot_table(
+            index="prd_de",
+            columns="c2_nm",    # 남자 / 여자
+            values="dt",
+            aggfunc="sum",
+        )
+        .sort_index()
+    )
 
-    pivot['전체']=pivot['남자']+pivot['여자']
-    pivot["남자비율"] = (pivot["남자"] / pivot["전체"] * 100).round(2)
-    pivot["여자비율"] = (pivot["여자"] / pivot["전체"] * 100).round(2)
+    # 전체, 비율 계산
+    pivot["전체"] = pivot.get("남자", 0) + pivot.get("여자", 0)
+    pivot["남자비율"] = (pivot.get("남자", 0) / pivot["전체"] * 100).round(2)
+    pivot["여자비율"] = (pivot.get("여자", 0) / pivot["전체"] * 100).round(2)
 
-    pivot = pivot.sort_index()
-
-    years = pivot.index.to_list()   # [2021, 2022, 2023] 
-    y1, y2, y3 = years[-1], years[-2], years[-3]   #y1=2023, y2=2022, y3=2021
-
+    years = sorted(pivot.index.to_list())
     rows = []
 
-    # 1) 최근 1년 : y1만 사용
-    sub = pivot.loc[[y1]]
-    rows.append({
-        "기간": "최근 1년",
-        "남자": int(sub["남자"].sum()),
-        "여자": int(sub["여자"].sum()),
-        "전체": int(sub["전체"].sum()),
-        "남자비율": sub["남자비율"].mean().round(2),   
-        "여자비율": sub["여자비율"].mean().round(2),
-    })
+    if len(years) >= 1:
+        y1 = years[-1]
+        sub = pivot.loc[[y1]]
+        rows.append({
+            "기간": "최근 1년",
+            "남자": int(sub["남자"].sum()),
+            "여자": int(sub["여자"].sum()),
+            "전체": int(sub["전체"].sum()),
+            "남자비율": float(sub["남자비율"].mean().round(2)),
+            "여자비율": float(sub["여자비율"].mean().round(2)),
+        })
 
-    # 2) 최근 2년 : y1 + y2
-    sub = pivot.loc[[y2, y1]]
-    rows.append({
-        "기간": "2년",
-        "남자": int(sub["남자"].sum()),
-        "여자": int(sub["여자"].sum()),
-        "전체": int(sub["전체"].sum()),
-        "남자비율": sub["남자비율"].mean().round(2),  
-        "여자비율": sub["여자비율"].mean().round(2),
-    })
+    if len(years) >= 2:
+        y1, y2 = years[-1], years[-2]
+        sub = pivot.loc[[y2, y1]]
+        rows.append({
+            "기간": "2년",
+            "남자": int(sub["남자"].sum()),
+            "여자": int(sub["여자"].sum()),
+            "전체": int(sub["전체"].sum()),
+            "남자비율": float(sub["남자비율"].mean().round(2)),
+            "여자비율": float(sub["여자비율"].mean().round(2)),
+        })
 
-    # 3) 최근 3년 : y1 + y2 + y3
-    sub = pivot.loc[[y3, y2, y1]]
-    rows.append({
-        "기간": "3년",
-        "남자": int(sub["남자"].sum()),
-        "여자": int(sub["여자"].sum()),
-        "전체": int(sub["전체"].sum()),
-        "남자비율": sub["남자비율"].mean().round(2),
-        "여자비율": sub["여자비율"].mean().round(2),
-    })
+    if len(years) >= 3:
+        y1, y2, y3 = years[-1], years[-2], years[-3]
+        sub = pivot.loc[[y3, y2, y1]]
+        rows.append({
+            "기간": "3년",
+            "남자": int(sub["남자"].sum()),
+            "여자": int(sub["여자"].sum()),
+            "전체": int(sub["전체"].sum()),
+            "남자비율": float(sub["남자비율"].mean().round(2)),
+            "여자비율": float(sub["여자비율"].mean().round(2)),
+        })
 
-    # 원하는 형태의 새 테이블 생성
-    summary = pd.DataFrame(rows).set_index("기간")
-    summary2 = summary.to_dict("records")
-    return summary2 
-    # [{기간: 남자,여자,전체,남자비율,여자비율}]
+    summary2 = pd.DataFrame(rows).set_index("기간")
+    return summary2.to_dict("records")
 
 
-    # 업종별 성별 사망 재해
 def get_stats3(industry_name3):
-    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6+&objL1=15118AI7AA+15118AI7AB+15118AI7AC+15118AI7AC01+15118AI7AD+15118AI7AE+15118AI7AJ+&objL2=11101SSB21+11101SSB22+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N014")
-    
-    response = requests.get(json_URL)
-    data = response.json()
+    qs = Stats3.objects.filter(c1_nm=industry_name3)
 
-    df = pd.json_normalize(data)
-    df["DT"] = df["DT"].astype(float)
+    if not qs.exists():
+        return []
 
-    df_industry = df[df["C1_NM"] == industry_name3]
+    df = pd.DataFrame.from_records(
+        qs.values("prd_de", "c2_nm", "dt")
+    )
 
     pivot = (
-        df_industry .pivot_table(
-            index="PRD_DE",        
-            columns="C2_NM",    
-            values="DT",
-            aggfunc="sum"
-        ))
+        df.pivot_table(
+            index="prd_de",
+            columns="c2_nm",
+            values="dt",
+            aggfunc="sum",
+        )
+        .sort_index()
+    )
 
-    pivot['전체']=pivot['남자']+pivot['여자']
-    pivot["남자비율"] = (pivot["남자"] / pivot["전체"] * 100).round(2)
-    pivot["여자비율"] = (pivot["여자"] / pivot["전체"] * 100).round(2)
+    pivot["전체"] = pivot.get("남자", 0) + pivot.get("여자", 0)
+    pivot["남자비율"] = (pivot.get("남자", 0) / pivot["전체"] * 100).round(2)
+    pivot["여자비율"] = (pivot.get("여자", 0) / pivot["전체"] * 100).round(2)
 
-    pivot = pivot.sort_index()
-
-    years = pivot.index.to_list()   # [2021, 2022, 2023] 
-    y1, y2, y3 = years[-1], years[-2], years[-3]   #y1=2023, y2=2022, y3=2021
-
+    years = sorted(pivot.index.to_list())
     rows = []
 
-    # 1) 최근 1년 : y1만 사용
-    sub = pivot.loc[[y1]]
-    rows.append({
-        "기간": "최근 1년",
-        "남자": int(sub["남자"].sum()),
-        "여자": int(sub["여자"].sum()),
-        "전체": int(sub["전체"].sum()),
-        "남자비율": sub["남자비율"].mean().round(2),   
-        "여자비율": sub["여자비율"].mean().round(2),
-    })
+    if len(years) >= 1:
+        y1 = years[-1]
+        sub = pivot.loc[[y1]]
+        rows.append({
+            "기간": "최근 1년",
+            "남자": int(sub["남자"].sum()),
+            "여자": int(sub["여자"].sum()),
+            "전체": int(sub["전체"].sum()),
+            "남자비율": float(sub["남자비율"].mean().round(2)),
+            "여자비율": float(sub["여자비율"].mean().round(2)),
+        })
 
-    # 2) 최근 2년 : y1 + y2
-    sub = pivot.loc[[y2, y1]]
-    rows.append({
-        "기간": "2년",
-        "남자": int(sub["남자"].sum()),
-        "여자": int(sub["여자"].sum()),
-        "전체": int(sub["전체"].sum()),
-        "남자비율": sub["남자비율"].mean().round(2),  
-        "여자비율": sub["여자비율"].mean().round(2),
-    })
+    if len(years) >= 2:
+        y1, y2 = years[-1], years[-2]
+        sub = pivot.loc[[y2, y1]]
+        rows.append({
+            "기간": "2년",
+            "남자": int(sub["남자"].sum()),
+            "여자": int(sub["여자"].sum()),
+            "전체": int(sub["전체"].sum()),
+            "남자비율": float(sub["남자비율"].mean().round(2)),
+            "여자비율": float(sub["여자비율"].mean().round(2)),
+        })
 
-    # 3) 최근 3년 : y1 + y2 + y3
-    sub = pivot.loc[[y3, y2, y1]]
-    rows.append({
-        "기간": "3년",
-        "남자": int(sub["남자"].sum()),
-        "여자": int(sub["여자"].sum()),
-        "전체": int(sub["전체"].sum()),
-        "남자비율": sub["남자비율"].mean().round(2),
-        "여자비율": sub["여자비율"].mean().round(2),
-    })
+    if len(years) >= 3:
+        y1, y2, y3 = years[-1], years[-2], years[-3]
+        sub = pivot.loc[[y3, y2, y1]]
+        rows.append({
+            "기간": "3년",
+            "남자": int(sub["남자"].sum()),
+            "여자": int(sub["여자"].sum()),
+            "전체": int(sub["전체"].sum()),
+            "남자비율": float(sub["남자비율"].mean().round(2)),
+            "여자비율": float(sub["여자비율"].mean().round(2)),
+        })
 
-    # 원하는 형태의 새 테이블 생성
-    summary = pd.DataFrame(rows).set_index("기간")
-    summary3 = summary.to_dict("records")
-    return summary3
-    # [{기간: 남자,여자,전체,남자비율,여자비율}]
+    summary3 = pd.DataFrame(rows).set_index("기간")
+    return summary3.to_dict("records")
 
 
 # 연령별 재해현황 
 def get_stats4(industry_name4):
-    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAC+15118AI7AC00+15118AI7AC000+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAE+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAJ+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAZ00+15118AI7ABAX+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AC01+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAC+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AC02+15118AI7AC03+15118AI7AC030+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AC1AM+15118AC1AN+15118AC1AO+15118AC1AP+15118AC1AQ+15118AC1AR+15118AC1AT+15118AC1AF+15118AC1AG+15118AC1AH+15118AC1AI+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N003")
-    
-    response = requests.get(json_URL)
-    data = response.json()
+    qs = Stats4.objects.filter(c1_nm=industry_name4)
 
-    df = pd.json_normalize(data)
-    df["DT"] = df["DT"].astype(float)
+    if not qs.exists():
+        return []
 
-    df_industry = df[df["C1_NM"] == industry_name4]
+    df = pd.DataFrame.from_records(
+        qs.values("prd_de", "c2_nm", "dt")
+    )
 
     pivot = (
-        df_industry .pivot_table(
-            index="PRD_DE",        
-            columns="C2_NM",    
-            values="DT",
-            aggfunc="sum"
-        ))
-    
-    pivot=pivot.drop('분류불능',axis=1)
+        df.pivot_table(
+            index="prd_de",
+            columns="c2_nm",   # '18세 미만', '18~24세', ...
+            values="dt",
+            aggfunc="sum",
+        )
+        .sort_index()
+    )
+
+    # '분류불능' 있으면 제거
+    pivot = pivot.drop(columns=["분류불능"], errors="ignore")
+
     age_pivot = pd.DataFrame(index=pivot.index)
 
     age_pivot["18세 미만"] = pivot.get("18세 미만", 0)
-    age_pivot["20대"] = (
-        pivot.get("18~24세", 0) +
-        pivot.get("25~29세", 0)
-    )
-    age_pivot["30대"] = (
-        pivot.get("30~34세", 0) +
-        pivot.get("35~39세", 0)
-    )
-    age_pivot["40대"] = (
-        pivot.get("40~44세", 0) +
-        pivot.get("45~49세", 0)
-    )
-    age_pivot["50대"] = (
-        pivot.get("50~54세", 0) +
-        pivot.get("55~59세", 0)
-    )
+    age_pivot["20대"] = pivot.get("18~24세", 0) + pivot.get("25~29세", 0)
+    age_pivot["30대"] = pivot.get("30~34세", 0) + pivot.get("35~39세", 0)
+    age_pivot["40대"] = pivot.get("40~44세", 0) + pivot.get("45~49세", 0)
+    age_pivot["50대"] = pivot.get("50~54세", 0) + pivot.get("55~59세", 0)
     age_pivot["60대 이상"] = pivot.get("60세 이상", 0)
 
-    age_pivot
-
     pivot = age_pivot.sort_index()
-
-    years = pivot.index.to_list()   # [2021, 2022, 2023] 
-    y1, y2, y3 = years[-1], years[-2], years[-3]   #y1=2023, y2=2022, y3=2021
-
+    years = sorted(pivot.index.to_list())
     rows = []
 
-    # 1) 최근 1년 : y1만 사용
-    sub = pivot.loc[[y1]]
-    rows.append({
-        "기간": "최근 1년",
-        "18세미만": sub["18세 미만"].sum(),
-        "20대": sub["20대"].sum(),
-        "30대": sub["30대"].sum(),
-        "40대": sub["40대"].sum(),
-        "50대": sub["50대"].sum(),
-        "60대이상": sub["60대 이상"].sum(),
+    if len(years) >= 1:
+        y1 = years[-1]
+        sub = pivot.loc[[y1]]
+        rows.append({
+            "기간": "최근 1년",
+            "18세미만": int(sub["18세 미만"].sum()),
+            "20대": int(sub["20대"].sum()),
+            "30대": int(sub["30대"].sum()),
+            "40대": int(sub["40대"].sum()),
+            "50대": int(sub["50대"].sum()),
+            "60대이상": int(sub["60대 이상"].sum()),
+        })
 
-    })
+    if len(years) >= 2:
+        y1, y2 = years[-1], years[-2]
+        sub = pivot.loc[[y2, y1]]
+        rows.append({
+            "기간": "2년",
+            "18세미만": int(sub["18세 미만"].sum()),
+            "20대": int(sub["20대"].sum()),
+            "30대": int(sub["30대"].sum()),
+            "40대": int(sub["40대"].sum()),
+            "50대": int(sub["50대"].sum()),
+            "60대이상": int(sub["60대 이상"].sum()),
+        })
 
-    # 2) 최근 2년 : y1 + y2
-    sub = pivot.loc[[y2,y1]]
-    rows.append({
-        "기간": "2년",
-        "18세미만": sub["18세 미만"].sum(),
-        "20대": sub["20대"].sum(),
-        "30대": sub["30대"].sum(),
-        "40대": sub["40대"].sum(),
-        "50대": sub["50대"].sum(),
-        "60대이상": sub["60대 이상"].sum(),
+    if len(years) >= 3:
+        y1, y2, y3 = years[-1], years[-2], years[-3]
+        sub = pivot.loc[[y3, y2, y1]]
+        rows.append({
+            "기간": "3년",
+            "18세미만": int(sub["18세 미만"].sum()),
+            "20대": int(sub["20대"].sum()),
+            "30대": int(sub["30대"].sum()),
+            "40대": int(sub["40대"].sum()),
+            "50대": int(sub["50대"].sum()),
+            "60대이상": int(sub["60대 이상"].sum()),
+        })
 
-    })
-
-    # 3) 최근 3년 : y1 + y2 + y3
-    sub = pivot.loc[[y3,y2,y1]]
-    rows.append({
-        "기간": "3년",
-        "18세미만": sub["18세 미만"].sum(),
-        "20대": sub["20대"].sum(),
-        "30대": sub["30대"].sum(),
-        "40대": sub["40대"].sum(),
-        "50대": sub["50대"].sum(),
-        "60대이상": sub["60대 이상"].sum(),
-
-    })
-
-    # 원하는 형태의 새 테이블 생성
-    summary = pd.DataFrame(rows).set_index("기간")
-    summary4 = summary.to_dict("records")
-    return summary4
-    # [{기간: 18세 미만,10대,20대,30대,40대,50대,60대 이상}]
+    summary4 = pd.DataFrame(rows).set_index("기간")
+    return summary4.to_dict("records")
 
 
 # 연령별 사망 재해현황 
 def get_stats5(industry_name5):
-    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAC+15118AI7AC00+15118AI7AC000+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAE+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAJ+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAZ00+15118AI7ABAX+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AC01+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAC+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AC02+15118AI7AC03+15118AI7AC030+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AC1AM+15118AC1AN+15118AC1AO+15118AC1AP+15118AC1AQ+15118AC1AR+15118AC1AT+15118AC1AF+15118AC1AG+15118AC1AH+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N015")
-    
-    response = requests.get(json_URL)
-    data = response.json()
+    qs = Stats5.objects.filter(c1_nm=industry_name5)
 
-    df = pd.json_normalize(data)
-    df["DT"] = df["DT"].astype(float)
+    if not qs.exists():
+        return []
 
-    df_industry = df[df["C1_NM"] == industry_name5]
+    df = pd.DataFrame.from_records(
+        qs.values("prd_de", "c2_nm", "dt")
+    )
 
     pivot = (
-        df_industry .pivot_table(
-            index="PRD_DE",        
-            columns="C2_NM",    
-            values="DT",
-            aggfunc="sum"
-        ))
-    
+        df.pivot_table(
+            index="prd_de",
+            columns="c2_nm",
+            values="dt",
+            aggfunc="sum",
+        )
+        .sort_index()
+    )
+
     age_pivot = pd.DataFrame(index=pivot.index)
 
     age_pivot["18세 미만"] = pivot.get("18세 미만", 0)
-    age_pivot["20대"] = (
-        pivot.get("18~24세", 0) +
-        pivot.get("25~29세", 0)
-    )
-    age_pivot["30대"] = (
-        pivot.get("30~34세", 0) +
-        pivot.get("35~39세", 0)
-    )
-    age_pivot["40대"] = (
-        pivot.get("40~44세", 0) +
-        pivot.get("45~49세", 0)
-    )
-    age_pivot["50대"] = (
-        pivot.get("50~54세", 0) +
-        pivot.get("55~59세", 0)
-    )
+    age_pivot["20대"] = pivot.get("18~24세", 0) + pivot.get("25~29세", 0)
+    age_pivot["30대"] = pivot.get("30~34세", 0) + pivot.get("35~39세", 0)
+    age_pivot["40대"] = pivot.get("40~44세", 0) + pivot.get("45~49세", 0)
+    age_pivot["50대"] = pivot.get("50~54세", 0) + pivot.get("55~59세", 0)
     age_pivot["60대 이상"] = pivot.get("60세 이상", 0)
 
-    age_pivot
-
     pivot = age_pivot.sort_index()
-
-    years = pivot.index.to_list()   # [2021, 2022, 2023] 
-    y1, y2, y3 = years[-1], years[-2], years[-3]   #y1=2023, y2=2022, y3=2021
-
+    years = sorted(pivot.index.to_list())
     rows = []
 
-    # 1) 최근 1년 : y1만 사용
-    sub = pivot.loc[[y1]]
-    rows.append({
-        "기간": "최근 1년",
-        "18세미만": sub["18세 미만"].sum(),
-        "20대": sub["20대"].sum(),
-        "30대": sub["30대"].sum(),
-        "40대": sub["40대"].sum(),
-        "50대": sub["50대"].sum(),
-        "60대이상": sub["60대 이상"].sum(),
+    if len(years) >= 1:
+        y1 = years[-1]
+        sub = pivot.loc[[y1]]
+        rows.append({
+            "기간": "최근 1년",
+            "18세미만": int(sub["18세 미만"].sum()),
+            "20대": int(sub["20대"].sum()),
+            "30대": int(sub["30대"].sum()),
+            "40대": int(sub["40대"].sum()),
+            "50대": int(sub["50대"].sum()),
+            "60대이상": int(sub["60대 이상"].sum()),
+        })
 
-    })
+    if len(years) >= 2:
+        y1, y2 = years[-1], years[-2]
+        sub = pivot.loc[[y2, y1]]
+        rows.append({
+            "기간": "2년",
+            "18세미만": int(sub["18세 미만"].sum()),
+            "20대": int(sub["20대"].sum()),
+            "30대": int(sub["30대"].sum()),
+            "40대": int(sub["40대"].sum()),
+            "50대": int(sub["50대"].sum()),
+            "60대이상": int(sub["60대 이상"].sum()),
+        })
 
-    # 2) 최근 2년 : y1 + y2
-    sub = pivot.loc[[y2,y1]]
-    rows.append({
-        "기간": "2년",
-        "18세미만": sub["18세 미만"].sum(),
-        "20대": sub["20대"].sum(),
-        "30대": sub["30대"].sum(),
-        "40대": sub["40대"].sum(),
-        "50대": sub["50대"].sum(),
-        "60대이상": sub["60대 이상"].sum(),
+    if len(years) >= 3:
+        y1, y2, y3 = years[-1], years[-2], years[-3]
+        sub = pivot.loc[[y3, y2, y1]]
+        rows.append({
+            "기간": "3년",
+            "18세미만": int(sub["18세 미만"].sum()),
+            "20대": int(sub["20대"].sum()),
+            "30대": int(sub["30대"].sum()),
+            "40대": int(sub["40대"].sum()),
+            "50대": int(sub["50대"].sum()),
+            "60대이상": int(sub["60대 이상"].sum()),
+        })
 
-    })
-
-    # 3) 최근 3년 : y1 + y2 + y3
-    sub = pivot.loc[[y3,y2,y1]]
-    rows.append({
-        "기간": "3년",
-        "18세미만": sub["18세 미만"].sum(),
-        "20대": sub["20대"].sum(),
-        "30대": sub["30대"].sum(),
-        "40대": sub["40대"].sum(),
-        "50대": sub["50대"].sum(),
-        "60대이상": sub["60대 이상"].sum(),
-
-    })
-
-    # 원하는 형태의 새 테이블 생성
-    summary = pd.DataFrame(rows).set_index("기간")
-    summary5 = summary.to_dict("records")
-    return summary5
-    # [{기간: 18세 미만,10대,20대,30대,40대,50대,60대 이상}]
+    summary5 = pd.DataFrame(rows).set_index("기간")
+    return summary5.to_dict("records")
 
 
 # 발생형태별  
 def get_stats6(industry_name6):
-    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAB0+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAJ+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AJAI00+15118AI7AJAI01+15118AI7AJAI010+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AJ401+15118AJ402+15118AJ403+15118AJ404+15118AJ405+15118AJ406+15118AJ407+15118AJ408+15118AJ409+15118AJ410+15118AJ411+15118AJ412+15118AJ413+15118AJ414+15118AJ415+15118AJ416+15118AJ417+15118AJ418+15118AJ422+15118AJ423+15118AJ419+15118AJ420+15118AJ421+15118AJ424+15118AJ425+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N011")
-    
-    response = requests.get(json_URL)
-    data = response.json()
+    qs = Stats6.objects.filter(c1_nm=industry_name6)
 
-    df = pd.json_normalize(data)
-    df["DT"] = df["DT"].astype(float)
+    if not qs.exists():
+        return {}
 
-    df_industry = df[df["C1_NM"] == industry_name6]
+    df = pd.DataFrame.from_records(
+        qs.values("prd_de", "c2_nm", "dt")
+    )
 
     pivot = (
-        df_industry .pivot_table(
-            index="PRD_DE",        
-            columns="C2_NM",    
-            values="DT",
-            aggfunc="sum"
-        ))
-    
-    pivot = pivot.fillna(0).sort_index()
-    years = pivot.index.to_list()   # 예: ['2021', '2022', '2023']
+        df.pivot_table(
+            index="prd_de",
+            columns="c2_nm",    # 발생형태명
+            values="dt",
+            aggfunc="sum",
+        )
+        .fillna(0)
+        .sort_index()
+    )
 
+    years = sorted(pivot.index.to_list())
     rows = []
 
     def add_row(n_years: int, label: str):
-            use_years = years[-n_years:]       # 마지막 n_years개 연도
-            sub = pivot.loc[use_years]
-            s = sub.sum(axis=0)                # 발생형태별 합계
-            s["기간"] = label
-            rows.append(s)
+        if len(years) < 1:
+            return
+        use_years = years[-n_years:] if len(years) >= n_years else years
+        sub = pivot.loc[use_years]
+        s = sub.sum(axis=0)
+        s["기간"] = label
+        rows.append(s)
 
-        
     add_row(1, "최근 1년")
     add_row(2, "2년")
     add_row(3, "3년")
+
+    if not rows:
+        return {}
 
     summary = pd.DataFrame(rows).set_index("기간")
     result = {}
 
     for period, row in summary.iterrows():
-        
-       
-        filtered_row = row[row > 0].sort_values(ascending=False)
+        # 기간 컬럼 제거 후, 0보다 큰 것만 상위 10개
+        numeric_row = row.drop(labels=[], errors="ignore")
+        filtered_row = numeric_row[numeric_row > 0].sort_values(ascending=False)
         top10 = filtered_row.head(10)
-        
+
         top10_list = []
-   
         filtered_rank_series = filtered_row.rank(ascending=False, method="min")
-        
+
         for name, cnt in top10.items():
             top10_list.append({
                 "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
             })
-        
 
-        rank_series = row.rank(ascending=False, method="min")
+        rank_series = numeric_row.rank(ascending=False, method="min")
         rank_map = {name: int(r) for name, r in rank_series.items()}
-        
+
         result[period] = {
             "top10": top10_list,
             "rank_map": rank_map,
         }
-
 
     return result
             
 
 # 발생형태 사망별  
 def get_stats7(industry_name7):
-    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAD6+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAB0+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAJ+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AJAI00+15118AI7AJAI01+15118AI7AJAI010+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AJ401+15118AJ402+15118AJ403+15118AJ404+15118AJ405+15118AJ406+15118AJ407+15118AJ408+15118AJ409+15118AJ410+15118AJ411+15118AJ412+15118AJ413+15118AJ414+15118AJ415+15118AJ416+15118AJ417+15118AJ418+15118AJ422+15118AJ423+15118AJ419+15118AJ420+15118AJ421+15118AJ424+15118AJ425+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N022")
-    
-    response = requests.get(json_URL)
-    data = response.json()
+    qs = Stats7.objects.filter(c1_nm=industry_name7)
 
-    df = pd.json_normalize(data)
-    df["DT"] = df["DT"].astype(float)
+    if not qs.exists():
+        return {}
 
-    df_industry = df[df["C1_NM"] == industry_name7]
+    df = pd.DataFrame.from_records(
+        qs.values("prd_de", "c2_nm", "dt")
+    )
 
     pivot = (
-        df_industry .pivot_table(
-            index="PRD_DE",        
-            columns="C2_NM",    
-            values="DT",
-            aggfunc="sum"
-        ))
-    
-    pivot = pivot.fillna(0).sort_index()
-    years = pivot.index.to_list()   # 예: ['2021', '2022', '2023']
+        df.pivot_table(
+            index="prd_de",
+            columns="c2_nm",
+            values="dt",
+            aggfunc="sum",
+        )
+        .fillna(0)
+        .sort_index()
+    )
 
+    years = sorted(pivot.index.to_list())
     rows = []
 
     def add_row(n_years: int, label: str):
-            use_years = years[-n_years:]       # 마지막 n_years개 연도
-            sub = pivot.loc[use_years]
-            s = sub.sum(axis=0)                # 발생형태별 합계
-            s["기간"] = label
-            rows.append(s)
+        if len(years) < 1:
+            return
+        use_years = years[-n_years:] if len(years) >= n_years else years
+        sub = pivot.loc[use_years]
+        s = sub.sum(axis=0)
+        s["기간"] = label
+        rows.append(s)
 
-        
     add_row(1, "최근 1년")
     add_row(2, "2년")
     add_row(3, "3년")
+
+    if not rows:
+        return {}
 
     summary = pd.DataFrame(rows).set_index("기간")
     result = {}
 
     for period, row in summary.iterrows():
-        
-       
-        filtered_row = row[row > 0].sort_values(ascending=False)
+        numeric_row = row.drop(labels=[], errors="ignore")
+        filtered_row = numeric_row[numeric_row > 0].sort_values(ascending=False)
         top10 = filtered_row.head(10)
-        
+
         top10_list = []
-   
         filtered_rank_series = filtered_row.rank(ascending=False, method="min")
-        
+
         for name, cnt in top10.items():
             top10_list.append({
                 "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
             })
-        
 
-        rank_series = row.rank(ascending=False, method="min")
+        rank_series = numeric_row.rank(ascending=False, method="min")
         rank_map = {name: int(r) for name, r in rank_series.items()}
-        
+
         result[period] = {
             "top10": top10_list,
             "rank_map": rank_map,
         }
 
-
     return result
+
 
 
 
 # 질병 유형별  
 def get_stats8(industry_name8):
-    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAE1+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAC+15118AI7AC00+15118AI7AC000+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAE+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAJ+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAZ00+15118AI7ABAX+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AC01+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAC+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AC02+15118AI7AC03+15118AI7AC030+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AC3BM+15118AC3BMAA+15118AC3BMAB+15118AC3BMAC+15118AC3BMAD+15118AC3BMAE+15118AC3BMAF+15118AC3BMAG+15118AC3BMAH+15118AC3BMAI+15118AC3BMAJ+15118AC3BMAJ0+15118AC3BMAL+15118AC3BMAM+15118AC3BMAN+15118AC3BMAO+15118AC3BMAP+15118AC3BMAQ+15118AC3BMAR+15118AC3BMAS+15118AC3BMAT+15118AC3BMAV01+15118AC3BMAU+15118AC3BMAV00+15118AC3BMAV+15118AC3BN+15118AC3BNAA+15118AC3BNAC+15118AC3BNAB+15118AC3BNAD+15118AC3BNAE+15118AC3BNAG+15118AC3BNAL+15118AC3BNAI+15118AC3BNAJ+15118AC3BNAK+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N038")
-    
-    response = requests.get(json_URL)
-    data = response.json()
+    qs = Stats8.objects.filter(c1_nm=industry_name8)
 
-    df = pd.json_normalize(data)
-    df["DT"] = df["DT"].astype(float)
+    if not qs.exists():
+        return {}
 
-    df_industry = df[df["C1_NM"] == industry_name8]
+    df = pd.DataFrame.from_records(
+        qs.values("prd_de", "c2_nm", "dt")
+    )
 
     pivot = (
-        df_industry .pivot_table(
-            index="PRD_DE",        
-            columns="C2_NM",    
-            values="DT",
-            aggfunc="sum"
-        ))
-    
-    pivot = pivot.fillna(0).sort_index()
-    years = pivot.index.to_list()   # 예: ['2021', '2022', '2023']
+        df.pivot_table(
+            index="prd_de",
+            columns="c2_nm",    # 질병 유형명
+            values="dt",
+            aggfunc="sum",
+        )
+        .fillna(0)
+        .sort_index()
+    )
 
+    years = sorted(pivot.index.to_list())
     rows = []
 
     def add_row(n_years: int, label: str):
-            use_years = years[-n_years:]       # 마지막 n_years개 연도
-            sub = pivot.loc[use_years]
-            s = sub.sum(axis=0)                # 발생형태별 합계
-            s["기간"] = label
-            rows.append(s)
+        if len(years) < 1:
+            return
+        use_years = years[-n_years:] if len(years) >= n_years else years
+        sub = pivot.loc[use_years]
+        s = sub.sum(axis=0)
+        s["기간"] = label
+        rows.append(s)
 
-        
     add_row(1, "최근 1년")
     add_row(2, "2년")
     add_row(3, "3년")
+
+    if not rows:
+        return {}
 
     summary = pd.DataFrame(rows).set_index("기간")
     result = {}
 
     for period, row in summary.iterrows():
-        
-       
-        filtered_row = row[row > 0].sort_values(ascending=False)
+        numeric_row = row.drop(labels=[], errors="ignore")
+        filtered_row = numeric_row[numeric_row > 0].sort_values(ascending=False)
         top10 = filtered_row.head(10)
-        
+
         top10_list = []
-   
         filtered_rank_series = filtered_row.rank(ascending=False, method="min")
-        
+
         for name, cnt in top10.items():
             top10_list.append({
                 "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
             })
-        
 
-        rank_series = row.rank(ascending=False, method="min")
+        rank_series = numeric_row.rank(ascending=False, method="min")
         rank_map = {name: int(r) for name, r in rank_series.items()}
-        
+
         result[period] = {
             "top10": top10_list,
             "rank_map": rank_map,
@@ -620,65 +580,66 @@ def get_stats8(industry_name8):
             
 # 질병 사망유형별  
 def get_stats9(industry_name9):
-    json_URL = (f"https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={API_KEY}&itmId=16118AAE1+&objL1=15118AI7AA+15118AI7AAAF+15118AI7AAAG+15118AI7AAAA+15118AI7AAAB+15118AI7AAAC+15118AI7AAAD+15118AI7AAAE+15118AI7AB+15118AI7ABAA+15118AI7ABAn+15118AI7ABAo+15118AI7ABAoo+15118AI7ABAB+15118AI7ABAC+15118AI7AC00+15118AI7AC000+15118AI7ABAp+15118AI7ABAp0+15118AI7ABAD+15118AI7ABAD0+15118AI7ABAE+15118AI7ABAF+15118AI7ABAF0+15118AI7ABAH+15118AI7ABAH0+15118AI7ABAH00+15118AI7ABAJ+15118AI7ABAG+15118AI7ABAq+15118AI7ABAq0+15118AI7ABAK+15118AI7ABAK0+15118AI7ABAM+15118AI7ABAr+15118AI7ABAr0+15118AI7ABAr00+15118AI7ABAr000+15118AI7ABAL+15118AI7ABAN+15118AI7ABAO+15118AI7ABAP+15118AI7ABAQ+15118AI7ABAQ0+15118AI7ABAQ00+15118AI7ABAR+15118AI7ABAS+15118AI7ABAT+15118AI7ABAT0+15118AI7ABAU+15118AI7ABAV+15118AI7ABAV0+15118AI7ABAY+15118AI7ABAZ+15118AI7ABAZ00+15118AI7ABAX+15118AI7ABAs+15118AI7AC+15118AI7ACAA+15118AI7AC01+15118AI7AD+15118AI7ADAB+15118AI7AE+15118AI7AEAA+15118AI7AEAA0+15118AI7AEAA00+15118AI7AEAN+15118AI7AEAN0+15118AI7AEAB+15118AI7AEAC+15118AI7AEAF+15118AI7AEAH+15118AI7AEAI+15118AI7AEAI0+15118AI7AEAJ+15118AI7AEAK+15118AI7AEAM+15118AI7AF+15118AI7AFAA+15118AI7AG+15118AI7AGAC+15118AI7AGAA+15118AI7AGAB+15118AI7AH+15118AI7AHAA+15118AI7AK+15118AI7AKAA+15118AI7AJ+15118AI7AJAP+15118AI7AJAA+15118AI7AJAA0+15118AI7AJAA00+15118AI7AJAB+15118AI7AJAC+15118AI7AJAL+15118AI7AJAE+15118AI7AJAE0+15118AI7AJAF+15118AI7AJAG+15118AI7AJAH+15118AI7AJAH0+15118AI7AJAI+15118AI7AC02+15118AI7AC03+15118AI7AC030+15118AI7AJAJ+15118AI7AJAD+&objL2=15118AC3BM+15118AC3BMAA+15118AC3BMAB+15118AC3BMAC+15118AC3BMAD+15118AC3BMAE+15118AC3BMAF+15118AC3BMAG+15118AC3BMAH+15118AC3BMAI+15118AC3BMAJ+15118AC3BMAJ0+15118AC3BMAL+15118AC3BMAM+15118AC3BMAN+15118AC3BMAO+15118AC3BMAP+15118AC3BMAQ+15118AC3BMAR+15118AC3BMAS+15118AC3BMAT+15118AC3BMAV01+15118AC3BMAU+15118AC3BMAV00+15118AC3BMAV+15118AC3BN+15118AC3BNAA+15118AC3BNAC+15118AC3BNAB+15118AC3BNAD+15118AC3BNAE+15118AC3BNAG+15118AC3BNAL+15118AC3BNAI+15118AC3BNAJ+15118AC3BNAK+&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&outputFields=OBJ_NM+NM+ITM_NM+PRD_DE+&orgId=118&tblId=DT_11806_N055")
-    
-    response = requests.get(json_URL)
-    data = response.json()
+    qs = Stats9.objects.filter(c1_nm=industry_name9)
 
-    df = pd.json_normalize(data)
-    df["DT"] = df["DT"].astype(float)
+    if not qs.exists():
+        return {}
 
-    df_industry = df[df["C1_NM"] == industry_name9]
+    df = pd.DataFrame.from_records(
+        qs.values("prd_de", "c2_nm", "dt")
+    )
 
     pivot = (
-        df_industry .pivot_table(
-            index="PRD_DE",        
-            columns="C2_NM",    
-            values="DT",
-            aggfunc="sum"
-        ))
-    
-    pivot = pivot.fillna(0).sort_index()
-    years = pivot.index.to_list()   # 예: ['2021', '2022', '2023']
+        df.pivot_table(
+            index="prd_de",
+            columns="c2_nm",
+            values="dt",
+            aggfunc="sum",
+        )
+        .fillna(0)
+        .sort_index()
+    )
 
+    years = sorted(pivot.index.to_list())
     rows = []
 
     def add_row(n_years: int, label: str):
-            use_years = years[-n_years:]       # 마지막 n_years개 연도
-            sub = pivot.loc[use_years]
-            s = sub.sum(axis=0)                # 발생형태별 합계
-            s["기간"] = label
-            rows.append(s)
+        if len(years) < 1:
+            return
+        use_years = years[-n_years:] if len(years) >= n_years else years
+        sub = pivot.loc[use_years]
+        s = sub.sum(axis=0)
+        s["기간"] = label
+        rows.append(s)
 
-        
     add_row(1, "최근 1년")
     add_row(2, "2년")
     add_row(3, "3년")
+
+    if not rows:
+        return {}
 
     summary = pd.DataFrame(rows).set_index("기간")
     result = {}
 
     for period, row in summary.iterrows():
-        
-       
-        filtered_row = row[row > 0].sort_values(ascending=False)
+        numeric_row = row.drop(labels=[], errors="ignore")
+        filtered_row = numeric_row[numeric_row > 0].sort_values(ascending=False)
         top10 = filtered_row.head(10)
-        
+
         top10_list = []
-   
         filtered_rank_series = filtered_row.rank(ascending=False, method="min")
-        
+
         for name, cnt in top10.items():
             top10_list.append({
                 "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
             })
-        
 
-        rank_series = row.rank(ascending=False, method="min")
+        rank_series = numeric_row.rank(ascending=False, method="min")
         rank_map = {name: int(r) for name, r in rank_series.items()}
-        
+
         result[period] = {
             "top10": top10_list,
             "rank_map": rank_map,
