@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <h2>산재 정보</h2>
         </div>
         <div class="card-body">
+            {% if individuals %}
             <form method="post" action="{% url 'Member:mypage_individual_bulk_delete' %}">
                 {% csrf_token %}
                 <table class="table">
@@ -46,10 +47,10 @@ document.addEventListener("DOMContentLoaded", function() {
                             <th scope="col"><input type="checkbox" id="select-all" title="전체 선택"></th>
                             <th scope="col">일련번호</th>
                             <th scope="col">제목</th>
-                            <th scope_col="col">재해일자</th>
                             <th scope="col">업종</th>
                             <th scope="col">발생형태</th>
                             <th scope="col">질병</th>
+                            <th scope_col="col">재해일자</th>
                             <th scope="col">주소</th>
                         </tr>
                     </thead>
@@ -61,10 +62,10 @@ document.addEventListener("DOMContentLoaded", function() {
                             <!-- 1~ 리스트 개수만큼 일련번호 -->
                             <td>{{ forloop.counter }}</td>
                             <td>{{ individual.i_title }}</td>
-                            <td>{{ individual.i_accident_date }}</td>
                             <td>{{ individual.member_industry.i_industry_type2 }}</td>
-                            <td>{{ individual.i_injury|default:"-" }}</td>
                             <td>{{ individual.i_disease_type|default:"-" }}</td>
+                            <td>{{ individual.i_injury|default:"-" }}</td>
+                            <td>{{ individual.i_accident_date }}</td>
                             <td>{{ individual.i_address }}</td>
                         </tr>
                         {% endfor %}
@@ -76,6 +77,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     <button type="submit" class="btn btn-danger">선택 항목 삭제</button>
                 </div>
             </form>
+            {% else %}
+            <div class="text-center">
+                <p>등록된 산재 정보가 없습니다.</p>
+                <a href="{% url 'Member:mypage_individual_add' %}" class="btn btn-primary">산재 정보 추가</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 {% endblock mypage_contents %}

@@ -1,8 +1,8 @@
 $(document).ready(function () {
 
-    const usernameInput = $("#username");
-    const pw1Input = $("#password1");
-    const pw2Input = $("#re-password2");
+    const usernameInput = $("#m_username"); 
+    const pw1Input = $("#m_password1");     
+    const pw2Input = $("#m_password2");     
 
     const usernameCheckMsg = $("#usernameCheckMsg");
     const passwordError = $("#passwordError");
@@ -95,4 +95,12 @@ $(document).ready(function () {
             e.preventDefault();
         }
     });
+
+    // Auto-focus on the first error field if available
+    if (window.firstErrorField) {
+        const elementToFocus = $('#' + window.firstErrorField); // jQuery selector
+        if (elementToFocus && elementToFocus.length) { // Check if element exists
+            elementToFocus.focus();
+        }
+    }
 });
