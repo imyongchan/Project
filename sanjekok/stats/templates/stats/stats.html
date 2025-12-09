@@ -141,6 +141,7 @@
         data-summary7='{{ summary7_json}}'
         data-summary8='{{ summary8_json}}'
         data-summary9='{{ summary9_json}}'>
+        
         <div class="visual-grid">
             <!-- 내 업종 재해율 -->
             <div class="visual-card small">
@@ -168,14 +169,15 @@
                 <canvas id="genderChart2"></canvas>
             </div>
 
-            <div class="visual-card">
+            <!-- 연령대별 재해 현황 (1열 전체 사용) -->
+            <div class="visual-card" id="card-age">
                 <h3>연령대별 재해 현황</h3>
                 <p id="ageSummary1"></p>
                 <canvas id="ageChart1"></canvas>
             </div>
 
-            <!-- 연령대별 사망 현황 -->
-            <div class="visual-card">
+            <!-- 연령대별 사망 현황 (1열 전체 사용) -->
+            <div class="visual-card" id="card-age-fatal">
                 <h3>연령대별 재해 사망 현황</h3>
                 <p id="ageSummary2"></p>
                 <canvas id="ageChart2"></canvas>

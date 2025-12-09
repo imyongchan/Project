@@ -10,7 +10,7 @@ if (window.Chart && window.ChartDataLabels) {
 
 /* =========================================
  * 공통 가로형 Bar 차트
- * chartRefName : 전역에 저장할 이름
+ * chartRefName : charts 객체에 저장할 이름
  * canvasId     : 캔버스 id
  * labels       : 라벨 배열
  * data         : 데이터 배열
@@ -35,7 +35,7 @@ function createHorizontalBarChart(chartRefName, canvasId, labels, data, options 
     }
 
     const ctx = canvas.getContext("2d");
-    const existing = window[chartRefName];
+    const existing = charts[chartRefName];
 
     // 라벨별 색상 배열 (highlightLabel과 같은 라벨은 highlightColor)
     const colors = labels.map(l =>
@@ -50,7 +50,7 @@ function createHorizontalBarChart(chartRefName, canvasId, labels, data, options 
         return;
     }
 
-    window[chartRefName] = new Chart(ctx, {
+    charts[chartRefName] = new Chart(ctx, {
         type: "bar",
         data: {
             labels,
@@ -190,10 +190,11 @@ function AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p, highlightLabe
     const data   = [ageU18, age20s, age30s, age40s, age50s, age60p];
 
     createHorizontalBarChart("age1", "ageChart1", labels, data, {
-        color: "#cfeff9ff",            // 연두색 계열
+        color: "#cfeff9ff",            // 연한 하늘색
         label: "연령대별 재해자 수",
         labelVisible: false,
-        highlightLabel
+        highlightLabel,
+        highlightColor: "#ef4444"
     });
 }
 
@@ -205,7 +206,8 @@ function AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa, highlig
         color: "#5c4ac2ff",            // 진한 남색
         label: "연령대별 사망자 수",
         labelVisible: false,
-        highlightLabel
+        highlightLabel,
+        highlightColor: "#ef4444"
     });
 }
 
@@ -230,7 +232,7 @@ function InjuryChart1(topList, highlightLabel = null) {
     const data   = topList.map(item => item.count || 0);
 
     createHorizontalBarChart("injury1", "injuryChart1", labels, data, {
-        color: "#cfeff9ff",            // 주황  
+        color: "#cfeff9ff",            // 연한 하늘색
         label: "재해자 수",
         labelVisible: false,
         highlightLabel,              // 내 발생형태
@@ -278,7 +280,7 @@ function DiseaseChart1(topList, highlightLabel = null) {
     const data   = topList.map(item => item.count || 0);
 
     createHorizontalBarChart("disease1", "diseaseChart1", labels, data, {
-        color: "#cfeff9ff",            // 파랑
+        color: "#cfeff9ff",            // 연한 하늘색
         label: "재해자 수",
         labelVisible: false,
         highlightLabel,
@@ -302,11 +304,11 @@ function DiseaseChart2(topList, highlightLabel = null) {
     const data   = topList.map(item => item.count || 0);
 
     createHorizontalBarChart("disease2", "diseaseChart2", labels, data, {
-        color: "#5c4ac2ff",            // 붉은 계열
+        color: "#5c4ac2ff",            // 진한 남색
         label: "사망자 수",
         labelVisible: false,
         highlightLabel,
-        highlightColor: "#a39d9d80"
+        highlightColor: "#ef4444"
     });
 }
 

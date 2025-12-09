@@ -59,13 +59,6 @@
    2. 카드/그리드 레이아웃
    ========================= */
 
-/* 카드들이 배치되는 그리드 */
-.visual-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));  /* 기본 2열 */
-    gap: 24px;
-    margin-top: 24px;
-}
 
 /* 화면이 좁을 때는 1열 */
 @media (max-width: 1024px) {
@@ -122,16 +115,14 @@
    ========================= */
 
 /* 연령대별, 발생형태, 질병형태 카드들은 1열 전체 사용 */
+#card-age,
+#card-age-fatal,
 #card-injury,
 #card-injury-fatal,
 #card-disease,
-#card-disease-fatal,
-.visual-card:has(#ageChart1),
-.visual-card:has(#ageChart2) {
-    grid-column: 1 / -1;  /* 전체 열 차지 */
+#card-disease-fatal {
+    grid-template-columns: 1fr;
 }
-
-/* 반응형: 작은 화면에서는 이미 1열이므로 문제없음 */
 
 /* =========================
    3. 드롭다운
@@ -175,15 +166,11 @@
 }
 
 /* 1열 전체를 사용하는 카드의 차트는 더 높게 */
+#card-age canvas,
+#card-age-fatal canvas,
 #card-injury canvas,
 #card-injury-fatal canvas,
 #card-disease canvas,
 #card-disease-fatal canvas {
-    height: 380px !important;
-}
-
-/* 연령대별 차트도 조금 높게 */
-#ageChart1,
-#ageChart2 {
-    height: 320px !important;
+    height: 350px !important;
 }
