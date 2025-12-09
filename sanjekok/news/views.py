@@ -26,7 +26,8 @@ def crawl_news_view(request):
 # 2) 뉴스목록: 페이지네이션
 
 def news_list(request):
-    posts = News.objects.all().order_by('id')  # 최신순
+    posts = News.objects.all().order_by('-n_created_at') # 기사작성일 순 
+    # id로 하면 새로운뉴스 insert될때 뒤에 붙는데 그게 앞에 안나옴
 
     WRITE_PAGES = 5     # 페이지 블록 개수
     PER_PAGE = 10       # 한 페이지당 게시물 개수
