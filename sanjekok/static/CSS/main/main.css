@@ -44,42 +44,13 @@ header .menu {
     visibility: visible;
 }
 
-.hero-box{
-    background-color: blue;
-    width: 90%;
-    height: 300px;
-    left: 5%;
-    border-radius: 12px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-    gap: 10%;
+main img {
+    width: 100%;
 }
 
-.hero-box img {
-    width: 20%;
-    height: 70%;
-    border-radius: 12px;
-    margin-top: 2%;
-}
-
-.hero-box .text {
-    font-size: 2vw;
-    font-family: "Pretendard", sans-serif;
-    font-weight: 800;
-}
-
-.hero-box .text .text_title1 {
-    color: yellow;
-}
-
-.hero-box .text .text_title2 {
-    color: aliceblue;
-}
-
-.hero-box .text .text_content {
-    font-size: 15px;
+main .mobile {
+    visibility: hidden;
+    width: 0;
 }
 
 .stat img {
@@ -165,26 +136,15 @@ footer{
         transform: translateY(0);
     }
 
-    .hero-box img {
-        margin-left: 30%; 
-        height: 40%; 
-        width: 30%; 
-        top: 10%; 
-    } 
-    
-    .hero-box .text {
-        margin-top: 150px;
-        margin-left: -30%;
+    main .pc {
+        visibility: hidden;
+        width: 0;
     }
-    .hero-box .text .text_title1,
-    .hero-box .text .text_title2 {
-        margin-top: 5%; 
-    } 
-    
-    .hero-box .text .text_content {
-        margin-left: -40%;
-        margin-top: 10%;
-        font-size: 2vw;
+
+    main .mobile {
+        visibility: visible;
+        width: 100%;
+        margin-bottom: 20px;
     }
 
     .news {

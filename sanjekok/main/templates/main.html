@@ -4,13 +4,10 @@
 {% block title %}산재콕 | 메인{% endblock %}
 
 {% block contents %}
-    <main class="hero-box">
-        <img src="https://images.stockcake.com/public/e/d/9/ed96a8ea-7fc3-4185-93c3-24dfef607202_large/industrial-team-focus-stockcake.jpg" alt="">
-        <div class="text">
-            <p class="text_title1">안전한 일터!</p>
-            <p class="text_title2">건강한 미래!</p>
-            <p class="text_content">산재콕은 여러분들의 안전한 근무환경을 응원합니다!</p>
-        </div>
+    
+    <main>
+        <img src="{% static 'img/hero.png' %}" alt="" class="pc">
+        <img src="{% static 'img/mobile_hero.png' %}" alt="" class="mobile">
     </main>
 
     <h2>산재 뉴스</h2>
