@@ -129,80 +129,22 @@ def kakao_callback(request):
         messages.error(request, "카카오 로그인에 실패했습니다. (인증 코드 없음)")
         return redirect("Member:login")
 
-    kakao_rest_api_key = settings.KAKAO_REST_API_KEY
-    print("--- DEBUG ---")
-    print(f"Using KAKAO_REST_API_KEY: {kakao_rest_api_key}")
-    print("---------------")
-    redirect_uri = settings.KAKAO_REDIRECT_URI
+    result = services.handle_kakao_login(code)
 
-    # --- Access Token 요청 ---
-    token_url = "https://kauth.kakao.com/oauth/token"
-    data = {
-        "grant_type": "authorization_code",
-        "client_id": kakao_rest_api_key,
-        "redirect_uri": redirect_uri,
-        "code": code,
-    }
+    if result['status'] == 'error':
+        messages.error(request, f"카카오 로그인 실패: {result['message']}")
+        return redirect("Member:login")
     
-    token_response = requests.post(token_url, data=data)
-    token_json = token_response.json()
-
-    if token_response.status_code != 200:
-        error_description = token_json.get("error_description", "알 수 없는 오류가 발생했습니다.")
-        messages.error(request, f"카카오 로그인 실패: {error_description}")
-        return redirect("Member:login")
-
-    if token_json.get("error"):
-        messages.error(request, f"카카오 로그인 실패: {token_json.get('error_description')}")
-        return redirect("Member:login")
-
-    access_token = token_json.get("access_token")
-    if not access_token:
-        messages.error(request, "카카오 로그인 실패: 액세스 토큰을 받아올 수 없습니다.")
-        return redirect("Member:login")
-
-    # --- 사용자 정보 요청 ---
-    profile_url = "https://kapi.kakao.com/v2/user/me"
-    headers = {"Authorization": f"Bearer {access_token}"}
-    
-    try:
-        profile_response = requests.get(profile_url, headers=headers)
-        profile_response.raise_for_status()
-        profile_json = profile_response.json()
-    except requests.exceptions.RequestException as e:
-        messages.error(request, f"카카오 로그인 실패: {e}")
-        return redirect("Member:login")
-
-    if profile_json.get("code"):
-        messages.error(request, f"카카오 로그인 실패: {profile_json.get('msg')}")
-        return redirect("Member:login")
-
-    kakao_id = profile_json.get("id")
-    if not kakao_id:
-        messages.error(request, "카카오 로그인 실패: 사용자 ID를 찾을 수 없습니다.")
-        return redirect("Member:login")
-        
-    nickname = profile_json.get("kakao_account", {}).get("profile", {}).get("nickname")
-    if not nickname:
-        # 닉네임은 필수 동의 항목이 아닌 경우가 있으므로, 없으면 기본값 설정
-        nickname = f"사용자_{kakao_id}"
-
-    try:
-        user = Member.objects.get(m_username=f"kakao_{kakao_id}")
-        
+    elif result['status'] == 'login':
+        user = result['user']
         request.session['member_id'] = int(user.member_id)
         request.session['member_username'] = user.m_username
         request.session['member_provider'] = user.m_provider
         messages.success(request, f"{user.m_name}님 환영합니다!")
         return redirect("Main:main")
-    except Member.DoesNotExist:
-        
-        request.session['social_signup_data'] = {
-            'm_username': f"kakao_{kakao_id}",
-            'm_name': nickname,
-            'm_provider': 'kakao',
-            'm_provider_id': kakao_id,
-        }
+
+    elif result['status'] == 'register':
+        request.session['social_signup_data'] = result['signup_data']
         return redirect('Member:registers')
 
 
