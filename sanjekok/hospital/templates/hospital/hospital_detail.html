@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ name }} - 산재지정의료기관 상세</title>
+  <link rel="stylesheet" href="{% static 'CSS/hospital/hospital.css' %}">
+</head>
+<body>
+
+<h2 class="page-title">산재지정의료기관 상세정보</h2>
+
+<div class="detail-container">
+  <div class="detail-info">
+    <h3 class="hospital-name">{{ name }}</h3>
+
+    <p><strong>주소</strong> : {{ road_address|default:address }}</p>
+    <p><strong>전화번호</strong> : {{ tel|default:"-" }}</p>
+
+    <p>
+      <a href="{{ external_url }}" target="_blank" class="btn-external">
+        공단 홈페이지 상세보기 바로가기
+      </a>
+    </p>
+  </div>
+
+  <div class="detail-map-wrapper">
+    <div id="detail-map" class="map-area"></div>
+  </div>
+</div>
+
+<script>
+  const KAKAO_KEY = "{{ KAKAO_KEY }}";
+  const DETAIL_LAT = {{ lat }};
+  const DETAIL_LNG = {{ lng }};
+  const HOSPITAL_NAME = "{{ name|escapejs }}";
+</script>
+
+<script>
+  // 상세 페이지용 카카오 지도
+  function loadKakaoMapScript() {
+    const script = document.createElement("script");
+    script.src = "//dapi.kakao.com/v2/maps/sdk.js?appkey=" + KAKAO_KEY + "&autoload=false";
+    script.onload = function () {
+      kakao.maps.load(initDetailMap);
+    };
+    document.head.appendChild(script);
+  }
+
+  function initDetailMap() {
+    const container = document.getElementById("detail-map");
+    const options = {
+      center: new kakao.maps.LatLng(DETAIL_LAT, DETAIL_LNG),
+      level: 4
+    };
+    const map = new kakao.maps.Map(container, options);
+
+    const markerPosition = new kakao.maps.LatLng(DETAIL_LAT, DETAIL_LNG);
+    const marker = new kakao.maps.Marker({
+      position: markerPosition,
+      map: map
+    });
+
+    const iwContent =
+      '<div style="padding:5px;font-size:12px;"><b>' + HOSPITAL_NAME + "</b></div>";
+    const infowindow = new kakao.maps.InfoWindow({
+      content: iwContent
+    });
+    infowindow.open(map, marker);
+  }
+
+  document.addEventListener("DOMContentLoaded", loadKakaoMapScript);
+</script>
+
+</body>
+</html>

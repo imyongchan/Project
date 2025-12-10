@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>산재지정의료기관 찾기</title>
+  <link rel="stylesheet" href="{% static 'CSS/hospital/hospital.css' %}">
+</head>
+<body>
+
+<h2 class="page-title">주변 산재지정의료기관 검색</h2>
+
+<div class="search-box">
+
+  <!-- 위치 선택 -->
+  <div class="search-row">
+    <label class="search-label">위치선택:</label>
+
+    <button id="btn-home"
+            class="btn-location"
+            {% if HOME_LAT %}
+              data-lat="{{ HOME_LAT }}"
+              data-lng="{{ HOME_LNG }}"
+            {% else %}
+              disabled
+            {% endif %}>
+      집
+    </button>
+
+    <button id="btn-work"
+            class="btn-location"
+            {% if WORK_LAT %}
+              data-lat="{{ WORK_LAT }}"
+              data-lng="{{ WORK_LNG }}"
+            {% else %}
+              disabled
+            {% endif %}>
+      근무지
+    </button>
+
+    <button id="btn-accident"
+            class="btn-location"
+            {% if ACC_LAT %}
+              data-lat="{{ ACC_LAT }}"
+              data-lng="{{ ACC_LNG }}"
+            {% else %}
+              disabled
+            {% endif %}>
+      사고지역
+    </button>
+  </div>
+
+  <!-- 안내 문구 -->
+  <div class="info-box">
+    집 / 근무지 / 사고지역 중 하나를 선택하면,
+    해당 위치를 기준으로 가까운 산재지정의료기관 Top 10을 보여줍니다.
+  </div>
+
+  <!-- 정렬 -->
+  <div class="sort-row">
+    <span class="sort-label">구분</span>
+    <div class="dropdown sort-dropdown">
+      <button id="sortBtn" class="dropdown-btn">거리순 ▼</button>
+      <div id="sortMenu" class="dropdown-menu">
+        <div class="sort-option" data-sort="rating">평점순</div>
+        <div class="sort-option" data-sort="distance">거리순</div>
+        <div class="sort-option" data-sort="review">리뷰 많은 순</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 리스트 -->
+<div class="result-box">
+  <h3 class="result-title">주변 산재지정의료기관 Top 10</h3>
+  <ul id="hospital-list" class="hospital-list"></ul>
+</div>
+
+<script src="{% static 'js/hospital/hospital.js' %}"></script>
+
+</body>
+</html>
