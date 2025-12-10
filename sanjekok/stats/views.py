@@ -44,6 +44,8 @@ def stats_home(request):
     selected_individual = None
     industry = None
 
+    show_detail = bool(request.GET.get('accident_id'))
+
     if individual_list.exists():
         selected_accident_id = request.GET.get('accident_id')
 
@@ -133,4 +135,5 @@ def stats_home(request):
         "summary8_json": summary8_json,
         "summary9_json": summary9_json,
         "risk_analysis": risk_analysis,  
+        "show_detail": show_detail,
     })

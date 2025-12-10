@@ -403,7 +403,7 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
 // 발생형태 TOP 파이차트
 function RiskAccidentPieChart(topList) {
     const labels = (topList || []).map(item => item.name);
-    const data   = (topList || []).map(item => item.count || 0);
+    const data   = (topList || []).map(item => item.percentage || 0);
 
     createPieChart("riskAccident", "riskAccidentPie", labels, data, {
         colors: ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],
@@ -414,7 +414,7 @@ function RiskAccidentPieChart(topList) {
 // 질병형태 TOP 파이차트
 function RiskDiseasePieChart(topList) {
     const labels = (topList || []).map(item => item.name);
-    const data   = (topList || []).map(item => item.count || 0);
+    const data   = (topList || []).map(item => item.percentage || 0);
 
     createPieChart("riskDisease", "riskDiseasePie", labels, data, {
         colors: ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],

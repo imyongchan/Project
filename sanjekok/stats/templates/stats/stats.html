@@ -22,15 +22,31 @@
                     {{ industry.i_industry_type2 }} / {{ member.m_sex }} / {{ age }}세
                 </p>
                 <!-- 나의 산재 눌렀을 때 나오는 추가 상세 정보 -->
-                <div id="injuryDetail"></div>
+                    <div id="injuryDetail">
+                            {% if show_detail and selected_individual %}
+                                {% if selected_individual.i_title %}
+                                    <p>산재명: {{ selected_individual.i_title }}</p>
+                                {% endif %}
+                                {% if selected_individual.i_injury %}
+                                    <p>발생 형태: {{ selected_individual.i_injury }}</p>
+                                {% endif %}
+                                {% if selected_individual.i_disease_type %}
+                                    <p>질병: {{ selected_individual.i_disease_type }}</p>
+                                {% endif %}
+                                {% if selected_individual.i_accident_date %}
+                                    <p>발생일자: {{ selected_individual.i_accident_date }}</p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
         <div class="profile-edit-btn">
             <button id="myInjuryBtn">나의 산재 ▼</button>
             <!-- 드롭다운 -->
             <ul id="injuryDropdown" class="dropdown hidden">
                 {% for ind in individual_list %}
-                <li data-id="{{ ind.id }}"
+                <li data-accident-id="{{ ind.accident_id }}"
                     data-title="{{ ind.i_title }}"
                     data-injury="{{ ind.i_injury }}"
                     data-disease="{{ ind.i_disease_type }}"
@@ -141,7 +157,10 @@
         data-summary7='{{ summary7_json}}'
         data-summary8='{{ summary8_json}}'
         data-summary9='{{ summary9_json}}'
-        data-age-band="{{ age_group }}">
+        data-age-band="{{ age_group }}"
+        data-has-selection="{% if show_detail and selected_individual %}1{% else %}0{% endif %}"
+        data-selected-injury="{% if show_detail and selected_individual and selected_individual.i_injury %}{{ selected_individual.i_injury }}{% endif %}"
+        data-selected-disease="{% if show_detail and selected_individual and selected_individual.i_disease_type %}{{ selected_individual.i_disease_type }}{% endif %}">
         
         <div class="visual-grid">
             <!-- 내 업종 재해율 -->

@@ -9,8 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const fatalSummary = document.getElementById("fatalSummary");
     const genderSummary1 = document.getElementById("genderSummary1");
     const genderSummary2 = document.getElementById("genderSummary2");
-    const ageSummary1 = document.getElementById("ageSummary1");
-    const ageSummary2 = document.getElementById("ageSummary2");
     const injurySummary1 = document.getElementById("injurySummary1");
     const injurySummary2 = document.getElementById("injurySummary2");
     const diseaseSummary1 = document.getElementById("diseaseSummary1");
@@ -30,6 +28,20 @@ document.addEventListener("DOMContentLoaded", () => {
     let diseaseStatsByPeriod = null;
     let diseaseFatalStatsByPeriod = null;
     const memberageband = visualArea ? (visualArea.dataset.ageBand || null) : null;
+
+    if (visualArea) {
+    const hasSelection = visualArea.dataset.hasSelection === "1";
+
+    if (hasSelection) {
+        injurySelected = true;
+        if (visualArea.dataset.selectedInjury) {
+            selectedInjuryType = visualArea.dataset.selectedInjury;
+        }
+        if (visualArea.dataset.selectedDisease) {
+            selectedDiseaseType = visualArea.dataset.selectedDisease;
+        }
+    }
+}
 
     /* ========================= 
      * 0. 백엔드에서 넘긴 JSON 파싱
@@ -83,36 +95,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dropdown) {
         dropdown.querySelectorAll("li").forEach(item => {
             item.addEventListener("click", () => {
-                const title = item.dataset.title;
-                const injury = item.dataset.injury;
-                const disease = item.dataset.disease;
-                const date = item.dataset.date;
+                const accidentId = item.dataset.accidentId;   // ★ data-accident-id
 
-                let html = "";
-                if (title && title !== "None") html += `<p>산재명: ${title}</p>`;
-                if (injury && injury !== "None") html += `<p>발생 형태: ${injury}</p>`;
-                if (disease && disease !== "None") html += `<p>질병: ${disease}</p>`;
-                if (date && date !== "None") html += `<p>발생일자: ${date}</p>`;
-
-                if (injuryDetail) {
-                    injuryDetail.innerHTML = html;
+                if (!accidentId) {
+                    return;
                 }
 
-                // 산재 선택 완료
-                injurySelected = true;
-                selectedInjuryType = (injury && injury !== "None") ? injury : null;
-                selectedDiseaseType = (disease && disease !== "None") ? disease : null;
-
-                // 분석기간 초기화 + 통계 숨김 
-                periodButtons.forEach(b => b.classList.remove("active"));
-                if (visualArea) visualArea.classList.add("hidden");
-
-
-                dropdown.classList.add("hidden");
+                // 현재 URL 기준으로 accident_id 파라미터 세팅 후 이동
+                const url = new URL(window.location.href);
+                url.searchParams.set("accident_id", accidentId);
+                window.location.href = url.toString();
             });
         });
     }
-
     /* ========================= 
      * 2. 분석 기간 버튼 클릭
      * ========================= */
