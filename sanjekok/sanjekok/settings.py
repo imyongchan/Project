@@ -19,6 +19,7 @@ KAKAO_JS_KEY = os.getenv("KAKAO_JS_KEY")
 KAKAO_REST_KEY = os.getenv("KAKAO_REST_KEY")
 SAFEMAP_KEY = os.getenv("SAFEMAP_KEY")
 KOSIS_API_KEY = os.getenv("KOSIS_API_KEY")
+KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

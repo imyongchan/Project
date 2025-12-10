@@ -6,6 +6,8 @@ from .models import Member, Individual, Member_industry
 from .forms import Step1MemberForm, Step2MemberForm
 from .decorators import login_required
 from . import services
+from django.conf import settings
+import requests
 # Create your views here.
 
 # 회원가입 1단계
@@ -33,28 +35,45 @@ def registerf(request):
 
 # 회원가입 2단계    
 def registers(request):
-    data = request.session.get('signup_data')
+    signup_data = request.session.get('signup_data')
+    social_signup_data = request.session.get('social_signup_data')
 
-    if not data:
-        messages.error(request, "첫 번째 회원가입 단계가 만료되었습니다. 다시 진행해주세요.")
+    if not signup_data and not social_signup_data:
+        messages.error(request, "회원가입 정보가 만료되었습니다. 다시 진행해주세요.")
         return redirect('Member:registerf')
 
     if request.method == "GET":
-        form = Step2MemberForm()
+        initial_data = {}
+        if social_signup_data:
+            initial_data['m_name'] = social_signup_data.get('m_name')
+        form = Step2MemberForm(initial=initial_data)
         return render(request, 'member/member_register2.html', {'form': form})
     
     elif request.method == "POST":
         form = Step2MemberForm(request.POST)
         if form.is_valid():
             member = form.save(commit=False)
-            member.m_username = data['m_username']
-            member.m_password = data['m_password']
+            
+            if social_signup_data:
+                member.m_username = social_signup_data['m_username']
+                member.m_provider = social_signup_data['m_provider']
+                member.m_password = make_password(None)
+                if 'social_signup_data' in request.session:
+                    del request.session['social_signup_data']
+            elif signup_data:
+                member.m_username = signup_data['m_username']
+                member.m_password = signup_data['m_password']
+                if 'signup_data' in request.session:
+                    del request.session['signup_data']
+            
             member.save()
 
-            # 보안상 세션 제거
-            del request.session["signup_data"]
-
             messages.success(request, "회원가입이 완료되었습니다.")
+            
+            # Log the user in after successful registration
+            request.session['member_id'] = int(member.member_id)
+            request.session['member_username'] = member.m_username
+
             return redirect('Member:complete')
 
         first_error_field = next(iter(form.errors)) if form.errors else None
@@ -85,6 +104,98 @@ def login(request):
 
         messages.success(request, f"{member.m_username}님 환영합니다!")
         return redirect("Main:main")
+    
+def kakao_login(request):
+    kakao_rest_api_key = settings.KAKAO_REST_API_KEY
+    
+    redirect_uri = "http://localhost:8000/member/kakao/callback/"
+    return redirect(
+        f"https://kauth.kakao.com/oauth/authorize?client_id={kakao_rest_api_key}&redirect_uri={redirect_uri}&response_type=code"
+    )
+
+
+# 2) 카카오에서 인증 후 콜백 처리
+def kakao_callback(request):
+    code = request.GET.get("code")
+    if not code:
+        messages.error(request, "카카오 로그인에 실패했습니다. (인증 코드 없음)")
+        return redirect("Member:login")
+
+    kakao_rest_api_key = settings.KAKAO_REST_API_KEY
+    print("--- DEBUG ---")
+    print(f"Using KAKAO_REST_API_KEY: {kakao_rest_api_key}")
+    print("---------------")
+    redirect_uri = "http://localhost:8000/member/kakao/callback/"
+
+    # --- Access Token 요청 ---
+    token_url = "https://kauth.kakao.com/oauth/token"
+    data = {
+        "grant_type": "authorization_code",
+        "client_id": kakao_rest_api_key,
+        "redirect_uri": redirect_uri,
+        "code": code,
+    }
+    
+    token_response = requests.post(token_url, data=data)
+    token_json = token_response.json()
+
+    if token_response.status_code != 200:
+        error_description = token_json.get("error_description", "알 수 없는 오류가 발생했습니다.")
+        messages.error(request, f"카카오 로그인 실패: {error_description}")
+        return redirect("Member:login")
+
+    if token_json.get("error"):
+        messages.error(request, f"카카오 로그인 실패: {token_json.get('error_description')}")
+        return redirect("Member:login")
+
+    access_token = token_json.get("access_token")
+    if not access_token:
+        messages.error(request, "카카오 로그인 실패: 액세스 토큰을 받아올 수 없습니다.")
+        return redirect("Member:login")
+
+    # --- 사용자 정보 요청 ---
+    profile_url = "https://kapi.kakao.com/v2/user/me"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    
+    try:
+        profile_response = requests.get(profile_url, headers=headers)
+        profile_response.raise_for_status()
+        profile_json = profile_response.json()
+    except requests.exceptions.RequestException as e:
+        messages.error(request, f"카카오 로그인 실패: {e}")
+        return redirect("Member:login")
+
+    if profile_json.get("code"):
+        messages.error(request, f"카카오 로그인 실패: {profile_json.get('msg')}")
+        return redirect("Member:login")
+
+    kakao_id = profile_json.get("id")
+    if not kakao_id:
+        messages.error(request, "카카오 로그인 실패: 사용자 ID를 찾을 수 없습니다.")
+        return redirect("Member:login")
+        
+    nickname = profile_json.get("kakao_account", {}).get("profile", {}).get("nickname")
+    if not nickname:
+        # 닉네임은 필수 동의 항목이 아닌 경우가 있으므로, 없으면 기본값 설정
+        nickname = f"사용자_{kakao_id}"
+
+    try:
+        user = Member.objects.get(m_username=f"kakao_{kakao_id}")
+        # --- Existing user: log in ---
+        request.session['member_id'] = int(user.member_id)
+        request.session['member_username'] = user.m_username
+        messages.success(request, f"{user.m_name}님 환영합니다!")
+        return redirect("Main:main")
+    except Member.DoesNotExist:
+        # --- New user: redirect to registration step 2 ---
+        request.session['social_signup_data'] = {
+            'm_username': f"kakao_{kakao_id}",
+            'm_name': nickname,
+            'm_provider': 'kakao',
+        }
+        return redirect('Member:registers')
+
+
 
 # 아이디 중복 확인
 def check_username(request):
