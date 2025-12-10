@@ -162,7 +162,7 @@
 
 /* 모든 카드 안의 차트 */
 .visual-card canvas {
-    width: 100%;
+    width: 50%;
     height: 280px !important;
     margin-top: 10px;
     display: block;

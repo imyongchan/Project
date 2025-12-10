@@ -1,6 +1,6 @@
 import json
 from datetime import date
-
+import numpy as np
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
@@ -43,6 +43,8 @@ def stats_home(request):
     # 5. 선택된 산재(사고) 결정
     selected_individual = None
     industry = None
+
+    show_detail = bool(request.GET.get('accident_id'))
 
     if individual_list.exists():
         selected_accident_id = request.GET.get('accident_id')
@@ -102,13 +104,22 @@ def stats_home(request):
     summary8 = get_stats8(industry_name8)
     summary9 = get_stats9(industry_name9)
 
-    # 8. 종합 위험도 분석 
+    def convert_np(obj):
+        if isinstance(obj, list):
+            return [convert_np(v) for v in obj]
+        elif isinstance(obj, dict):
+            return {k: convert_np(v) for k, v in obj.items()}
+        elif isinstance(obj, (np.float64, np.float32)):
+            return float(obj)
+        else:
+            return obj
+
     risk_analysis = get_risk_analysis(
         industry_name=industry.i_industry_type2,
         age=age,
         gender=member.m_sex
     )
-
+    risk_analysis = convert_np(risk_analysis)
     # 9. JS에서 사용할 데이터는 JSON 직렬화
     summary6_json = json.dumps(summary6, ensure_ascii=False)
     summary7_json = json.dumps(summary7, ensure_ascii=False)
@@ -133,4 +144,5 @@ def stats_home(request):
         "summary8_json": summary8_json,
         "summary9_json": summary9_json,
         "risk_analysis": risk_analysis,  
+        "show_detail": show_detail,
     })

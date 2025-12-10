@@ -146,9 +146,17 @@ function GenderChart1(male, female) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "bottom" }
-                
-                
+                  legend: {
+                    position: "bottom",
+                    labels: {
+                        font: {
+                            size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
+                            weight: "600"
+                        },
+                        color: "#111827"  // 글자색 (선택사항)
+                    }
+                },
+                    
             }
         }
     });
@@ -182,7 +190,16 @@ function GenderChart2(maleFatal, femaleFatal) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "bottom" }
+                 legend: {
+                    position: "bottom",
+                    labels: {
+                        font: {
+                            size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
+                            weight: "600"
+                        },
+                        color: "#111827"  // 글자색 (선택사항)
+                    }
+                },
             }
         }
     });
@@ -368,7 +385,14 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
             cutout,   // 도넛 안쪽 구멍 크기
             plugins: {
                 legend: {
-                    position: "bottom"
+                    position: "bottom",
+                    labels: {
+                        font: {
+                            size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
+                            weight: "600"
+                        },
+                        color: "#111827"  // 글자색 (선택사항)
+                    }
                 },
                 tooltip: {
                     callbacks: {
@@ -383,7 +407,7 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
                 datalabels: {
                     color: "#111827",
                     font: {
-                        size: 14,
+                        size: 15,
                         weight: "600"
                     },
                     formatter: (value, ctx) => {
@@ -403,7 +427,7 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
 // 발생형태 TOP 파이차트
 function RiskAccidentPieChart(topList) {
     const labels = (topList || []).map(item => item.name);
-    const data   = (topList || []).map(item => item.count || 0);
+    const data   = (topList || []).map(item => item.percentage || 0);
 
     createPieChart("riskAccident", "riskAccidentPie", labels, data, {
         colors: ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],
@@ -414,7 +438,7 @@ function RiskAccidentPieChart(topList) {
 // 질병형태 TOP 파이차트
 function RiskDiseasePieChart(topList) {
     const labels = (topList || []).map(item => item.name);
-    const data   = (topList || []).map(item => item.count || 0);
+    const data   = (topList || []).map(item => item.percentage || 0);
 
     createPieChart("riskDisease", "riskDiseasePie", labels, data, {
         colors: ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],

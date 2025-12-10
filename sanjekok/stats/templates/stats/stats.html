@@ -6,7 +6,6 @@
     <title>맞춤 산재 통계</title>
     <link rel="stylesheet" href="{% static 'CSS/stats/stats.css' %}">
     <style>
-
     </style>
 </head>
 <body>
@@ -22,7 +21,22 @@
                     {{ industry.i_industry_type2 }} / {{ member.m_sex }} / {{ age }}세
                 </p>
                 <!-- 나의 산재 눌렀을 때 나오는 추가 상세 정보 -->
-                <div id="injuryDetail"></div>
+                <div id="injuryDetail">
+                    {% if show_detail and selected_individual %}
+                        {% if selected_individual.i_title %}
+                            <p>산재명: {{ selected_individual.i_title }}</p>
+                        {% endif %}
+                        {% if selected_individual.i_injury %}
+                            <p>발생 형태: {{ selected_individual.i_injury }}</p>
+                        {% endif %}
+                        {% if selected_individual.i_disease_type %}
+                            <p>질병: {{ selected_individual.i_disease_type }}</p>
+                        {% endif %}
+                        {% if selected_individual.i_accident_date %}
+                            <p>발생일자: {{ selected_individual.i_accident_date }}</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div class="profile-edit-btn">
@@ -30,7 +44,7 @@
             <!-- 드롭다운 -->
             <ul id="injuryDropdown" class="dropdown hidden">
                 {% for ind in individual_list %}
-                <li data-id="{{ ind.id }}"
+                <li data-accident-id="{{ ind.accident_id }}"
                     data-title="{{ ind.i_title }}"
                     data-injury="{{ ind.i_injury }}"
                     data-disease="{{ ind.i_disease_type }}"
@@ -137,11 +151,14 @@
 
     <!-- 3. 통계 시각화 영역 -->
     <section id="stats-visual-area" class="stats-visual hidden"
-        data-summary6='{{ summary6_json}}'
-        data-summary7='{{ summary7_json}}'
-        data-summary8='{{ summary8_json}}'
-        data-summary9='{{ summary9_json}}'
-        data-age-band="{{ age_group }}">
+        data-summary6='{{ summary6_json }}'
+        data-summary7='{{ summary7_json }}'
+        data-summary8='{{ summary8_json }}'
+        data-summary9='{{ summary9_json }}'
+        data-age-band="{{ age_group }}"
+        data-has-selection="{% if show_detail and selected_individual %}1{% else %}0{% endif %}"
+        data-selected-injury="{% if show_detail and selected_individual and selected_individual.i_injury %}{{ selected_individual.i_injury }}{% endif %}"
+        data-selected-disease="{% if show_detail and selected_individual and selected_individual.i_disease_type %}{{ selected_individual.i_disease_type }}{% endif %}">
         
         <div class="visual-grid">
             <!-- 내 업종 재해율 -->
@@ -212,11 +229,10 @@
                 <canvas id="diseaseChart2"></canvas>
             </div>
 
-                        <!-- 종합 위험도 평가 카드 -->
+            <!-- 종합 위험도 평가 카드 -->
             <div class="visual-card highlight" id="card-risk">
                 <div class="risk-header">
                     <h3 style="margin: 0;">종합 위험도 평가</h3>
-                    
                 </div>
                 
                 {% if risk_analysis and risk_analysis.has_data %}
@@ -235,18 +251,18 @@
                         <div class="risk-category">
                             <div class="risk-category-title">
                                 <span class="risk-icon">⚠️</span>
-                                발생형태 TOP 3
+                                발생형태 TOP 5
                             </div>
                             <div class="risk-category-inner">
                                 <div class="risk-list">
-                                    {% for item in risk_analysis.injury_top3 %}
+                                    {% for item in risk_analysis.injury_top5 %}
                                     <div class="risk-item">
                                         <span class="risk-rank rank-{{ item.rank }}">{{ item.rank }}</span>
                                         <span class="risk-name">{{ item.name }}</span>
                                         <span class="risk-percentage">{{ item.percentage }}%</span>
                                     </div>
                                     {% endfor %}
-                            </div>
+                                </div>
                                 <div class="risk-chart-wrap">
                                     <canvas id="riskAccidentPie"></canvas>
                                 </div>
@@ -257,20 +273,21 @@
                         <div class="risk-category">
                             <div class="risk-category-title">
                                 <span class="risk-icon">🏥</span>
-                                질병형태 TOP 3
+                                질병형태 TOP 5
                             </div>
                             <div class="risk-category-inner">
                                 <div class="risk-list">
-                                {% for item in risk_analysis.disease_top3 %}
-                                <div class="risk-item">
-                                    <span class="risk-rank rank-{{ item.rank }}">{{ item.rank }}</span>
-                                    <span class="risk-name">{{ item.name }}</span>
-                                    <span class="risk-percentage">{{ item.percentage }}%</span>
+                                    {% for item in risk_analysis.disease_top5 %}
+                                    <div class="risk-item">
+                                        <span class="risk-rank rank-{{ item.rank }}">{{ item.rank }}</span>
+                                        <span class="risk-name">{{ item.name }}</span>
+                                        <span class="risk-percentage">{{ item.percentage }}%</span>
+                                    </div>
+                                    {% endfor %}
                                 </div>
-                                {% endfor %}
-                            </div>
-                            <div class="risk-chart-wrap">
-                                <canvas id="riskDiseasePie"></canvas>
+                                <div class="risk-chart-wrap">
+                                    <canvas id="riskDiseasePie"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -285,10 +302,30 @@
     </section>
 </div>
 
+{% if risk_analysis and risk_analysis.has_data %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Django context → JS 객체로 전달
+    const riskInjuryTop5 = {{ risk_analysis.injury_top5|safe }};
+    const riskDiseaseTop5 = {{ risk_analysis.disease_top5|safe }};
+
+    // ✅ 파이차트 렌더링
+    if (window.RiskAccidentPieChart && riskInjuryTop5?.length) {
+        window.RiskAccidentPieChart(riskInjuryTop5);
+    }
+    if (window.RiskDiseasePieChart && riskDiseaseTop5?.length) {
+        window.RiskDiseasePieChart(riskDiseaseTop5);
+    }
+});
+</script>
+{% endif %}
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="{% static 'js/stats/chart.js' %}"></script>
 <script src="{% static 'js/stats/stats.js' %}"></script>
+
+
 {% endblock %}
 </body>
 </html>
