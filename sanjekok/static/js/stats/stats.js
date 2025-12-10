@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const dropdown = document.getElementById("injuryDropdown");
     const periodButtons = document.querySelectorAll(".period-btn");
     const visualArea = document.getElementById("stats-visual-area");
-    const injuryDetail = document.getElementById("injuryDetail");
     const accidentSummary = document.getElementById("accidentSummary");
     const fatalSummary = document.getElementById("fatalSummary");
     const genderSummary1 = document.getElementById("genderSummary1");
@@ -375,6 +374,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 // selectedDiseaseType이 없으면 질병 카드 숨김
                 if (cardDisease) cardDisease.style.display = "none";
                 if (cardDiseaseFatal) cardDiseaseFatal.style.display = "none";
+            }
+
+            if (riskInjuryTop5 && window.RiskAccidentPieChart) {
+                window.RiskAccidentPieChart(riskInjuryTop5);
+            }
+            if (riskDiseaseTop5 && window.RiskDiseasePieChart) {
+                window.RiskDiseasePieChart(riskDiseaseTop5);
             }
         });
     });

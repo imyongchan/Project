@@ -146,9 +146,17 @@ function GenderChart1(male, female) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "bottom" }
-                
-                
+                  legend: {
+                    position: "bottom",
+                    labels: {
+                        font: {
+                            size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
+                            weight: "600"
+                        },
+                        color: "#111827"  // 글자색 (선택사항)
+                    }
+                },
+                    
             }
         }
     });
@@ -182,7 +190,16 @@ function GenderChart2(maleFatal, femaleFatal) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: "bottom" }
+                 legend: {
+                    position: "bottom",
+                    labels: {
+                        font: {
+                            size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
+                            weight: "600"
+                        },
+                        color: "#111827"  // 글자색 (선택사항)
+                    }
+                },
             }
         }
     });
@@ -368,7 +385,14 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
             cutout,   // 도넛 안쪽 구멍 크기
             plugins: {
                 legend: {
-                    position: "bottom"
+                    position: "bottom",
+                    labels: {
+                        font: {
+                            size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
+                            weight: "600"
+                        },
+                        color: "#111827"  // 글자색 (선택사항)
+                    }
                 },
                 tooltip: {
                     callbacks: {
@@ -383,7 +407,7 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
                 datalabels: {
                     color: "#111827",
                     font: {
-                        size: 14,
+                        size: 15,
                         weight: "600"
                     },
                     formatter: (value, ctx) => {
