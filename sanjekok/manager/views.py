@@ -95,7 +95,7 @@ def delete(request, member_id):
     member = get_object_or_404(Member, member_id=member_id)
     member.m_status = 0  # 탈퇴 상태로 변경
     member.save()
-    return redirect('manager_member.html')
+    return redirect('Manager:member')
 
 def review(request):
 
