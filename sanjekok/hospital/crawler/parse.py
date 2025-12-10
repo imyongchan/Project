@@ -8,7 +8,7 @@ from typing import List, Dict
 def _extract_items(raw_json: dict):
     """
     응답 JSON에서 item 배열만 꺼내기.
-    (response.body.items.item / body.items / items 등 여러 형태를 다 받도록 처리)
+    (response.body.items.item / body.items / items 등 여러 형태를 처리)
     """
     if not raw_json:
         return []
@@ -39,8 +39,11 @@ def parse_hospitals(raw_json: dict) -> List[Dict]:
     """
     SAFEMAP 산재지정병원 API JSON → Hospital 테이블에 넣을 dict 리스트로 변환
 
-    IF_0025 필드명은 실제 스펙에 따라 약간 달라질 수 있어서,
-    대소문자나 다른 이름 후보들을 순서대로 시도한다.
+    주소는:
+      - 지번주소(adres/ADRES)가 있으면 우선 사용
+      - 없으면 도로명주소(rn_adres/RN_ADRES)를 사용
+
+    이름이나 주소가 하나라도 없으면 해당 레코드는 버린다.
     """
     items = _extract_items(raw_json)
     results: List[Dict] = []
@@ -59,16 +62,22 @@ def parse_hospitals(raw_json: dict) -> List[Dict]:
             or ""
         )
 
-        # 주소(소재지)
-        address = (
+        # 지번주소
+        jibun_addr = (
             it.get("adres")
             or it.get("ADRES")
-            or it.get("addr")
-            or it.get("ADDR")
-            or it.get("locplc")
-            or it.get("LOCPLC")
             or ""
         )
+
+        # 도로명주소
+        road_addr = (
+            it.get("rn_adres")
+            or it.get("RN_ADRES")
+            or ""
+        )
+
+        # 지번주소 우선, 없으면 도로명주소
+        address = (jibun_addr or road_addr).strip()
 
         # 전화번호
         phone = (
@@ -81,26 +90,41 @@ def parse_hospitals(raw_json: dict) -> List[Dict]:
 
         # 종별 (병원/의원/상급종합병원 등)
         hosp_type = (
-            it.get("hosp_ty")
-            or it.get("HOSP_TY")
-            or it.get("fclty_ty")
+            it.get("fclty_ty")
             or it.get("FCLTY_TY")
+            or it.get("hosp_ty")
+            or it.get("HOSP_TY")
             or ""
         )
 
         # 부가기능 / 재활인증 / 진폐요양 / 진료제한 / 평가연도 등
-        rc = (it.get("rc") or it.get("RC") or "")
-        rc_info = (it.get("rc_info") or it.get("RC_INFO") or "")
+        rc = (
+            it.get("coniosis")
+            or it.get("CONIOSIS")
+            or it.get("rc")
+            or it.get("RC")
+            or ""
+        )
+
+        rc_info = (
+            it.get("rm_cd")
+            or it.get("RM_CD")
+            or it.get("rc_info")
+            or it.get("RC_INFO")
+            or ""
+        )
+
         tr = (it.get("tr") or it.get("TR") or "")
         ei = (it.get("ei") or it.get("EI") or "")
 
-        if not name and not address:
+        # 이름이나 주소 둘 중 하나라도 없으면 버림
+        if not name or not address:
             continue
 
         results.append(
             {
                 "h_hospital_name": name.strip(),
-                "h_address": address.strip(),
+                "h_address": address,  # 이미 strip 적용
                 "h_phone_number": phone.strip(),
                 "h_hospital_type": hosp_type.strip(),
                 "h_rc": rc.strip() if isinstance(rc, str) else rc,
