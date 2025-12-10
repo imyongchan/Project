@@ -6,7 +6,7 @@
     <title>맞춤 산재 통계</title>
     <link rel="stylesheet" href="{% static 'CSS/stats/stats.css' %}">
     <style>
-        .hidden { display: none !important; }
+
     </style>
 </head>
 <body>
@@ -211,7 +211,68 @@
                 <canvas id="diseaseChart2"></canvas>
             </div>
 
-            <div class="visual-card highlight">종합 위험도 평가</div>
+                        <!-- 종합 위험도 평가 카드 -->
+            <div class="visual-card highlight" id="card-risk">
+                <div class="risk-header">
+                    <h3 style="margin: 0;">종합 위험도 평가</h3>
+                    
+                </div>
+                
+                {% if risk_analysis and risk_analysis.has_data %}
+                <div class="risk-section">
+                    <p class="risk-condition">
+                        <strong>{{ risk_analysis.industry }}</strong>, 
+                        <strong>{{ risk_analysis.age_group }}</strong>, 
+                        <strong>{{ risk_analysis.gender }}</strong> 조건에서<br>
+                        최근 3년간 가장 많이 발생한 위험 요인입니다.
+                    </p>
+                    
+                    <div class="risk-grid">
+                        <!-- 발생형태 TOP 3 -->
+                        <div class="risk-category">
+                            <div class="risk-category-title">
+                                <span class="risk-icon">⚠️</span>
+                                발생형태 TOP 3
+                            </div>
+                            {% if risk_analysis.injury_top3 %}
+                                {% for item in risk_analysis.injury_top3 %}
+                                <div class="risk-item">
+                                    <span class="risk-rank rank-{{ item.rank }}">{{ item.rank }}</span>
+                                    <span class="risk-name">{{ item.name }}</span>
+                                    <span class="risk-percentage">{{ item.percentage }}%</span>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="risk-no-data">데이터가 없습니다</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- 질병형태 TOP 3 -->
+                        <div class="risk-category">
+                            <div class="risk-category-title">
+                                <span class="risk-icon">🏥</span>
+                                질병형태 TOP 3
+                            </div>
+                            {% if risk_analysis.disease_top3 %}
+                                {% for item in risk_analysis.disease_top3 %}
+                                <div class="risk-item">
+                                    <span class="risk-rank rank-{{ item.rank }}">{{ item.rank }}</span>
+                                    <span class="risk-name">{{ item.name }}</span>
+                                    <span class="risk-percentage">{{ item.percentage }}%</span>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="risk-no-data">데이터가 없습니다</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="risk-no-data" style="padding: 40px;">
+                    충분한 통계 데이터가 없습니다
+                </div>
+                {% endif %}
+            </div>
         </div>
     </section>
 </div>
