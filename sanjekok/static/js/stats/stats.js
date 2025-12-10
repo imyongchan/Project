@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let fatalStatsByPeriod = null;
     let diseaseStatsByPeriod = null;
     let diseaseFatalStatsByPeriod = null;
+    const memberageband = visualArea ? (visualArea.dataset.ageBand || null) : null;
 
     /* ========================= 
      * 0. 백엔드에서 넘긴 JSON 파싱
@@ -102,19 +103,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 selectedInjuryType = (injury && injury !== "None") ? injury : null;
                 selectedDiseaseType = (disease && disease !== "None") ? disease : null;
 
-                // 분석기간 초기화 + 통계 숨김 + 요약 초기화
+                // 분석기간 초기화 + 통계 숨김 
                 periodButtons.forEach(b => b.classList.remove("active"));
                 if (visualArea) visualArea.classList.add("hidden");
-                if (accidentSummary) accidentSummary.textContent = "";
-                if (fatalSummary) fatalSummary.textContent = "";
-                if (genderSummary1) genderSummary1.textContent = "";
-                if (genderSummary2) genderSummary2.textContent = "";
-                if (ageSummary1) ageSummary1.innerHTML = "";
-                if (ageSummary2) ageSummary2.innerHTML = "";
-                if (injurySummary1) injurySummary1.innerHTML = "";
-                if (injurySummary2) injurySummary2.innerHTML = "";
-                if (diseaseSummary1) diseaseSummary1.innerHTML = "";
-                if (diseaseSummary2) diseaseSummary2.innerHTML = "";
+
 
                 dropdown.classList.add("hidden");
             });
@@ -177,14 +169,16 @@ document.addEventListener("DOMContentLoaded", () => {
              * ========================= */
             if (accidentSummary) {
                 const rateText = isNaN(accRate) ? "-" : accRate.toFixed(2);
-                accidentSummary.innerHTML = `<strong style="font-size:24px;color:#14b6f6;">${rateText}</strong>` +
-                    `<span style="font-size:13px;color:#64748b;margin-left:6px;">‰ / 재해자수 ${accCount.toLocaleString()}명</span>`;
+                accidentSummary.innerHTML = `<strong style="font-size:27px;color:#14b6f6;">${rateText}</strong>` +
+                    `<span style="font-size:20px;color:#64748b;margin-left:6px;">‰ 
+                     재해자수 ${accCount.toLocaleString()}명</span>`;
             }
 
             if (fatalSummary) {
                 const rateText = isNaN(fatalRate) ? "-" : fatalRate.toFixed(2);
-                fatalSummary.innerHTML = `<strong style="font-size:24px;color:#14b6f6;">${rateText}</strong>` +
-                    `<span style="font-size:13px;color:#64748b;margin-left:6px;">명 / 사망자수 ${fatalCount.toLocaleString()}명</span>`;
+                fatalSummary.innerHTML = `<strong style="font-size:27px;color:#14b6f6;">${rateText}</strong>` +
+                    `<span style="font-size:20px;color:#64748b;margin-left:6px;">명
+                     사망자수 ${fatalCount.toLocaleString()}명</span>`;
             }
 
             /* ========================= 
@@ -193,8 +187,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (genderSummary1) {
                 const maleRateText = isNaN(maleRate) ? "-" : maleRate.toFixed(1);
                 const femaleRateText = isNaN(femaleRate) ? "-" : femaleRate.toFixed(1);
-                genderSummary1.textContent = `남자: ${male.toLocaleString()}명 (${maleRateText}%), ` +
-                    `여자: ${female.toLocaleString()}명 (${femaleRateText}%)`;
+                genderSummary1.innerHTML = `<span style="font-size:20px;"> 남자: ${male.toLocaleString()}명 (${maleRateText}%), ` +
+                    `여자: ${female.toLocaleString()}명 (${femaleRateText}%) </span>`;
                 if (window.GenderChart1) {
                     window.GenderChart1(male, female);
                 }
@@ -203,8 +197,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (genderSummary2) {
                 const maleRateText2 = isNaN(maleRate2) ? "-" : maleRate2.toFixed(1);
                 const femaleRateText2 = isNaN(femaleRate2) ? "-" : femaleRate2.toFixed(1);
-                genderSummary2.textContent = `남자: ${male2.toLocaleString()}명 (${maleRateText2}%), ` +
-                    `여자: ${female2.toLocaleString()}명 (${femaleRateText2}%)`;
+                genderSummary2.innerHTML = `<span style="font-size:20px;"> 남자: ${male2.toLocaleString()}명 (${maleRateText2}%), ` +
+                    `여자: ${female2.toLocaleString()}명 (${femaleRateText2}%) </span>`;
                 if (window.GenderChart2) {
                     window.GenderChart2(male2, female2);
                 }
@@ -214,10 +208,10 @@ document.addEventListener("DOMContentLoaded", () => {
              * 2-3. 연령대별 현황 + 차트
              * ========================= */
             if (window.AgeChart1) {
-                window.AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p);
+                window.AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p,memberageband);
             }
             if (window.AgeChart2) {
-                window.AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa);
+                window.AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa,memberageband);
             }
 
             /* ========================= 
@@ -242,15 +236,15 @@ document.addEventListener("DOMContentLoaded", () => {
                             const myRank = rankMap[selectedInjuryType];
                             if (myRank) {
                                 if (myRank <= 10) {
-                                    html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                        `<strong>${myRank}위</strong> 입니다.`;
+                                    html = `<span style="font-size:20px;"> 나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                        `<strong>${myRank}위</strong> 입니다. </span>`;
                                 } else {
-                                    html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                        `<strong>${myRank}위</strong>로, TOP 10에는 포함되지 않습니다.`;
+                                    html = `<span style="font-size:20px;">나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                        `<strong>${myRank}위</strong>로, TOP 10에는 포함되지 않습니다. </span>`;
                                 }
                             } else {
-                                html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                    `해당 업종 통계에 집계되어 있지 않습니다.`;
+                                html = `<span style="font-size:20px;">나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                    `해당 업종 통계에 집계되어 있지 않습니다. </span>`;
                             }
                         }
                         
@@ -279,16 +273,16 @@ document.addEventListener("DOMContentLoaded", () => {
                             const myRank = rankMap[selectedInjuryType];
                             if (myRank) {
                                 if (myRank <= 10) {
-                                    html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                        `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.`;
+                                    html = `<span style="font-size:20px;">나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                        `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.</span>`;
                                 } else {
-                                    html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                    html = `<span style="font-size:20px;">나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
                                         `사망 재해 기준으로 <strong>${myRank}위</strong>이며, ` +
-                                        `TOP 10에는 포함되지 않습니다.`;
+                                        `TOP 10에는 포함되지 않습니다.</span>`;
                                 }
                             } else {
-                                html = `나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
-                                    `사망 재해 통계에 집계되어 있지 않습니다.`;
+                                html = `<span style="font-size:20px;">나의 부상형태(<strong>${selectedInjuryType}</strong>)는 ` +
+                                    `사망 재해 통계에 집계되어 있지 않습니다.</span>`;
                             }
                         }
                         
@@ -326,15 +320,15 @@ document.addEventListener("DOMContentLoaded", () => {
                             const myRank = rankMap[selectedDiseaseType];
                             if (myRank) {
                                 if (myRank <= 10) {
-                                    html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                        `<strong>${myRank}위</strong> 입니다.`;
+                                    html = `<span style="font-size:20px;"> 나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                        `<strong>${myRank}위</strong> 입니다.</span>`;
                                 } else {
-                                    html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                        `<strong>${myRank}위</strong>로, TOP 10에는 포함되지 않습니다.`;
+                                    html = `<span style="font-size:20px;"> 나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                        `<strong>${myRank}위</strong>로, TOP 10에는 포함되지 않습니다.</span>`;
                                 }
                             } else {
-                                html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                    `해당 업종 질병 통계에 집계되어 있지 않습니다.`;
+                                html = ` <span style="font-size:20px;">나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                    `해당 업종 질병 통계에 집계되어 있지 않습니다.</span>`;
                             }
                         }
                         
@@ -363,16 +357,16 @@ document.addEventListener("DOMContentLoaded", () => {
                             const myRank = rankMap[selectedDiseaseType];
                             if (myRank) {
                                 if (myRank <= 10) {
-                                    html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                        `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.`;
+                                    html = `<span style="font-size:20px;">나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                        `사망 재해 기준으로 <strong>${myRank}위</strong> 입니다.</span>`;
                                 } else {
-                                    html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                    html = `<span style="font-size:20px;">나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
                                         `사망 재해 기준으로 <strong>${myRank}위</strong>이며, ` +
-                                        `TOP 10에는 포함되지 않습니다.`;
+                                        `TOP 10에는 포함되지 않습니다.</span>`;
                                 }
                             } else {
-                                html = `나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
-                                    `질병 사망 통계에 집계되어 있지 않습니다.`;
+                                html = `<span style="font-size:20px;">나의 질병(<strong>${selectedDiseaseType}</strong>)은 ` +
+                                    `질병 사망 통계에 집계되어 있지 않습니다.</span>`;
                             }
                         }
                         

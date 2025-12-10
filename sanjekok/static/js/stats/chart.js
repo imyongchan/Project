@@ -66,6 +66,11 @@ function createHorizontalBarChart(chartRefName, canvasId, labels, data, options 
             indexAxis: "y",              // 가로형
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    right: 70   // 필요하면 50~60까지 늘려도 됨
+                }
+            },            
             plugins: {
                 legend: { display: !!labelVisible },
                 tooltip: {
@@ -78,10 +83,11 @@ function createHorizontalBarChart(chartRefName, canvasId, labels, data, options 
                     anchor: "end",
                     align: "right",
                     clamp: true,
+                    
                     formatter: (v) => `${(v ?? 0).toLocaleString()}명`,
                     color: "#111827",
                     font: {
-                        size: 13,      // 글씨 크게
+                        size: 17,      // 글씨 크게
                         weight: "600"
                     }
                 }
@@ -94,13 +100,13 @@ function createHorizontalBarChart(chartRefName, canvasId, labels, data, options 
                         color: "rgba(148, 163, 184, 0.25)"
                     },
                     ticks: {
-                        font: { size: 13 },
+                        font: { size: 20 },
                     }
                 },
                 y: {
                     grid: { display: false },
                     ticks: {
-                        font: { size: 13 },
+                        font: { size: 20 },
                     }
                 }
             }
@@ -141,6 +147,8 @@ function GenderChart1(male, female) {
             maintainAspectRatio: false,
             plugins: {
                 legend: { position: "bottom" }
+                
+                
             }
         }
     });
@@ -312,6 +320,111 @@ function DiseaseChart2(topList, highlightLabel = null) {
     });
 }
 
+
+function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
+    const {
+        colors = ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],  // 최대 TOP5
+        cutout = "55%"  // 도넛 형태, 필요 없으면 "0%"로 바꾸면 완전 파이
+    } = options;
+
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) {
+        console.warn("canvas 없음:", canvasId);
+        return;
+    }
+
+    const ctx = canvas.getContext("2d");
+    const existing = charts[chartRefName];
+
+    // 데이터 없으면 차트 제거
+    if (!labels || !labels.length || !data || !data.length) {
+        if (existing) {
+            existing.destroy();
+            charts[chartRefName] = null;
+        }
+        return;
+    }
+
+    if (existing) {
+        existing.data.labels = labels;
+        existing.data.datasets[0].data = data;
+        existing.update();
+        return;
+    }
+
+    charts[chartRefName] = new Chart(ctx, {
+        type: "doughnut",       // 필요하면 "pie" 로 변경 가능
+        data: {
+            labels,
+            datasets: [{
+                data,
+                backgroundColor: colors.slice(0, labels.length),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout,   // 도넛 안쪽 구멍 크기
+            plugins: {
+                legend: {
+                    position: "bottom"
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => {
+                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0) || 1;
+                            const val = ctx.raw ?? 0;
+                            const percent = (val / total * 100).toFixed(1);
+                            return `${ctx.label}: ${percent}% (${val.toLocaleString()}명)`;
+                        }
+                    }
+                },
+                datalabels: {
+                    color: "#111827",
+                    font: {
+                        size: 14,
+                        weight: "600"
+                    },
+                    formatter: (value, ctx) => {
+                        const total = ctx.chart.data.datasets[0].data
+                            .reduce((a, b) => a + b, 0) || 1;
+                        const percent = value / total * 100;
+                        return `${percent.toFixed(1)}%`;
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+
+// 발생형태 TOP 파이차트
+function RiskAccidentPieChart(topList) {
+    const labels = (topList || []).map(item => item.name);
+    const data   = (topList || []).map(item => item.count || 0);
+
+    createPieChart("riskAccident", "riskAccidentPie", labels, data, {
+        colors: ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],
+        cutout: "55%"
+    });
+}
+
+// 질병형태 TOP 파이차트
+function RiskDiseasePieChart(topList) {
+    const labels = (topList || []).map(item => item.name);
+    const data   = (topList || []).map(item => item.count || 0);
+
+    createPieChart("riskDisease", "riskDiseasePie", labels, data, {
+        colors: ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],
+        cutout: "55%"
+    });
+}
+
+
+
+
 /* =========================
  *  전역에서 호출할 수 있게 연결
  * ========================= */
@@ -324,3 +437,5 @@ window.InjuryChart1  = InjuryChart1;
 window.InjuryChart2  = InjuryChart2;
 window.DiseaseChart1 = DiseaseChart1;
 window.DiseaseChart2 = DiseaseChart2;
+window.RiskAccidentPieChart = RiskAccidentPieChart;
+window.RiskDiseasePieChart  = RiskDiseasePieChart;
