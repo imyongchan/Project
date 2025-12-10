@@ -3,13 +3,27 @@
 let currentCenter = null;
 let currentSort = "distance";
 
+// Django 템플릿에서 전달한 API URL (없으면 기본값 사용)
+const hospitalApiUrl =
+  document.body.dataset.hospitalApiUrl || "/hospital/api/";
+
+// 메시지 영역에 텍스트 표시
+function setMessage(text) {
+  const msgEl = document.getElementById("hospital-message");
+  if (!msgEl) return;
+  msgEl.textContent = text || "";
+}
+
 // Ajax로 병원 리스트 가져오기
 function loadHospitals() {
   if (!currentCenter) return;
 
   const lat = currentCenter.lat;
   const lng = currentCenter.lng;
-  const url = "/hospital/api/?lat=" + lat + "&lng=" + lng + "&sort=" + currentSort;
+  const url =
+    hospitalApiUrl + "?lat=" + lat + "&lng=" + lng + "&sort=" + currentSort;
+
+  setMessage("전국 산재 지정병원 중에서 가까운 병원 Top 10을 찾는 중입니다...");
 
   fetch(url)
     .then(function (res) {
@@ -18,13 +32,22 @@ function loadHospitals() {
     .then(function (data) {
       if (data.error) {
         console.error(data.error);
+        setMessage("병원 조회 중 오류가 발생했습니다: " + data.error);
+        renderHospitalList([]);
         return;
       }
       const hospitals = data.hospitals || [];
       renderHospitalList(hospitals);
+      if (hospitals.length === 0) {
+        setMessage("주변에 검색된 산재지정의료기관이 없습니다.");
+      } else {
+        setMessage("");
+      }
     })
     .catch(function (err) {
       console.error("병원 조회 실패", err);
+      setMessage("병원 조회 실패: " + err);
+      renderHospitalList([]);
     });
 }
 
@@ -64,13 +87,28 @@ function initUIEvents() {
   const sortBtn = document.getElementById("sortBtn");
   const sortMenu = document.getElementById("sortMenu");
 
+  function clearActiveButtons() {
+    [btnHome, btnWork, btnAcc].forEach(function (btn) {
+      if (!btn) return;
+      btn.classList.remove("active");
+    });
+  }
+
   function bindLocationButton(btn) {
     if (!btn || btn.disabled) return;
     btn.addEventListener("click", function () {
       const lat = parseFloat(btn.dataset.lat);
       const lng = parseFloat(btn.dataset.lng);
-      if (isNaN(lat) || isNaN(lng)) return;
+      if (isNaN(lat) || isNaN(lng)) {
+        setMessage("좌표 정보가 올바르지 않습니다.");
+        return;
+      }
       currentCenter = { lat: lat, lng: lng };
+
+      // 어떤 위치 버튼을 선택했는지 표시(선택 상태)
+      clearActiveButtons();
+      btn.classList.add("active");
+
       loadHospitals();
     });
   }
@@ -80,25 +118,27 @@ function initUIEvents() {
   bindLocationButton(btnAcc);
 
   // 정렬 드롭다운
-  sortBtn.addEventListener("click", function () {
-    sortMenu.classList.toggle("open");
-  });
-
-  sortMenu.querySelectorAll(".sort-option").forEach(function (item) {
-    item.addEventListener("click", function () {
-      const sort = item.dataset.sort;
-      currentSort = sort;
-
-      let label = "거리순";
-      if (sort === "rating") label = "평점순";
-      if (sort === "review") label = "리뷰 많은 순";
-
-      sortBtn.textContent = label + " ▼";
-      sortMenu.classList.remove("open");
-
-      loadHospitals();
+  if (sortBtn && sortMenu) {
+    sortBtn.addEventListener("click", function () {
+      sortMenu.classList.toggle("open");
     });
-  });
+
+    sortMenu.querySelectorAll(".sort-option").forEach(function (item) {
+      item.addEventListener("click", function () {
+        const sort = item.dataset.sort;
+        currentSort = sort;
+
+        let label = "거리순";
+        if (sort === "rating") label = "평점순";
+        if (sort === "review") label = "리뷰 많은 순";
+
+        sortBtn.textContent = label + " ▼";
+        sortMenu.classList.remove("open");
+
+        loadHospitals();
+      });
+    });
+  }
 
   // 기본값: 집 → 근무지 → 사고지역 순으로 사용 가능한 버튼 자동 클릭
   if (btnHome && !btnHome.disabled) {
