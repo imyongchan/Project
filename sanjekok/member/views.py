@@ -8,6 +8,7 @@ from .decorators import login_required
 from . import services
 from django.conf import settings
 import requests
+from django.urls import reverse
 # Create your views here.
 
 # 회원가입 1단계
@@ -57,6 +58,7 @@ def registers(request):
             if social_signup_data:
                 member.m_username = social_signup_data['m_username']
                 member.m_provider = social_signup_data['m_provider']
+                member.m_provider_id = social_signup_data.get('m_provider_id')
                 member.m_password = make_password(None)
                 if 'social_signup_data' in request.session:
                     del request.session['social_signup_data']
@@ -70,11 +72,16 @@ def registers(request):
 
             messages.success(request, "회원가입이 완료되었습니다.")
             
-            # Log the user in after successful registration
             request.session['member_id'] = int(member.member_id)
             request.session['member_username'] = member.m_username
 
-            return redirect('Member:complete')
+            if member.m_provider != 'local':
+                # Social login user
+                messages.success(request, f"{member.m_name}님 환영합니다!")
+                return redirect("Main:main")
+            else:
+                # Regular user
+                return redirect('Member:complete')
 
         first_error_field = next(iter(form.errors)) if form.errors else None
         context = {
@@ -102,13 +109,13 @@ def login(request):
         request.session['member_id'] = int(member.member_id)
         request.session['member_username'] = member.m_username
 
-        messages.success(request, f"{member.m_username}님 환영합니다!")
+        messages.success(request, f"{member.m_name}님 환영합니다!")
         return redirect("Main:main")
     
 def kakao_login(request):
     kakao_rest_api_key = settings.KAKAO_REST_API_KEY
     
-    redirect_uri = "http://localhost:8000/member/kakao/callback/"
+    redirect_uri = settings.KAKAO_REDIRECT_URI
     return redirect(
         f"https://kauth.kakao.com/oauth/authorize?client_id={kakao_rest_api_key}&redirect_uri={redirect_uri}&response_type=code"
     )
@@ -125,7 +132,7 @@ def kakao_callback(request):
     print("--- DEBUG ---")
     print(f"Using KAKAO_REST_API_KEY: {kakao_rest_api_key}")
     print("---------------")
-    redirect_uri = "http://localhost:8000/member/kakao/callback/"
+    redirect_uri = settings.KAKAO_REDIRECT_URI
 
     # --- Access Token 요청 ---
     token_url = "https://kauth.kakao.com/oauth/token"
@@ -181,17 +188,18 @@ def kakao_callback(request):
 
     try:
         user = Member.objects.get(m_username=f"kakao_{kakao_id}")
-        # --- Existing user: log in ---
+        
         request.session['member_id'] = int(user.member_id)
         request.session['member_username'] = user.m_username
         messages.success(request, f"{user.m_name}님 환영합니다!")
         return redirect("Main:main")
     except Member.DoesNotExist:
-        # --- New user: redirect to registration step 2 ---
+        
         request.session['social_signup_data'] = {
             'm_username': f"kakao_{kakao_id}",
             'm_name': nickname,
             'm_provider': 'kakao',
+            'm_provider_id': kakao_id,
         }
         return redirect('Member:registers')
 
@@ -346,8 +354,33 @@ def mypage_individual_bulk_delete(request):
 # 로그아웃
 @login_required
 def logout(request):
+    member_id = request.session.get('member_id')
+    provider = 'local' # Default provider
+
+    if member_id:
+        try:
+            member = Member.objects.get(member_id=member_id)
+            provider = member.m_provider
+        except Member.DoesNotExist:
+            pass # Member not found, proceed with default logout
+
+    # 세션 데이터를 삭제하여 우리 앱에서 로그아웃
     request.session.flush()
     messages.success(request, "성공적으로 로그아웃되었습니다.", extra_tags='logout-alert')
+
+    # 소셜 사용자인 경우, 해당 소셜 서비스에서 로그아웃 처리
+    if provider == 'kakao':
+        kakao_rest_api_key = settings.KAKAO_REST_API_KEY
+        logout_redirect_uri = settings.KAKAO_LOGOUT_REDIRECT_URI
+        
+        kakao_logout_url = (
+            f"https://kauth.kakao.com/oauth/logout"
+            f"?client_id={kakao_rest_api_key}"
+            f"&logout_redirect_uri={logout_redirect_uri}"
+        )
+        return redirect(kakao_logout_url)
+
+    # 로컬 사용자는 메인 페이지로 리디렉션
     return redirect("Main:main")
 
 # 마이페이지 - 비밀번호 변경
