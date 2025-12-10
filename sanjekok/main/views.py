@@ -7,7 +7,7 @@ def main(request):
     api_key = settings.KOSIS_API_KEY
     req_url = "https://kosis.kr/openapi/Param/statisticsParameterData.do?"
 
-    by_age = "&itmId=16118AAD6+&objL1=ALL&objL2=ALL&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&orgId=118&tblId=DT_11806_N003"
+    by_age = "&itmId=16118AAD6+&objL1=ALL&objL2=ALL&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&orgId=118&tblId=DT_11806_N003"
     by_gender = "&itmId=16118AAD6+&objL1=ALL&objL2=ALL&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&orgId=118&tblId=DT_11806_N002"
     by_industry = "&itmId=16118AAD6_15118AI8AA+16118AAD6_15118AI8AB+16118AAD6_15118AI8AC+16118AAD6_15118AI8ACAC+16118AAD6_15118AI8ACAB+16118AAD6_15118AI8ACAD+&objL1=ALL&format=json&jsonVD=Y&prdSe=Y&startPrdDe=2021&endPrdDe=2023&orgId=118&tblId=DT_11806_N000"
     
@@ -15,28 +15,80 @@ def main(request):
     url_gender = f"{req_url}method=getList&apiKey={api_key}{by_gender}"
     url_industry = f"{req_url}method=getList&apiKey={api_key}{by_industry}"
 
-    # 연령별
+    # ===== 1) 연령별 =====
     data_age = requests.get(url_age).json()
 
+    # 연령대별 합계 초기화
+    age_total = {}
+
     for item in data_age:
-        if item.get("C1_NM") != "총계":
-            continue  # 총계가 아니면 건너뛰기
+        industry = item["C1_NM"]      # 산업명
+        age_group = item["C2_NM"]     # 연령대
+        year = int(item["PRD_DE"])    # 연도
+        value = int(float(item["DT"]))  # 값
 
-        result = float(item["DT"])
-    
-    # 업무별
+        # 총계 산업 제외, 2021~2023년만
+        if industry == "총계" or year < 2021 or year > 2023:
+            continue
 
-    # 성별
-    for item in data_age:
-        if item.get("C1_NM") != "총계":
-            continue  # 총계가 아니면 건너뛰기
+        if age_group == "계" or age_group == "분류불능":
+            continue
 
-        result = float(item["DT"])
+        if age_group not in age_total:
+            age_total[age_group] = 0
+
+        age_total[age_group] += value
+
+
+    # ===== 2) 산업별 =====
+    data_industry = requests.get(url_industry).json()
+
+    industry_total = {}
+
+    for item in data_industry:
+        industry = item["C1_NM"]   # 제조업, 건설업 등
+        kind = item["ITM_NM"]
+        value = int(float(item["DT"]))
+
+        if industry not in ("광업", "제조업", "전기·가스·증기 및 수도사업", "건설업", "운수·창고 및 통신업", "임업", "어업", "농업", "금융 및 보험업", "기타의 사업"):
+            continue
+
+        # 재해자수만
+        if kind != "재해자수":
+            continue
+
+        if industry not in industry_total:
+            industry_total[industry] = 0
+
+        industry_total[industry] += value  # 여기서 바로 더함
+
+
+
+
+    # ===== 3) 성별 =====
+    data_gender = requests.get(url_gender).json()
+
+        # 결과 구조 초기화
+    gender_total = {"남자": 0, "여자": 0}
+
+    for item in data_gender:
+        c1 = item["C1_NM"]  # 총계
+        c2 = item["C2_NM"]  # 남자/여자
+        value = int(float(item["DT"]))
+
+        # 총계 + 성별만
+        if c1 == "총계" and c2 in ["남자", "여자"]:
+            gender_total[c2] += value
+
+
 
     #뉴스 
     news = News.objects.order_by('-n_created_at')[:3]
 
     context = {
+        "gender_total": gender_total,
+        "age_total": age_total,
+        "industry_total": industry_total,
         'list' : news
     }
 

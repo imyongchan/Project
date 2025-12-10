@@ -4,23 +4,47 @@
 {% block title %}산재콕 | 메인{% endblock %}
 
 {% block contents %}
-    
-    <main>
-        <img src="{% static 'img/hero.png' %}" alt="" class="pc">
-        <img src="{% static 'img/mobile_hero.png' %}" alt="" class="mobile">
-    </main>
+
+<main>
+    <img src="{% static 'img/hero.png' %}" class="pc">
+    <img src="{% static 'img/mobile_hero.png' %}" class="mobile">
+</main>
+
+<h2>산재 통계</h2>
+<p style="text-align: right;"><a href="#" style="text-decoration: none;">더보기</a></p>
+<div class="chart" style="margin-bottom: 30px;">
+    <div class="chart-buttons">
+        <button onclick="showChart('age')">연령별 통계</button>
+        <button onclick="showChart('gender')">성별 통계</button>
+        <button onclick="showChart('industry')">산업별 통계</button>
+    </div>
+</div>
+
+<div id="chartArea" style="width: 400px; margin: 30px auto;">
+    <p>산출년도:2021년~2023년</p>
+    <canvas id="mainChart"></canvas>
+</div>
 
 <h2>산재 뉴스</h2>
-    <article class="news">
-        {% for news in list %}
-            <div class="news-item">
-                <a href="{{ news.n_link }}" target="_blank">
-                    <img src="{{ news.n_image_url }}" alt="뉴스 이미지" class="news-img">
-                </a>
-                <p class="news_title"><a href="{{ news.n_link }}" target="_blank">{{ news.n_title }}</a></p>
-                <p>{{ news.n_writer }}</p>
-            </div>
-        {% endfor %}
-    </article>
-    <p style="text-align: right;"><a href="#">더보기</a></p>
+<p style="text-align: right;"><a href="#" style="text-decoration: none;">더보기</a></p>
+<article class="news">
+    {% for news in list %}
+        <div class="news-item">
+            <a href="{{ news.n_link }}" target="_blank">
+                <img src="{{ news.n_image_url }}" class="news-img">
+            </a>
+            <p class="news_title"><a href="{{ news.n_link }}" target="_blank">{{ news.n_title }}</a></p>
+            <p>{{ news.n_writer }}</p>
+        </div>
+    {% endfor %}
+</article>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ageData = {{ age_total|safe }};
+    const genderData = {{ gender_total|safe }};
+    const industryData = {{ industry_total|safe }};
+</script>
 {% endblock %}
