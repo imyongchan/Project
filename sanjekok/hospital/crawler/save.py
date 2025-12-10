@@ -3,6 +3,7 @@
 # 파싱된 병원 데이터를 t_hospital 테이블에 저장
 # - 이름/주소 하나라도 비어 있는 건 parse 단계에서 이미 제외됨
 # - 여기서는 중복 체크 없이 무조건 create() 만 호출
+# - h_rc, h_rc_info 는 항상 빈 문자열로 저장
 
 from typing import List, Dict
 from hospital.models import Hospital
@@ -13,6 +14,7 @@ def save_hospitals(hospitals: List[Dict]) -> int:
     파싱된 병원 dict 리스트를 DB에 저장.
     - 이름/주소가 없는 건 parse 단계에서 이미 제외됨
     - 여기서는 중복 여부를 따지지 않고 모두 CREATE
+    - h_rc, h_rc_info 는 값이 넘어와도 무조건 "" 로 저장
     """
     count = 0
 
@@ -31,8 +33,8 @@ def save_hospitals(hospitals: List[Dict]) -> int:
             h_address=addr,
             h_phone_number=phone,
             h_hospital_type=(data.get("h_hospital_type") or "").strip(),
-            h_rc=(data.get("h_rc") or "").strip(),
-            h_rc_info=(data.get("h_rc_info") or "").strip(),
+            h_rc="",           # 항상 빈 값
+            h_rc_info="",      # 항상 빈 값
             h_tr=(data.get("h_tr") or "").strip(),
             h_ei=(data.get("h_ei") or "").strip(),
         )

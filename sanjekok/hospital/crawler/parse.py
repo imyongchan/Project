@@ -1,6 +1,7 @@
 # hospital/crawler/parse.py
 #
 # SAFEMAP IF_0025 JSON → Hospital 모델용 dict 리스트로 변환
+# h_address 에는 무조건 rn_adres(또는 RN_ADRES) 값만 넣는다.
 
 from typing import List, Dict
 
@@ -39,11 +40,10 @@ def parse_hospitals(raw_json: dict) -> List[Dict]:
     """
     SAFEMAP 산재지정병원 API JSON → Hospital 테이블에 넣을 dict 리스트로 변환
 
-    주소는:
-      - 지번주소(adres/ADRES)가 있으면 우선 사용
-      - 없으면 도로명주소(rn_adres/RN_ADRES)를 사용
-
-    이름이나 주소가 하나라도 없으면 해당 레코드는 버린다.
+    - h_hospital_name : fclty_nm 계열
+    - h_address       : rn_adres / RN_ADRES (도로명주소)만 사용
+    - 이름이나 rn_adres 둘 중 하나라도 없으면 해당 레코드는 버린다.
+    - h_rc, h_rc_info 는 쓰지 않으므로 항상 빈 문자열로 둔다.
     """
     items = _extract_items(raw_json)
     results: List[Dict] = []
@@ -61,23 +61,15 @@ def parse_hospitals(raw_json: dict) -> List[Dict]:
             or it.get("YADM_NM")
             or ""
         )
+        name = name.strip() if isinstance(name, str) else ""
 
-        # 지번주소
-        jibun_addr = (
-            it.get("adres")
-            or it.get("ADRES")
-            or ""
-        )
-
-        # 도로명주소
+        # 도로명주소: rn_adres / RN_ADRES 만 사용
         road_addr = (
             it.get("rn_adres")
             or it.get("RN_ADRES")
             or ""
         )
-
-        # 지번주소 우선, 없으면 도로명주소
-        address = (jibun_addr or road_addr).strip()
+        address = road_addr.strip() if isinstance(road_addr, str) else ""
 
         # 전화번호
         phone = (
@@ -87,6 +79,7 @@ def parse_hospitals(raw_json: dict) -> List[Dict]:
             or it.get("TEL")
             or ""
         )
+        phone = phone.strip() if isinstance(phone, str) else ""
 
         # 종별 (병원/의원/상급종합병원 등)
         hosp_type = (
@@ -96,26 +89,7 @@ def parse_hospitals(raw_json: dict) -> List[Dict]:
             or it.get("HOSP_TY")
             or ""
         )
-
-        # 부가기능 / 재활인증 / 진폐요양 / 진료제한 / 평가연도 등
-        rc = (
-            it.get("coniosis")
-            or it.get("CONIOSIS")
-            or it.get("rc")
-            or it.get("RC")
-            or ""
-        )
-
-        rc_info = (
-            it.get("rm_cd")
-            or it.get("RM_CD")
-            or it.get("rc_info")
-            or it.get("RC_INFO")
-            or ""
-        )
-
-        tr = (it.get("tr") or it.get("TR") or "")
-        ei = (it.get("ei") or it.get("EI") or "")
+        hosp_type = hosp_type.strip() if isinstance(hosp_type, str) else ""
 
         # 이름이나 주소 둘 중 하나라도 없으면 버림
         if not name or not address:
@@ -123,14 +97,14 @@ def parse_hospitals(raw_json: dict) -> List[Dict]:
 
         results.append(
             {
-                "h_hospital_name": name.strip(),
-                "h_address": address,  # 이미 strip 적용
-                "h_phone_number": phone.strip(),
-                "h_hospital_type": hosp_type.strip(),
-                "h_rc": rc.strip() if isinstance(rc, str) else rc,
-                "h_rc_info": rc_info.strip() if isinstance(rc_info, str) else rc_info,
-                "h_tr": tr.strip() if isinstance(tr, str) else tr,
-                "h_ei": ei.strip() if isinstance(ei, str) else ei,
+                "h_hospital_name": name,
+                "h_address": address,           # rn_adres 그대로 들어감
+                "h_phone_number": phone,
+                "h_hospital_type": hosp_type,
+                "h_rc": "",                     # 사용 안 함
+                "h_rc_info": "",                # 사용 안 함
+                "h_tr": "",                     # 필요 시 나중에 사용
+                "h_ei": "",
             }
         )
 
