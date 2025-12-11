@@ -5,6 +5,15 @@ body {
     background: #f8f9fa;
     color: #222;
 }
+/*로고 이미지*/
+.Logoimg {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 200px;
+    height: 60px;
+}
+
 
 /* 로그인 영역 */
 header .loginbox {
