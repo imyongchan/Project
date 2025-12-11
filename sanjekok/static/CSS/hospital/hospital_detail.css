@@ -1,0 +1,249 @@
+/* 페이지 제목 */
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 20px 0;
+}
+
+/* 공통 박스 */
+.section-box {
+  position: relative;
+  border: 1px solid #444;
+  margin-bottom: 16px;
+  background-color: #fff;
+}
+
+.section-label {
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  width: 28px;
+  height: 28px;
+  background-color: #4ba94a;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+
+/* 리뷰 영역에서는 숫자 라벨 숨김 */
+.review-section .section-label {
+  display: none;
+}
+
+.section-label.small-label {
+  width: 24px;
+  height: 24px;
+  font-size: 13px;
+}
+
+.section-content {
+  padding: 16px 20px;
+}
+
+/* 상단 병원 정보 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.hospital-title .hospital-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.hospital-meta {
+  font-size: 12px;
+}
+
+.hospital-meta span {
+  margin-left: 4px;
+}
+
+.meta-stars {
+  color: #f15f5f;
+}
+
+/* 주소/전화 */
+.hospital-info-row {
+  display: flex;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.info-label {
+  width: 70px;
+  font-weight: 600;
+}
+
+.info-value {
+  flex: 1;
+}
+
+/* 기본정보 블록 */
+.section-inner-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #444;
+}
+
+.basic-info-box {
+  padding: 12px 20px 16px;
+  font-size: 13px;
+}
+
+.basic-info-line {
+  margin-bottom: 4px;
+}
+
+.basic-label {
+  display: inline-block;
+  width: 120px;
+  font-weight: 600;
+}
+
+/* 지도 영역 */
+.map-area {
+  width: 100%;
+  height: 260px;
+  background-color: #eee;
+  margin-top: 8px;
+}
+
+/* 리뷰 영역 */
+.review-section .section-inner-title {
+  border-bottom: none;
+  margin-bottom: 8px;
+}
+
+/* 리뷰 입력 박스: column 레이아웃으로 정리 */
+.review-input-wrapper {
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.review-rating-row {
+  display: flex;
+  align-items: center;
+}
+
+.review-label {
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+.star-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.star {
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 2px;
+  color: #ccc;
+}
+
+.star.on {
+  color: #f15f5f;
+}
+
+.star-score {
+  margin-left: 6px;
+  font-weight: 700;
+  color: #f15f5f;
+}
+
+/* 리뷰 입력창 */
+.review-textarea {
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: 8px;
+  padding: 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  resize: vertical;
+  box-sizing: border-box; /* 상자 밖으로 안 나가도록 */
+}
+
+/* 버튼 */
+.btn-review-submit,
+.btn-review-more {
+  border: 1px solid #000;
+  background-color: #222;
+  color: #fff;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* float 제거, 리뷰 박스 내부 오른쪽 정렬 */
+.btn-review-submit {
+  align-self: flex-end;
+}
+
+.btn-review-submit:hover,
+.btn-review-more:hover {
+  opacity: 0.9;
+}
+
+/* 리뷰 카드 */
+.review-list {
+  margin-top: 16px;
+}
+
+.review-item {
+  border-top: 1px solid #ddd;
+  padding: 10px 0;
+  font-size: 13px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.review-writer {
+  font-weight: 600;
+}
+
+.review-date {
+  font-size: 12px;
+  color: #777;
+}
+
+.btn-review-delete {
+  margin-left: 6px;
+  padding: 2px 6px;
+  font-size: 11px;
+  border: 1px solid #999;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.review-body {
+  margin: 0;
+}
+
+/* 더보기 영역 */
+.review-more-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
