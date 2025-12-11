@@ -31,7 +31,7 @@ def main(request):
         if industry == "총계" or year < 2021 or year > 2023:
             continue
 
-        if age_group == "계" or age_group == "분류불능":
+        if age_group != "50~54세" or age_group != "55~59세" or age_group != "60세 이상":
             continue
 
         if age_group not in age_total:
@@ -50,7 +50,7 @@ def main(request):
         kind = item["ITM_NM"]
         value = int(float(item["DT"]))
 
-        if industry not in ("광업", "제조업", "전기·가스·증기 및 수도사업", "건설업", "운수·창고 및 통신업", "임업", "어업", "농업", "금융 및 보험업", "기타의 사업"):
+        if industry not in ("광업", "제조업", "건설업", "어업", "농업"):
             continue
 
         # 재해자수만
@@ -93,3 +93,9 @@ def main(request):
     }
 
     return render(request, "main.html", context)
+
+def service(request):
+    return render(request, "intro_service.html")
+
+def tech(request):
+    return render(request, "intro_tech.html")
