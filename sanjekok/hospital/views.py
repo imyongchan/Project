@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_GET
+from django.shortcuts import redirect
+from django.contrib import messages
 
 import math
 from urllib.parse import urlencode
@@ -173,12 +175,14 @@ def calc_distance_km(lat1, lng1, lat2, lng2):
 
     return R * c
 
+
 def _or_dash(value):
     """값이 없거나 공백이면 '-' 로 치환"""
     if value is None:
         return "-"
     s = str(value).strip()
     return s if s else "-"
+
 
 def ensure_hospital_coords(hospital: Hospital):
     """
@@ -224,16 +228,19 @@ def get_base_coords(base_addr: str):
 
 
 def hospital_search(request):
-    """
-    병원 검색 화면
-    - 세션의 member_id 로 Member 조회
-    - 집/근무지/사고목록(여러 건)을 템플릿에 내려보냄
-    """
+
+    member_id = request.session.get("member_id")
+
+    if not member_id:
+        messages.error(request, "로그인이 필요합니다.")
+        return redirect('Member:login')
+    
+
     home_address = ""
     work_address = ""
     accidents_ctx = []   # [{id, title(i_title), address}, ...]
 
-    member_id = request.session.get("member_id")
+    
 
     if member_id:
         try:
@@ -270,30 +277,21 @@ def hospital_search(request):
 
 
 def hospital_api(request):
-    """
-    기준 주소(addr)와 병원 테이블의 h_lat/h_lng 를 이용해
-    근처 병원 Top10을 반환.
-
-    - sort=distance : 실제 거리(km) 기준 오름차순
-                      (병원 좌표는 DB에 있는 값만 사용, 지오코딩은 하지 않음)
-    - sort=rating   : 평점 내림차순 (현재는 0.0 placeholder)
-    - sort=review   : 리뷰 수 내림차순 (현재는 0 placeholder)
-    """
     base_addr = (request.GET.get("addr") or "").strip()  # 집/근무지/사고지역 중 선택된 주소
-    sort = request.GET.get("sort", "distance")
+    sort = request.GET.get("sort", "distance")           # distance | rating | review
 
-    # 기준 주소를 1번만 지오코딩(+캐시)
+    # 기준 주소 지오코딩
     base_lat = base_lng = None
     if base_addr:
         base_lat, base_lng = get_base_coords(base_addr)
 
-    # 기본 쿼리: 좌표가 있는 병원만 (이미 DB에 h_lat/h_lng를 넣어둔 상태라고 가정)
+    # 기본 쿼리
     qs = Hospital.objects.all()
 
-    if sort == "distance" and base_lat is not None and base_lng is not None:
+    # 기준 좌표가 있으면 좌표 있는 병원 + 대략 30km 반경만 먼저 필터
+    if base_lat is not None and base_lng is not None:
         qs = qs.filter(h_lat__isnull=False, h_lng__isnull=False)
 
-        # 기준 좌표 근처 병원만 bounding box 로 1차 필터 (대략 반경 30km)
         MAX_KM = 30.0
         delta_lat = MAX_KM / 111.0
         cos_lat = math.cos(math.radians(base_lat))
@@ -306,6 +304,25 @@ def hospital_api(request):
             h_lng__lte=base_lng + delta_lng,
         )
 
+    # 1) 병원별 평점 / 리뷰수 미리 집계 (한 번의 쿼리로)
+    rating_rows = (
+        Review.objects
+        .filter(hospital__in=qs)
+        .values("hospital_id")
+        .annotate(
+            avg_rating=Avg("r_rating"),   # 0.0 ~ 10.0
+            review_count=Count("id"),
+        )
+    )
+    rating_map = {
+        row["hospital_id"]: {
+            "avg_rating": float(row["avg_rating"]) if row["avg_rating"] is not None else 0.0,
+            "review_count": row["review_count"] or 0,
+        }
+        for row in rating_rows
+    }
+
+    # 2) 각 병원별 거리 / 평점 / 리뷰수를 items에 담기
     items = []
 
     for h in qs:
@@ -313,15 +330,20 @@ def hospital_api(request):
         lat = getattr(h, "h_lat", None)
         lng = getattr(h, "h_lng", None)
 
+        # 거리 계산
         distance_km = None
-        if sort == "distance" and base_lat is not None and base_lng is not None:
-            if lat is not None and lng is not None:
-                d = calc_distance_km(base_lat, base_lng, lat, lng)
-                if d is not None:
-                    distance_km = round(d, 1)
+        if base_lat is not None and base_lng is not None and lat is not None and lng is not None:
+            d = calc_distance_km(base_lat, base_lng, lat, lng)
+            if d is not None:
+                distance_km = round(d, 1)
+
+        # 병원별 평점 / 리뷰수
+        rinfo = rating_map.get(h.id, {})
+        rating = rinfo.get("avg_rating", 0.0)       # 0.0 ~ 10.0
+        review_count = rinfo.get("review_count", 0)
 
         # 상세 페이지 링크에 기준 주소(base_addr)를 같이 붙인다.
-        detail_url = reverse("hospital_detail", args=[h.id])
+        detail_url = reverse("Hospital:hospital_detail", args=[h.id])
         if base_addr:
             detail_url = f"{detail_url}?{urlencode({'base_addr': base_addr})}"
 
@@ -329,30 +351,37 @@ def hospital_api(request):
             "hospital": h,
             "addr": addr,
             "distance_km": distance_km,
-            "rating": 0.0,
-            "review_count": 0,
+            "rating": rating,
+            "review_count": review_count,
             "detail_url": detail_url,
         })
 
-    # 정렬
-    if sort == "distance" and base_lat is not None and base_lng is not None:
-        # 거리 기준 오름차순, 거리 없음(None)은 맨 뒤
-        def dist_key(item):
-            d = item["distance_km"]
-            return d if d is not None else 1e9
+    # 3) 항상 먼저 "거리 기준"으로 전체 정렬
+    def dist_key(item):
+        d = item["distance_km"]
+        return d if d is not None else 1e9
 
+    if base_lat is not None and base_lng is not None:
         items.sort(key=dist_key)
-    elif sort == "rating":
-        items.sort(key=lambda x: (-x["rating"], x["hospital"].h_hospital_name))
-    elif sort == "review":
-        items.sort(key=lambda x: (-x["review_count"], x["hospital"].h_hospital_name))
     else:
+        # 기준 좌표가 없으면 그냥 이름순
         items.sort(key=lambda x: x["hospital"].h_hospital_name)
 
-    # Top10만 추출
+    # 4) 거리 기준 상위 10개만 남기기
     top10 = items[:10]
 
-    # JSON 응답용 데이터 구성
+    # 5) 그 10개 안에서만 평점 / 리뷰 많은 순 재정렬
+    if sort == "rating":
+        # 평점 높은 순, 같으면 거리 가까운 순
+        top10.sort(key=lambda x: (-x["rating"], dist_key(x)))
+    elif sort == "review":
+        # 리뷰 많은 순, 같으면 거리 가까운 순
+        top10.sort(key=lambda x: (-x["review_count"], dist_key(x)))
+    else:
+        # distance 또는 기타 값이면 이미 거리순으로 정렬돼 있음
+        pass
+
+    # 6) JSON 응답
     result = []
     for item in top10:
         h = item["hospital"]
@@ -372,13 +401,6 @@ def hospital_api(request):
 
 
 def hospital_detail(request, hospital_id: int):
-    """
-    단일 병원 상세 정보
-    - 병원 좌표는 Hospital.h_lat/h_lng에서 가져오고,
-      없으면 한 번만 지오코딩해서 DB에 저장(ensure_hospital_coords)
-    - 기준 위치(base_addr)와의 거리(km), 리뷰 평균/개수도 함께 계산
-      (기준 주소도 get_base_coords로 캐시 사용)
-    """
     hospital = get_object_or_404(Hospital, pk=hospital_id)
 
     # 병원 좌표 확보 (DB에 없으면 한 번만 지오코딩해서 저장)
@@ -433,9 +455,6 @@ def hospital_detail(request, hospital_id: int):
 
 @require_GET
 def hospital_geocode(request):
-    """
-    필요하다면 사용할 수 있는 지오코딩 API (현재 목록에서는 사용하지 않음).
-    """
     query = request.GET.get("query")
     if not query:
         return JsonResponse({"documents": []})

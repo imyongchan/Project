@@ -26,7 +26,22 @@ function useAddress(address, label) {
     return;
   }
 
+  // 기준 주소 설정
   currentBaseAddress = address;
+
+  // 위치 변경 시 정렬 기준 거리순으로 초기화
+  currentSort = "distance";
+  const sortBtn = document.getElementById("sortBtn");
+  if (sortBtn) {
+    sortBtn.textContent = "거리순 ▼";
+  }
+
+  // 집/근무지 선택 시 사고지역 버튼 텍스트는 기본값으로 초기화
+  const btnAcc = document.getElementById("btn-accident");
+  if (btnAcc) {
+    btnAcc.textContent = "사고지역 ▼";
+  }
+
   loadHospitals();
 }
 
@@ -36,7 +51,25 @@ function useAccident(accident) {
     alert("해당 사고의 주소 정보가 없습니다.");
     return;
   }
-  useAddress(accident.address, accident.title || "사고지역");
+
+  // 기준 주소 설정
+  currentBaseAddress = accident.address;
+
+  // 사고지역 선택 시도 정렬 기준 거리순으로 초기화
+  currentSort = "distance";
+  const sortBtn = document.getElementById("sortBtn");
+  if (sortBtn) {
+    sortBtn.textContent = "거리순 ▼";
+  }
+
+  // 사고지역 버튼에 산재 제목 표시
+  const btnAcc = document.getElementById("btn-accident");
+  if (btnAcc) {
+    const title = accident.title || "사고지역";
+    btnAcc.textContent = title + " ▼";
+  }
+
+  loadHospitals();
 }
 
 // 병원 리스트 렌더링
@@ -177,39 +210,39 @@ function initUIEvents() {
 
   // 사고지역 드롭다운 (여러 사고)
   if (btnAcc && accMenu) {
-  if (ctx.accidents && ctx.accidents.length > 0) {
-    // 메뉴 항목 생성
-    accMenu.innerHTML = "";
-    ctx.accidents.forEach(accident => {
-      const item = document.createElement("div");
-      item.className = "accident-option";
-      item.textContent = accident.title || "사고지역";
-      item.addEventListener("click", () => {
-        accMenu.classList.remove("open");
-        useAccident(accident);
+    if (ctx.accidents && ctx.accidents.length > 0) {
+      // 메뉴 항목 생성
+      accMenu.innerHTML = "";
+      ctx.accidents.forEach(accident => {
+        const item = document.createElement("div");
+        item.className = "accident-option";
+        item.textContent = accident.title || "사고지역";
+        item.addEventListener("click", () => {
+          accMenu.classList.remove("open");
+          useAccident(accident);
+        });
+        accMenu.appendChild(item);
       });
-      accMenu.appendChild(item);
-    });
 
-    // 버튼 클릭 시 메뉴 열기/닫기
-    btnAcc.addEventListener("click", () => {
-      accMenu.classList.toggle("open");
-    });
+      // 버튼 클릭 시 메뉴 열기/닫기
+      btnAcc.addEventListener("click", () => {
+        accMenu.classList.toggle("open");
+      });
 
-    // 바깥 클릭 시 메뉴 닫기
-    document.addEventListener("click", e => {
-      if (!accMenu.classList.contains("open")) return;
-      if (!accMenu.contains(e.target) && e.target !== btnAcc) {
-        accMenu.classList.remove("open");
-      }
-    });
-  } else {
-    btnAcc.addEventListener("click", () =>
-      alert("등록된 사고지역이 없습니다.")
-    );
-    btnAcc.classList.add("btn-disabled");
+      // 바깥 클릭 시 메뉴 닫기
+      document.addEventListener("click", e => {
+        if (!accMenu.classList.contains("open")) return;
+        if (!accMenu.contains(e.target) && e.target !== btnAcc) {
+          accMenu.classList.remove("open");
+        }
+      });
+    } else {
+      btnAcc.addEventListener("click", () =>
+        alert("등록된 사고지역이 없습니다.")
+      );
+      btnAcc.classList.add("btn-disabled");
+    }
   }
-}
 
   initSortDropdown();
 
