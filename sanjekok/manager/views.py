@@ -100,29 +100,26 @@ def delete(request, member_id):
 
 def review(request):
 
-    hospital = request.GET.get('hospital', '')
-    member = request.GET.get('member', '')
+    filter_by = request.GET.get("filter_by")
+    keyword = request.GET.get("keyword", "")
 
     reviews = Review.objects.all().order_by('-id')
 
-    # 병원 필터
-    if hospital:
-        reviews = reviews.filter(hospital__name__icontains=hospital)
+    if filter_by == "hospital" and keyword:
+        reviews = reviews.filter(hospital__h_hospital_name__icontains=keyword)
 
-    # 작성자 필터
-    if member:
-        reviews = reviews.filter(member__m_username__icontains=member)
+    if filter_by == "member" and keyword:
+        reviews = reviews.filter(member__m_username__icontains=keyword)
 
-    paginator = Paginator(reviews, 5)   # ▶ 한 페이지에 5개씩
-    page_number = request.GET.get('page')  # ▶ URL에서 page 값 받기
-    page_obj = paginator.get_page(page_number)  # ▶ 페이지 객체 생성
+    paginator = Paginator(reviews, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     context = {
         'page_obj': page_obj,
-        'r_list': reviews
-    } 
-
-    return  render(request, 'manager_review.html', context)
+        'r_list': page_obj,
+    }
+    return render(request, 'manager_review.html', context)
 
 def stats(request):
     

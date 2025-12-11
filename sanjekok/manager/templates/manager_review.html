@@ -18,7 +18,7 @@
                 class="form-control"
                 style="width: 200px;">
 
-            <button class="btn btn-primary">검색</button>
+            <button type="submit" class="btn btn-primary">검색</button>
 
             {% if request.GET.filter_by or request.GET.keyword %}
                 <a href="{% url 'Manager:review' %}" class="btn btn-secondary">초기화</a>
@@ -48,28 +48,38 @@
 
         <div class="pagination justify-content-center mt-3">
 
-            <!-- 이전 페이지 -->
-            {% if page_obj.has_previous %}
-            <a class="btn btn-outline-primary mx-1" href="?page={{ page_obj.previous_page_number }}">이전</a>
-            {% else %}
+        <!-- 이전 페이지 -->
+        {% if page_obj.has_previous %}
+            <a class="btn btn-outline-primary mx-1"
+            href="?page={{ page_obj.previous_page_number }}&filter_by={{ request.GET.filter_by }}&keyword={{ request.GET.keyword }}">
+            이전
+            </a>
+        {% else %}
             <span class="btn btn-outline-secondary disabled mx-1">이전</span>
-            {% endif %}
+        {% endif %}
 
-            <!-- 페이지 번호 -->
-            {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                    <span class="btn btn-primary mx-1">{{ num }}</span>
-                {% else %}
-                    <a class="btn btn-outline-primary mx-1" href="?page={{ num }}">{{ num }}</a>
-                {% endif %}
-            {% endfor %}
-
-            <!-- 다음 페이지 -->
-            {% if page_obj.has_next %}
-            <a class="btn btn-outline-primary mx-1" href="?page={{ page_obj.next_page_number }}">다음</a>
+        <!-- 페이지 번호 -->
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="btn btn-primary mx-1">{{ num }}</span>
             {% else %}
-            <span class="btn btn-outline-secondary disabled mx-1">다음</span>
+                <a class="btn btn-outline-primary mx-1"
+                href="?page={{ num }}&filter_by={{ request.GET.filter_by }}&keyword={{ request.GET.keyword }}">
+                {{ num }}
+                </a>
             {% endif %}
+        {% endfor %}
+
+        <!-- 다음 페이지 -->
+        {% if page_obj.has_next %}
+            <a class="btn btn-outline-primary mx-1"
+            href="?page={{ page_obj.next_page_number }}&filter_by={{ request.GET.filter_by }}&keyword={{ request.GET.keyword }}">
+            다음
+            </a>
+        {% else %}
+            <span class="btn btn-outline-secondary disabled mx-1">다음</span>
+        {% endif %}
+
 
         </div>
     </div>
