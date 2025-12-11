@@ -9,7 +9,7 @@ body {
 /* 기본 헤더 스타일       */
 /* ---------------------- */
 .header {
-    background-color: #fefefe;
+    background-color: #fffffff2;
     border-bottom: 1px solid #e5e5e5;
     width: 100%;
     position: sticky;
@@ -20,7 +20,7 @@ body {
 .header-container {
     max-width: 1200px;
     margin: 0 auto;
-    height: 70px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -31,8 +31,8 @@ body {
 /* 로고 이미지             */
 /* ---------------------- */
 .Logoimg img {
-    height: 100px;
-    width: 170px;
+    height:100;
+    width: 100px;
     cursor: pointer;
 }
 
@@ -61,7 +61,7 @@ body {
 }
 
 .menu a:hover {
-    color: #0d6efd;
+    color: #f99b18;
 }
 
 /* ---------------------- */
@@ -96,7 +96,7 @@ body {
 }
 
 .submenu li a:hover {
-    color: #0d6efd;
+    color: #f99b18;
 }
 
 /* hover 시 부드럽게 나타남 */
