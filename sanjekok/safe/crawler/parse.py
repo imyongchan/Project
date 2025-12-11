@@ -27,13 +27,46 @@ def parse_list(data, shpCd):
         keywords = []
         if keywords_raw:
             keywords = [k.strip() for k in keywords_raw.split(",") if k.strip()]
+    
+    
+        # 언어 판별
+        lang_raw = item.get("langCrtrNtnltyNm")
+
+        if lang_raw is None or lang_raw == "공통언어":
+            language = "한국어"            # 한국어 자료
+        else:
+            language = "외국어"       # 외국어 자료
+            
+            
+        # 자료고유번호
+        seq = item.get("medSeq") 
+        
+        # 조회수 
+        hit_count = item.get("totHitsum")   
+        
+        # 내용
+        note = item.get("medNote") 
+        
+        # 동영상 url
+        video_url = item.get("ytbUrlAddr")     
+        
+        # 공공누리
+        publisher = item.get("medGonggongnuriNm")           
+            
+        # ---------------------------------------------------
 
         results.append({
-            "title": title,
-            "type": content_type,
-            "img": img_url,
-            "date": reg_dt,
-            "keywords": keywords,
+            "title": title,     # 제목
+            "img": img_url,     # 썸네일 이미지 url
+            "type": content_type,   # 자료형태   
+            "content": note,    # 자료내용
+            "created_at": reg_dt,     # 자료 작성일
+            "hit": hit_count,   # 조회수
+            "seq": seq,         # 링크에 덭붙일 자료고유번호
+            "language": language,  # 안전자료언어
+            "video_url": video_url, # 동영상자료 시 동영상 url
+            "publisher": publisher, # 공공누리
+            "tags": keywords,  # 키워드(들) 
         })
 
     return results

@@ -46,7 +46,7 @@ class SafeTag(models.Model):
         verbose_name_plural = '안전자료실 태그 연결 목록'
         
         constraints = [
-    models.UniqueConstraint(fields=['safe', 'tag'], name='unique_safe_tag')
+        models.UniqueConstraint(fields=['safe', 'tag'], name='unique_safe_tag')
     ]
 
     def __str__(self):

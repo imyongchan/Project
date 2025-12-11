@@ -5,7 +5,7 @@ BASE_URL = "https://portal.kosha.or.kr/api/portal24/bizV/p/VCPDG01007/selectMedi
 
 def fetch_page(shpCd, page=1, rows=12): 
     payload = {
-        "shpCd": shpCd,  # 자료형태 구분 요청 인자. 
+        "shpCd": shpCd,  # 자료형태 요청 인자. 
         "searchCondition": "all",
         "searchValue": None,
         "ascDesc": "desc",
