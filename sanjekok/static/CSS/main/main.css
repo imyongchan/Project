@@ -6,12 +6,10 @@ body {
     color: #222;
 }
 /*로고 이미지*/
-.Logoimg {
-    background-size: contain;
+header .Logoimg {
     background-repeat: no-repeat;
-    background-position: center;
-    width: 200px;
-    height: 60px;
+    width: 15px;
+    height: 15px;
 }
 
 
