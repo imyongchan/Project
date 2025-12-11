@@ -37,44 +37,49 @@
     {% endif %}
     
     <header class="header">
-        <div class="loginbox">
-            {% if request.session.member_id %}
-                <span>{{ request.session.member_name }}님</span>
-                <a href="{% url 'Member:mypage_profile' %}">마이페이지</a>
-                /
-                <a href="{% url 'Member:logout' %}" id="logout-link">로그아웃</a>
-            {% else %}
-                <a href="{% url 'Member:login' %}">로그인</a>
-                /
-                <a href="{% url 'Member:registerf' %}">회원가입</a>
-            {% endif %}
+        <div class="header-container">
+            <!-- 왼쪽: 로고 -->
+            <div class="Logoimg">
+                <a href="{% url 'Main:main' %}">
+                    <img src="{% static 'img/LOGO1.png' %}" alt="산재콕 로고">
+                </a>
+            </div>
+
+            <!-- 가운데: 메뉴 -->
+            <nav class="menu">
+                <ul>
+                    <li>
+                        <a href="#">소개 ▾</a>
+                        <ul class="submenu">
+                            <li><a href="{% url 'Main:service' %}">서비스 소개</a></li>
+                            <li><a href="{% url 'Main:tech' %}">핵심 기능</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'News:news_list' %}">산재 뉴스</a></li>
+                    <li><a href="{% url 'Stats:stats_home' %}">산재 통계</a></li>
+                    <li><a href="#">지도 검색 ▾</a>
+                        <ul class="submenu">
+                            <li><a href="#">주변 산재 검색</a></li>
+                            <li><a href="#">주변 병원 검색</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'Safe:safe_main' %}">안전 자료실</a></li>
+                </ul>
+            </nav>
+
+            <!-- 오른쪽: 로그인 / 회원가입 -->
+            <button class="hamburger" onclick="toggleMenu()" aria-label="메뉴 열기">☰</button>
+            <div class="auth-buttons">
+                {% if request.session.member_id %}
+                    <span>{{ request.session.member_name }}님</span>
+                    <a href="{% url 'Member:mypage_profile' %}" class="btn btn-outline-dark">마이페이지</a>
+                    <a href="{% url 'Member:logout' %}" class="btn btn-dark">로그아웃</a>
+                {% else %}
+                    <a href="{% url 'Member:login' %}" class="btn btn-outline-dark">로그인</a>
+                    <a href="{% url 'Member:registerf' %}" class="btn btn-dark">회원가입</a>
+                {% endif %}
+            </div>
         </div>
-
-        <hr style="opacity: 10%;">
-        <button class="hamburger" onclick="toggleMenu()" aria-label="메뉴 열기">☰</button>
-        <nav class="menu" id="menu">
-            <ul>
-                <li>
-                    <a href="#">소개</a>
-                    <ul class="submenu">
-                        <li><a href="#">서비스 소개</a></li>
-                        <li><a href="#">핵심 기능</a></li>
-                    </ul>
-                </li>
-
-               <li><a href="{% url 'Stats:stats_home' %}">산재 통계</a></li>
-
-                <li>
-                    <a href="#">지도 검색</a>
-                    <ul class="submenu">
-                        <li><a href="#">주변 산재 검색</a></li>
-                        <li><a href="#">주변 병원 검색</a></li>
-                    </ul>
-                </li>
-
-                <li><a href="#">안전 자료실</a></li>
-            </ul>
-        </nav>
     </header>
 
     {% block contents %}
@@ -82,11 +87,11 @@
 
     <footer class="footer">
     <div class="info">
-        <p><strong>산재콕</strong> | 프로젝트 팀: 하랑유니버스</p>
-        <p>주소: 서울 강남구 테헤란로26길 12</p>
-        <p>전화문의: 1588-0000 | 이메일: help@safety.or.kr</p>
-        </div>
-        <p class="copyright">© 2025 Sanjae Prevention Center. All rights reserved.</p>
+        <p><strong>산재콕</strong></p>
+        <p><strong>프로젝트 팀</strong> | 하랑유니버스</p>
+        <p><strong>Developer</strong> | 김용찬, 최도윤, 이하랑, 박소윤, 문승신</p>
+        <p><strong>주소</strong> | 서울 강남구 테헤란로26길 12</p>
+        <p><strong>전화문의</strong> | 1588-0000  <strong>이메일</strong> | help@safety.or.kr</p>
     </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

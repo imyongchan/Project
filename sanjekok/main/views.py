@@ -83,7 +83,7 @@ def main(request):
 
 
     #뉴스 
-    news = News.objects.order_by('-n_created_at')[:3]
+    news = News.objects.order_by('-n_created_at')[:8]
 
     context = {
         "gender_total": gender_total,

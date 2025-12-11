@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cardDisease = document.getElementById("card-disease");
     const cardDiseaseFatal = document.getElementById("card-disease-fatal");
 
+    
     let injurySelected = false;
     let selectedInjuryType = null;
     let selectedDiseaseType = null;
@@ -118,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // 1) 산재 정보 자체가 없는 경우
             if (!hasInjury) {
                 alert("산재 정보가 없습니다. 마이페이지에서 산재 정보를 등록해주세요.");
-                window.location.href = "/member/mypage_individual_list/";
+                window.location.href = "/member/mypage/individual-list/";
                 return;
             }
 

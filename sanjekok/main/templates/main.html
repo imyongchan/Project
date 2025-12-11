@@ -5,44 +5,77 @@
 
 {% block contents %}
 
-<main>
-    <img src="{% static 'img/hero.png' %}" class="pc">
-    <img src="{% static 'img/mobile_hero.png' %}" class="mobile">
-</main>
-
-<h2>산재 통계</h2>
-<p style="text-align: right;"><a href="#" style="text-decoration: none;">더보기</a></p>
-<div class="chart" style="margin-bottom: 30px;">
-    <div class="chart-buttons">
-        <button onclick="showChart('age')">연령별 통계</button>
-        <button onclick="showChart('gender')">성별 통계</button>
-        <button onclick="showChart('industry')">산업별 통계</button>
-    </div>
-</div>
-
-<div id="chartArea" style="width: 400px; margin: 30px auto;">
-    <p>산출년도:2021년~2023년</p>
-    <canvas id="mainChart"></canvas>
-</div>
-
-<h2>산재 뉴스</h2>
-<p style="text-align: right;"><a href="#" style="text-decoration: none;">더보기</a></p>
-<article class="news">
-    {% for news in list %}
-        <div class="news-item">
-            <a href="{{ news.n_link }}" target="_blank">
-                <img src="{{ news.n_image_url }}" class="news-img">
-            </a>
-            <p class="news_title"><a href="{{ news.n_link }}" target="_blank">{{ news.n_title }}</a></p>
-            <p>{{ news.n_writer }}</p>
+<section class="hero">
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <h1>산재 예방과 정보 제공의 최전선</h1>
+            <p>산업재해 정보를 한눈에, 콕콕 짚어드립니다</p>
+            <a href="{% url 'Main:service' %}" class="hero-btn">VIEW SERVICES</a>
         </div>
-    {% endfor %}
-</article>
+    </div>
+</section>
+
+<section class="stats-section">
+        <h2>전국 산업재해 통계</h2>
+
+        <div class="chart">
+            <div class="chart-buttons">
+            <button onclick="showChart('age')">연령</button>
+            <button onclick="showChart('gender')">성별</button>
+            <button onclick="showChart('industry')">산업</button>
+            </div>
+        </div>
+
+        <div id="chartArea">
+            <p>산출년도: 2021년~2023년</p>
+            <canvas id="mainChart"></canvas>
+        </div>
+
+        <!-- 기사 더보기 버튼 -->
+        <div class="stats-more">
+            <a href="{% url 'Stats:stats_home' %}" class="more-btn1">나만의 통계정보 보러가기 ▾</a>
+        </div>
+</section>
+
+<section class="news-section">
+        <div class="news-header">
+            <p class="subtitle">산업재해 예방 정보</p>
+            <h2>산재뉴스</h2>
+        </div>
+
+        
+        <div class="news-grid">
+            {% for news in list %}
+            <article class="news-card">
+                <a href="{{ news.n_link }}" target="_blank">
+                    <div class="news-thumb">
+                    <img src="{{ news.n_image_url }}" alt="뉴스 이미지">
+                    </div>
+                </a>
+                <div class="news-body">
+                    <h3 class="news-title">
+                    <a href="{{ news.n_link }}" target="_blank">{{ news.n_title }}</a>
+                    </h3>
+                    <div class="news-meta">
+                    <span class="category">{{ news.n_writer }}</span>
+                    <span class="date">| {{ news.n_created_at }}</span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- 기사 더보기 버튼 -->
+        <div class="news-more">
+            <a href="{% url 'News:news_list' %}" class="more-btn2">기사 더보기 ▾</a>
+        </div>
+</section>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="{% static 'js/main/main_main.js' %}"></script>
+<script src="{% static 'js/main/main.js' %}"></script>
 <script>
     const ageData = {{ age_total|safe }};
     const genderData = {{ gender_total|safe }};
