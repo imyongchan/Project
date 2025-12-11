@@ -182,11 +182,6 @@ def naver_callback(request):
         request.session['social_signup_data'] = result['signup_data']
         return redirect("Member:registers")
 
-
-
-
-
-
 # 아이디 중복 확인
 def check_username(request):
     username = request.GET.get('username')

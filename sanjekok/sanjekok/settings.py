@@ -22,6 +22,9 @@ KOSIS_API_KEY = os.getenv("KOSIS_API_KEY")
 KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY")
 KAKAO_REDIRECT_URI = os.getenv("KAKAO_REDIRECT_URI")
 KAKAO_LOGOUT_REDIRECT_URI = os.getenv("KAKAO_LOGOUT_REDIRECT_URI")
+NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID")
+NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET")
+NAVER_REDIRECT_URI = os.getenv("NAVER_REDIRECT_URI")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

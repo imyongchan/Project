@@ -122,6 +122,7 @@ def handle_kakao_login(code):
         }
         return {'status': 'register', 'signup_data': signup_data}
     
+
 # 네이버 로그인 처리 함수
 def handle_naver_login(code, state):
     """
@@ -169,7 +170,7 @@ def handle_naver_login(code, state):
 
     profile = profile_res["response"]
     naver_id = profile["id"]
-    nickname = profile.get("nickname") or f"naver_user_{naver_id}"
+    name = profile.get("name", "")
 
     username = f"naver_{naver_id}"
 
@@ -186,7 +187,7 @@ def handle_naver_login(code, state):
     # 4) 회원가입 필요
     signup_data = {
         "m_username": username,
-        "m_name": nickname,
+        "m_name": name,
         "m_provider": "naver",
         "m_provider_id": naver_id,
     }
