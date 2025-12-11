@@ -66,8 +66,37 @@
   margin-left: 4px;
 }
 
+/* 상단 평균 평점 별 컨테이너 */
 .meta-stars {
+  display: inline-block;
+}
+
+/* 상단 평균 평점 별(반칸 지원, 색은 그대로) */
+.meta-star {
+  display: inline-block;
+  position: relative;
+  font-size: 12px;
+  margin-left: 1px;
+  color: #f15f5f;        /* 예전과 같은 색 */
+}
+
+/* 꽉 찬 별: textContent = "★" */
+.meta-star.full {
+}
+
+/* 반칸 별: textContent = "☆" + 왼쪽 절반만 ★ 로 채우기 */
+.meta-star.half::before {
+  content: "★";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  overflow: hidden;
   color: #f15f5f;
+}
+
+/* 빈 별: textContent = "☆" */
+.meta-star.empty {
 }
 
 /* 주소/전화 */
@@ -155,7 +184,7 @@
   align-items: center;
 }
 
-/* 별점 (반칸 지원) */
+/* 입력용 별점 (반칸 지원) */
 .star {
   display: inline-block;
   position: relative;

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from member.models import Member, Individual
 from reviews.models import Review
+from hospital.models import Hospital
 from django.contrib.auth.hashers import check_password
 from datetime import date, datetime, timedelta
 from django.core.paginator import Paginator
@@ -106,11 +107,11 @@ def review(request):
 
     # 병원 필터
     if hospital:
-        reviews = reviews.filter(hospital_id__name__icontains=hospital)
+        reviews = reviews.filter(hospital__name__icontains=hospital)
 
     # 작성자 필터
     if member:
-        reviews = reviews.filter(member_id__m_username__icontains=member)
+        reviews = reviews.filter(member__m_username__icontains=member)
 
     paginator = Paginator(reviews, 5)   # ▶ 한 페이지에 5개씩
     page_number = request.GET.get('page')  # ▶ URL에서 page 값 받기
