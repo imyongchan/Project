@@ -21,19 +21,36 @@ def crawl_safe_view(request):
     return redirect("Safe:safe_main") # 크롤링 후 뉴스 리스트로 이동
 
 
-# 2) 사용자용: 로그인 필요. 회원only
+# 2) 사용자용: 자료목록 검색/필터, 자료목록
 
-@login_required
 def safe_list(request):
     qs = Safe.objects.all()
 
+    # -------------------------------
     # 검색
+    # -------------------------------
     q = request.GET.get("q")
     if q:
         qs = qs.filter(s_title__icontains=q)
 
+    # -------------------------------
+    # 자료형태 필터
+    # -------------------------------
+    material_type = request.GET.get("type")
 
-    # 정렬: latest, old, view
+    # 대표 자료형태 값들 (기타 제외)
+    MAIN_TYPES = ["OPS", "동영상", "책자", "PPT"]
+
+    if material_type in MAIN_TYPES:
+        qs = qs.filter(s_type=material_type)
+
+    elif material_type == "기타":
+        # 기타 = 대표 4개 유형이 아닌 모든 자료
+        qs = qs.exclude(s_type__in=MAIN_TYPES) | qs.filter(s_type__isnull=True) | qs.filter(s_type="")
+
+    # -------------------------------
+    # 정렬
+    # -------------------------------
     order = request.GET.get("order", "latest")
 
     if order == "latest":
@@ -44,15 +61,19 @@ def safe_list(request):
         qs = qs.order_by("-s_view_count")
 
     # -------------------------------
-    # 페이지네이션 — 12개씩
+    # 페이지네이션
+    # -------------------------------
+    from django.core.paginator import Paginator
     paginator = Paginator(qs, 12)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    page = request.GET.get("page")
+    page_obj = paginator.get_page(page)
 
     return render(request, "safe/safe_list.html", {
         "page_obj": page_obj,
-        "order": order,
         "q": q,
+        "order": order,
+        "material_type": material_type,
     })
+
 
     
