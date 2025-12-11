@@ -12,33 +12,33 @@
         <!-- 1. 프로필 영역 -->
         <section class="profile-box">
             <div class="profile-left">
-                <div class="profile-icon">👤</div>
+                <div class="profile-icon"></div>
                 <div class="profile-info">
-                    <h2>{{ member.m_name }} 님의 프로필</h2>
-                    <p>
-                        {{ industry.i_industry_type2 }} / {{ member.m_sex }} / {{ age }}세
-                    </p>
+                    <h2>{{ member.m_name }}님의 프로필</h2>
+                    <p><strong> 업종명</strong>  :  {{ industry.i_industry_type2 }}  
+                    <p><strong> 성별 </strong>  :  {{ member.m_sex }}</p>    
+                    <p><strong> 나이 </strong>  :  만 {{ age }}세</p>
                     <!-- 나의 산재 눌렀을 때 나오는 추가 상세 정보 -->
                     <div id="injuryDetail">
                         {% if show_detail and selected_individual %}
                             {% if selected_individual.i_title %}
-                                <p>산재명: {{ selected_individual.i_title }}</p>
+                                <p><strong>산재명</strong>  :  {{ selected_individual.i_title }}</p>
                             {% endif %}
                             {% if selected_individual.i_injury %}
-                                <p>발생 형태: {{ selected_individual.i_injury }}</p>
+                                <p><strong>발생형태</strong>  :  {{ selected_individual.i_injury }}</p>
                             {% endif %}
                             {% if selected_individual.i_disease_type %}
-                                <p>질병: {{ selected_individual.i_disease_type }}</p>
+                                <p><strong>질병</strong>  :  {{ selected_individual.i_disease_type }}</p>
                             {% endif %}
                             {% if selected_individual.i_accident_date %}
-                                <p>발생일자: {{ selected_individual.i_accident_date }}</p>
+                                <p><strong>발생일자</strong>  :  {{ selected_individual.i_accident_date }}</p>
                             {% endif %}
                         {% endif %}
                     </div>
                 </div>
             </div>
             <div class="profile-edit-btn">
-                <button id="myInjuryBtn">나의 산재 ▼</button>
+                <button id="myInjuryBtn">나의 산재 선택하기▼</button>
                 <!-- 드롭다운 -->
                 <ul id="injuryDropdown" class="dropdown hidden">
                     {% for ind in individual_list %}
@@ -56,9 +56,9 @@
 
         <!-- 2. 분석 기간 선택 -->
         <section class="period-section">
-            <h3>분석 기간:</h3>
+            
             <div class="period-buttons">
-                <!-- 최근 1년 -->
+                <h3>분석 기간:</h3>
                 <button class="period-btn" data-year="1"
                     data-acc-count="{{ summary1.0.재해자수 }}"
                     data-acc-rate="{{ summary1.0.재해율 }}"
@@ -162,40 +162,42 @@
             <div class="visual-grid">
                 <!-- 내 업종 재해율 -->
                 <div class="visual-card small">
-                    <h3>내 업종 재해율</h3>
+                    <h3>재해율</h3>
                     <p id="accidentSummary"></p>
+                    <p>재해율 - 근로자 1,000명당 발생하는 재해자수의 비율</p>
                 </div>
 
                 <!-- 내 업종 사망만인율 -->
                 <div class="visual-card small">
-                    <h3>내 업종 사망만인율</h3>
+                    <h3>사망만인율</h3>
                     <p id="fatalSummary"></p>
+                    <p>사망만인율 - 근로자 10,000명당 발생하는 사망자수의 비율</p>
                 </div>
 
                 <!-- 남/녀 재해 현황 -->
                 <div class="visual-card">
-                    <h3>남/녀 재해 현황</h3>
+                    <h3>남/녀 현황</h3>
                     <p id="genderSummary1"></p>
                     <canvas id="genderChart1"></canvas>
                 </div>
 
                 <!-- 남/녀 재해 사망현황 -->
                 <div class="visual-card">
-                    <h3>남/녀 재해 사망 현황</h3>
+                    <h3>남/녀 사망현황</h3>
                     <p id="genderSummary2"></p>
                     <canvas id="genderChart2"></canvas>
                 </div>
 
                 <!-- 연령대별 재해 현황 (1열 전체 사용) -->
                 <div class="visual-card" id="card-age">
-                    <h3>연령대별 재해 현황</h3>
+                    <h3>연령대별 현황</h3>
                     <p id="ageSummary1"></p>
                     <canvas id="ageChart1"></canvas>
                 </div>
 
                 <!-- 연령대별 사망 현황 (1열 전체 사용) -->
                 <div class="visual-card" id="card-age-fatal">
-                    <h3>연령대별 재해 사망 현황</h3>
+                    <h3>연령대별 사망현황</h3>
                     <p id="ageSummary2"></p>
                     <canvas id="ageChart2"></canvas>
                 </div>

@@ -1,54 +1,157 @@
 /* =========================
-   1. 레이아웃 기본
+   전체 레이아웃 & 색상 조정
    ========================= */
 .stats-container {
-    width: 100%;
-    max-width: 1500px;
-    margin: 24px auto 40px;
-    padding: 0 16px;
-    box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
+  margin: 60px auto 80px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  color: #23333d;
 }
 
-/* 프로필 영역 */
+/* =========================
+   1. 프로필 박스
+   ========================= */
 .profile-box {
-    background: #e7f9ff;
-    padding: 20px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e8eb;
+  margin-bottom: 40px;
 }
 
 .profile-left {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .profile-icon {
-    font-size: 50px;
-    margin-right: 15px;
+  width: 120px;
+  height: 120px;
+  background: url('/static/img/Stats_person.png') no-repeat center;
+  background-size: contain;
+  flex-shrink: 0;
 }
 
-/* 분석 기간 버튼 */
+.profile-info h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #23333d;
+}
+
+.profile-info p {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0;
+}
+
+.profile-edit-btn {
+  position: relative;
+}
+
+.profile-edit-btn button {
+  background: #23333d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.profile-edit-btn button:hover {
+  background: #f99b18;
+}
+
+/* 드롭다운 스타일 */
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: #fff;
+  border: 1px solid #ddd;
+  width: 180px;
+  border-radius: 8px;
+  list-style: none;
+  padding: 8px 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.dropdown li {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.dropdown li:hover {
+  background: #f6f8f7;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* =========================
+   2. 분석 기간 영역
+   ========================= */
 .period-section {
-    margin-bottom: 20px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 32px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e8eb;
+  margin-bottom: 40px;
 }
 
-.period-buttons button {
-    padding: 10px 20px;
-    margin-right: 10px;
-    border-radius: 6px;
-    border: none;
-    background: #ddd;
-    cursor: pointer;
-    font-size: 14px;
+.period-section h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #23333d;
+  margin-bottom: 10px;
 }
 
-.period-buttons .active {
-    background: #14b6f6;
-    color: white;
+.period-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
+
+.period-btn {
+  background: #f6f8f7;
+  border: 1px solid #ccc;
+  color: #23333d;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.period-btn:hover {
+  background: #f99b18;
+  border-color: #f99b18;
+  color: #fff;
+}
+
+.period-btn.active {
+  background: #f99b18;
+  color: #fff;
+  border: 1px solid #f99b18;
+}
+
 
 /* 통계 영역 hidden 처리 */
 .stats-visual.hidden {
@@ -207,7 +310,7 @@
 }
 
 .risk-category {
-    background: #f8fafc;
+    background: #23333d;
     padding: 16px;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
@@ -216,7 +319,7 @@
 .risk-category-title {
     font-size: 20px;
     font-weight: 700;
-    color: #334155;
+    color: #ffffff;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
@@ -232,7 +335,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 0;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #23333d;
 }
 
 .risk-item:last-child {
@@ -260,19 +363,25 @@
 .risk-rank.rank-3 {
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
 }
+.risk-rank.rank-4 {
+    background: linear-gradient(135deg, #f59e0b 0%, #2fb34a 100%);
+}
+.risk-rank.rank-5 {
+    background: linear-gradient(135deg, #f59e0b 0%, #9cffafff 100%);
+}
 
 .risk-name {
     flex: 1;
     margin: 0 12px;
     font-size: 20px;
     font-weight: 600;
-    color: #1e293b;
+    color: #ffffff;
 }
 
 .risk-percentage {
     font-size: 20px;
     font-weight: 700;
-    color: #ef4444;
+    color: #f99b18;
 }
 
 

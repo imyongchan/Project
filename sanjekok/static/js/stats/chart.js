@@ -138,7 +138,7 @@ function GenderChart1(male, female) {
             labels: ["남자", "여자"],
             datasets: [{
                 data,
-                backgroundColor: ["#14b6f6", "#EF4444"],
+                backgroundColor: ["#23333d", "#f99b18"],
                 borderWidth: 1
             }]
         },
@@ -158,7 +158,21 @@ function GenderChart1(male, female) {
                 },
                     
             }
+        },
+        datalabels: {
+                color: "#ffffff",
+                font: {
+                        size: 15,
+                        weight: "300"
+                    },
+                    formatter: (value, ctx) => {
+                        const total = ctx.chart.data.datasets[0].data
+                            .reduce((a, b) => a + b, 0) || 1;
+                        const percent = value / total * 100;
+                        return `${percent.toFixed(1)}%`;
+                    }
         }
+
     });
 }
 
@@ -182,7 +196,7 @@ function GenderChart2(maleFatal, femaleFatal) {
             labels: ["남자 사망", "여자 사망"],
             datasets: [{
                 data,
-                backgroundColor: ["#14b6f6", "#EF4444"],
+                backgroundColor: ["#23333d", "#f99b18"],
                 borderWidth: 1
             }]
         },
@@ -215,11 +229,11 @@ function AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p, highlightLabe
     const data   = [ageU18, age20s, age30s, age40s, age50s, age60p];
 
     createHorizontalBarChart("age1", "ageChart1", labels, data, {
-        color: "#cfeff9ff",            // 연한 하늘색
+        color: "#23333d",            // 연한 하늘색
         label: "연령대별 재해자 수",
         labelVisible: false,
         highlightLabel,
-        highlightColor: "#ef4444"
+        highlightColor: "#f99b18"
     });
 }
 
@@ -228,11 +242,11 @@ function AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa, highlig
     const data   = [ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa];
 
     createHorizontalBarChart("age2", "ageChart2", labels, data, {
-        color: "#5c4ac2ff",            // 진한 남색
+        color: "#23333d",            // 진한 남색
         label: "연령대별 사망자 수",
         labelVisible: false,
         highlightLabel,
-        highlightColor: "#ef4444"
+        highlightColor: "#f99b18"
     });
 }
 
@@ -257,11 +271,11 @@ function InjuryChart1(topList, highlightLabel = null) {
     const data   = topList.map(item => item.count || 0);
 
     createHorizontalBarChart("injury1", "injuryChart1", labels, data, {
-        color: "#cfeff9ff",            // 연한 하늘색
+        color: "#23333d",            // 연한 하늘색
         label: "재해자 수",
         labelVisible: false,
         highlightLabel,              // 내 발생형태
-        highlightColor: "#ef4444"
+        highlightColor: "#f99b18"
     });
 }
 
@@ -281,11 +295,11 @@ function InjuryChart2(topList, highlightLabel = null) {
     const data   = topList.map(item => item.count || 0);
 
     createHorizontalBarChart("injury2", "injuryChart2", labels, data, {
-        color: "#5c4ac2ff",            // 진한 남색
+        color: "#23333d",            // 진한 남색
         label: "사망자 수",
         labelVisible: false,
         highlightLabel,
-        highlightColor: "#ef4444"
+        highlightColor: "#f99b18"
     });
 }
 
@@ -305,11 +319,11 @@ function DiseaseChart1(topList, highlightLabel = null) {
     const data   = topList.map(item => item.count || 0);
 
     createHorizontalBarChart("disease1", "diseaseChart1", labels, data, {
-        color: "#cfeff9ff",            // 연한 하늘색
+        color: "#23333d",            // 연한 하늘색
         label: "재해자 수",
         labelVisible: false,
         highlightLabel,
-        highlightColor: "#ef4444"
+        highlightColor: "#f99b18"
     });
 }
 
@@ -329,18 +343,18 @@ function DiseaseChart2(topList, highlightLabel = null) {
     const data   = topList.map(item => item.count || 0);
 
     createHorizontalBarChart("disease2", "diseaseChart2", labels, data, {
-        color: "#5c4ac2ff",            // 진한 남색
+        color: "#23333d",            // 진한 남색
         label: "사망자 수",
         labelVisible: false,
         highlightLabel,
-        highlightColor: "#ef4444"
+        highlightColor: "#f99b18"
     });
 }
 
 
 function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
     const {
-        colors = ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],  // 최대 TOP5
+        colors = ["#EF4444", "#f99b18", "#FACC15", "#22C55E", "#3B82F6"],  // 최대 TOP5
         cutout = "55%"  // 도넛 형태, 필요 없으면 "0%"로 바꾸면 완전 파이
     } = options;
 
@@ -389,9 +403,9 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
                     labels: {
                         font: {
                             size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
-                            weight: "600"
+                            weight: "200"
                         },
-                        color: "#111827"  // 글자색 (선택사항)
+                        color: "#ffffff"  // 글자색 (선택사항)
                     }
                 },
                 tooltip: {
@@ -430,7 +444,7 @@ function RiskAccidentPieChart(topList) {
     const data   = (topList || []).map(item => item.percentage || 0);
 
     createPieChart("riskAccident", "riskAccidentPie", labels, data, {
-        colors: ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],
+        colors: ["#dc2626 ", "#f99b18", "#FACC15", "#2fb34a", "#9cffafff"],
         cutout: "55%"
     });
 }
@@ -441,7 +455,7 @@ function RiskDiseasePieChart(topList) {
     const data   = (topList || []).map(item => item.percentage || 0);
 
     createPieChart("riskDisease", "riskDiseasePie", labels, data, {
-        colors: ["#EF4444", "#F97316", "#FACC15", "#22C55E", "#3B82F6"],
+        colors: ["#dc2626 ", "#f99b18", "#FACC15", "#2fb34a", "#9cffafff"],
         cutout: "55%"
     });
 }
