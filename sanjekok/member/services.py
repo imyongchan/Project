@@ -102,9 +102,13 @@ def handle_kakao_login(code):
         return {'status': 'error', 'message': profile_json.get('msg')}
 
     kakao_id = profile_json.get("id")
-    nickname = profile_json.get("kakao_account", {}).get("profile", {}).get("nickname")
+    kakao_account = profile_json.get("kakao_account") or {}
+    profile = kakao_account.get("profile") or {}
+    nickname = profile.get("nickname")
+
     if not kakao_id:
         return {'status': 'error', 'message': '사용자 ID를 찾을 수 없습니다.'}
+
     if not nickname:
         nickname = f"사용자_{kakao_id}"
 
@@ -170,7 +174,7 @@ def handle_naver_login(code, state):
 
     profile = profile_res["response"]
     naver_id = profile["id"]
-    name = profile.get("name", "")
+    name = (profile.get("name") or "").strip()
 
     username = f"naver_{naver_id}"
 

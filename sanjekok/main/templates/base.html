@@ -39,8 +39,8 @@
     <header class="header">
         <div class="loginbox">
             {% if request.session.member_id %}
-                <span>{{ request.session.member_username }}님</span>
-                <a href="{% url 'Member:mypage' %}">마이페이지</a>
+                <span>{{ request.session.member_name }}님</span>
+                <a href="{% url 'Member:mypage_profile' %}">마이페이지</a>
                 /
                 <a href="{% url 'Member:logout' %}">로그아웃</a>
             {% else %}
