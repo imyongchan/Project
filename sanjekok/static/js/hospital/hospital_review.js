@@ -113,12 +113,37 @@
 
     // 평점 표시 (★/☆) – 반칸은 지금은 숫자로만 사용 중이면 그대로 둬도 됨
     const ratingP = document.createElement("p");
-    const starCount = Math.round(item.rating / 2); // 0~5
-    let stars = "";
-    for (let i = 0; i < starCount; i++) stars += "★";
-    for (let i = starCount; i < 5; i++) stars += "☆";
-    ratingP.textContent = `평점: ${stars} (${item.rating})`;
+    ratingP.className = "review-rating-line";
 
+    const labelSpan = document.createElement("span");
+    labelSpan.textContent = "평점: ";
+    ratingP.appendChild(labelSpan);
+
+    // item.rating : 1~10 → 별 5개 (반칸 포함)
+    for (let i = 1; i <= 5; i++) {
+      const starSpan = document.createElement("span");
+      starSpan.classList.add("review-star");
+      starSpan.textContent = "★";
+
+      const fullValue = i * 2;       // 2,4,6,8,10
+      const halfValue = fullValue - 1; // 1,3,5,7,9
+
+      if (item.rating >= fullValue) {
+        starSpan.classList.add("full");
+      } else if (item.rating === halfValue) {
+        starSpan.classList.add("half");
+      } else {
+        starSpan.classList.add("empty");
+      }
+
+      ratingP.appendChild(starSpan);
+    }
+
+    const scoreSpan = document.createElement("span");
+    scoreSpan.className = "review-score-text";
+    scoreSpan.textContent = ` (${item.rating})`;
+    ratingP.appendChild(scoreSpan);
+    
     wrapper.appendChild(header);
     wrapper.appendChild(ratingP);
     wrapper.appendChild(bodyP);
