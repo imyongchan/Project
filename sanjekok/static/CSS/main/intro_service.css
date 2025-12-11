@@ -70,7 +70,16 @@
         border-radius: 50%;
     }
 
+    .tech .a1 {
+        display: flex;
+        gap: 100px;
+    }
+
+    .tech .a2 {
+        display: inline-block;
+    }
 @media (max-width: 768px){
     .subheader{display: none;}
     .content{margin-left: 10vw;}
+    .tech .a1{display: block;}
 }
