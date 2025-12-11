@@ -4,73 +4,159 @@
 <head>
   <meta charset="UTF-8">
   <title>{{ name }} - 산재지정의료기관 상세</title>
-  <link rel="stylesheet" href="{% static 'CSS/hospital/hospital.css' %}">
+  <link rel="stylesheet" href="{% static 'CSS/hospital/hospital_detail.css' %}">
 </head>
-<body>
 
-<h2 class="page-title">산재지정의료기관 상세정보</h2>
+<body
+  data-kakao-key="{{ KAKAO_KEY }}"
+  data-lat="{{ lat|default:0 }}"
+  data-lng="{{ lng|default:0 }}"
+  data-hospital-name="{{ name }}"
+  data-hospital-id="{{ hospital_id }}"
+>
 
-<div class="detail-container">
-  <div class="detail-info">
-    <h3 class="hospital-name">{{ name }}</h3>
+  <h2 class="page-title">주변 산재지정의료기관 검색</h2>
 
-    <p><strong>주소</strong> : {{ road_address|default:address }}</p>
-    <p><strong>전화번호</strong> : {{ tel|default:"-" }}</p>
+  <!-- 1. 의료기관 기본 정보 영역 -->
+  <section class="section-box">
 
-    <p>
-      <a href="{{ external_url }}" target="_blank" class="btn-external">
-        공단 홈페이지 상세보기 바로가기
-      </a>
-    </p>
-  </div>
+    <div class="section-content">
+      <div class="section-header">
+        <div class="hospital-title">
+          <span class="hospital-name">{{ name }}</span>
+        </div>
+        
+        <div class="hospital-meta">
+          <span class="meta-distance">
+            거리 :
+            {% if distance_km is not None %}
+              {{ distance_km }}km.
+            {% else %}
+              -
+            {% endif %}
+          </span>
 
-  <div class="detail-map-wrapper">
-    <div id="detail-map" class="map-area"></div>
-  </div>
-</div>
+          <span class="meta-rating">{{ avg_rating }}</span>
+          <span class="meta-stars">★★★★★</span>
+          <span class="meta-review">리뷰 {{ review_count }}</span>
+        </div>
+      </div>
 
-<script>
-  const KAKAO_KEY = "{{ KAKAO_KEY }}";
-  const DETAIL_LAT = {{ lat }};
-  const DETAIL_LNG = {{ lng }};
-  const HOSPITAL_NAME = "{{ name|escapejs }}";
-</script>
+      <div class="hospital-info-row">
+        <div class="info-label">주소</div>
+        <div class="info-value">{{ road_address|default:address }}</div>
+      </div>
+      <div class="hospital-info-row">
+        <div class="info-label">전화번호</div>
+        <div class="info-value">{{ tel|default:"-" }}</div>
+      </div>
+    </div>
+  </section>
 
-<script>
-  // 상세 페이지용 카카오 지도
-  function loadKakaoMapScript() {
-    const script = document.createElement("script");
-    script.src = "//dapi.kakao.com/v2/maps/sdk.js?appkey=" + KAKAO_KEY + "&autoload=false";
-    script.onload = function () {
-      kakao.maps.load(initDetailMap);
-    };
-    document.head.appendChild(script);
-  }
+  <!-- 기본정보 + 위치 -->
+  <section class="section-box">
+    <div class="section-inner-title">기본정보</div>
+    <div class="basic-info-box">
+      <div class="basic-info-line">
+        <span class="basic-label">종별 :</span>
+        <span class="basic-example">ex) 요양병원</span>
+      </div>
+      <div class="basic-info-line">
+        <span class="basic-label">부가기능 :</span>
+        <span class="basic-example">ex) 진폐요양</span>
+      </div>
+      <div class="basic-info-line">
+        <span class="basic-label">재활인증 (만료일) :</span>
+        <span class="basic-example">2026-12-31</span>
+      </div>
+      <div class="basic-info-line">
+        <span class="basic-label">진료제한 (기간) :</span>
+        <span class="basic-example">-</span>
+      </div>
+      <div class="basic-info-line">
+        <span class="basic-label">의료기관평가 (평가연도) :</span>
+        <span class="basic-example">-</span>
+      </div>
+    </div>
+  </section>
 
-  function initDetailMap() {
-    const container = document.getElementById("detail-map");
-    const options = {
-      center: new kakao.maps.LatLng(DETAIL_LAT, DETAIL_LNG),
-      level: 4
-    };
-    const map = new kakao.maps.Map(container, options);
+  <!-- 2. 위치(지도) 영역 -->
+  <section class="section-box">
 
-    const markerPosition = new kakao.maps.LatLng(DETAIL_LAT, DETAIL_LNG);
-    const marker = new kakao.maps.Marker({
-      position: markerPosition,
-      map: map
-    });
+    <div class="section-content">
+      <div class="section-inner-title">위치</div>
+      <div id="detail-map" class="map-area"></div>
+    </div>
+  </section>
 
-    const iwContent =
-      '<div style="padding:5px;font-size:12px;"><b>' + HOSPITAL_NAME + "</b></div>";
-    const infowindow = new kakao.maps.InfoWindow({
-      content: iwContent
-    });
-    infowindow.open(map, marker);
-  }
+  <!-- 리뷰 영역 -->
+  <section class="section-box review-section">
 
-  document.addEventListener("DOMContentLoaded", loadKakaoMapScript);
-</script>
+    <div class="section-content">
+      <div class="section-inner-title">리뷰</div>
 
+      <!-- 별점 + 입력 -->
+      <div class="review-input-wrapper">
+        <div class="review-rating-row">
+          <span class="review-label">리뷰</span>
+          <div class="star-group" id="star-group">
+            <!-- data-value 로 점수 부여 -->
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+            <span class="star-score" id="star-score">0</span>
+          </div>
+        </div>
+
+        <textarea id="review-text" class="review-textarea"
+                  placeholder="리뷰를 입력하세요."></textarea>
+
+        <button type="button" id="btn-review-submit" class="btn-review-submit">
+          리뷰 등록하기
+        </button>
+      </div>
+
+      <!-- 기존 리뷰 목록 -->
+      <div class="review-list" id="review-list">
+        <!-- 예시 카드 -->
+        <article class="review-item">
+          <div class="review-header">
+            <span class="review-writer">작성자ID: 여기 병원 별로1….</span>
+            <span class="review-date">2025-10-23</span>
+          </div>
+          <p class="review-body">리뷰 내용 예시입니다.</p>
+        </article>
+
+        <article class="review-item">
+          <div class="review-header">
+            <span class="review-writer">작성자ID: 여기 병원 별로2….</span>
+            <span class="review-date">2023-10-23</span>
+            <button type="button" class="btn-review-delete">삭제</button>
+          </div>
+          <p class="review-body">리뷰 내용 예시입니다.</p>
+        </article>
+
+        <article class="review-item">
+          <div class="review-header">
+            <span class="review-writer">작성자ID: 여기 병원 별로3….</span>
+            <span class="review-date">2022-10-23</span>
+          </div>
+          <p class="review-body">리뷰 내용 예시입니다.</p>
+        </article>
+      </div>
+
+      <div class="review-more-wrapper">
+        <button type="button" id="btn-review-more" class="btn-review-more">
+          더보기
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 분리된 JS 파일 로드 -->
+  <script src="{% static 'JS/hospital/hospital_detail.js' %}"></script>
+  <script src="{% static 'JS/hospital/hospital_review.js' %}"></script>
 </body>
 </html>
