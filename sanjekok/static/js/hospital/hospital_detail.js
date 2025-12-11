@@ -8,8 +8,54 @@ document.addEventListener("DOMContentLoaded", function () {
   const LNG = parseFloat(body.dataset.lng || "0");
   const HOSPITAL_NAME = body.dataset.hospitalName || "";
 
+  /* =======================
+   * 1. 상단 평균 평점 별(반칸) 표시
+   * ======================= */
+  (function renderHeaderStars() {
+    const ratingEl = document.querySelector(".hospital-meta .meta-rating");
+    const starsWrap = document.querySelector(".hospital-meta .meta-stars");
+    if (!ratingEl || !starsWrap) return;
+
+    // avg_rating: 0.0 ~ 10.0
+    let rating = parseFloat(ratingEl.textContent) || 0;
+    if (rating < 0) rating = 0;
+    if (rating > 10) rating = 10;
+
+    // 기존 "★★★★★" 텍스트 제거
+    starsWrap.textContent = "";
+
+    // 별 5개를 1~10점(반칸) 기준으로 표시
+    for (let i = 1; i <= 5; i++) {
+      const span = document.createElement("span");
+      span.classList.add("meta-star");
+
+      const fullValue = i * 2;        // 2,4,6,8,10
+      const halfValue = fullValue - 1; // 1,3,5,7,9
+
+      if (rating >= fullValue) {
+        // 꽉 찬 별
+        span.classList.add("full");
+        span.textContent = "★";
+      } else if (rating >= halfValue) {
+        // 반칸 별
+        span.classList.add("half");
+        span.classList.add("empty");   // 모양은 ☆, 색은 CSS에서 처리
+        span.textContent = "☆";
+      } else {
+        // 빈 별
+        span.classList.add("empty");
+        span.textContent = "☆";
+      }
+
+      starsWrap.appendChild(span);
+    }
+  })();
+
+  /* =======================
+   * 2. 지도 표시 (카카오맵)
+   * ======================= */
+  // 좌표가 없으면 지도만 생략 (위 별 표시에는 영향 없음)
   if (!KAKAO_KEY || !LAT || !LNG) {
-    // 좌표가 없으면 지도 로딩 생략
     return;
   }
 
@@ -34,6 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
       '<div style="padding:5px;font-size:12px;"><b>' +
       HOSPITAL_NAME +
       "</b></div>";
+
     const infowindow = new kakao.maps.InfoWindow({
       content: iwContent,
     });
