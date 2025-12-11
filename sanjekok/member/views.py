@@ -72,8 +72,10 @@ def registers(request):
 
             messages.success(request, "회원가입이 완료되었습니다.")
             
+            # 세션에 사용자 정보 저장
             request.session['member_id'] = int(member.member_id)
             request.session['member_username'] = member.m_username
+            request.session['member_name'] = member.m_name  # 사용자 이름 추가
             request.session['member_provider'] = member.m_provider
 
             if member.m_provider != 'local':
@@ -82,7 +84,9 @@ def registers(request):
                 return redirect("Main:main")
             else:
                 # Regular user
-                return redirect('Member:complete')
+                messages.success(request, f"{member.m_name}님, 회원가입을 환영합니다!")
+                return redirect('Main:main') # 'Member:complete' 대신 'Main:main'으로 변경
+
 
         first_error_field = next(iter(form.errors)) if form.errors else None
         context = {
@@ -182,6 +186,45 @@ def naver_callback(request):
         request.session['social_signup_data'] = result['signup_data']
         return redirect("Member:registers")
 
+# 구글 로그인
+def google_login(request):
+    base_url = "https://accounts.google.com/o/oauth2/v2/auth"
+    params = {
+        "client_id": settings.GOOGLE_CLIENT_ID,
+        "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+        "response_type": "code",
+        "scope": "openid email profile",
+        "access_type": "offline",
+        "prompt": "consent",
+    }
+    return redirect(f"{base_url}?{urllib.parse.urlencode(params)}")
+
+
+def google_callback(request):
+    code = request.GET.get("code")
+
+    if not code:
+        messages.error(request, "구글 로그인에 실패했습니다. (인증 코드 없음)")
+        return redirect("Member:login")
+
+    result = services.handle_google_login(code)
+
+    if result["status"] == "error":
+        messages.error(request, f"구글 로그인 실패: {result['message']}")
+        return redirect("Member:login")
+
+    elif result["status"] == "login":
+        user = result["user"]
+        request.session["member_id"] = int(user.member_id)
+        request.session["member_name"] = user.m_name
+        request.session["member_provider"] = user.m_provider
+        messages.success(request, f"{user.m_name}님 환영합니다!")
+        return redirect("Main:main")
+
+    elif result["status"] == "register":
+        request.session["social_signup_data"] = result["signup_data"]
+        return redirect("Member:registers")
+
 # 아이디 중복 확인
 def check_username(request):
     username = request.GET.get('username')
@@ -190,8 +233,6 @@ def check_username(request):
     }
     return JsonResponse(data)
 
-def complete(request):
-    return render(request, 'member/member_complete.html')
 
 # 마이페이지 - 비밀번호 확인
 @login_required

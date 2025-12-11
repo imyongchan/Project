@@ -13,10 +13,11 @@ urlpatterns = [
 
     path("naver/login/", views.naver_login, name="naver_login"),    # 네이버 로그인
     path("naver/callback/", views.naver_callback, name="naver_callback"),   # 네이버 로그인 콜백
-    # path("naver/logout/", views.naver_logout, name="naver_logout"),  # 네이버 로그아웃
+
+    path("google/login/", views.google_login, name="google_login"),  # 구글 로그인
+    path("google/callback/", views.google_callback, name="google_callback"),  # 구글 로그인 콜백
 
     path('check-username/', views.check_username, name='check_username'), # 아이디 중복 확인
-    path('complete/', views.complete, name='complete'),  # 회원가입 완료
     path('logout/', views.logout, name='logout'),  # 로그아웃
 
     path('mypage/check/', views.mypage_check, name='mypage_check'),  # 마이페이지 - 비밀번호 확인

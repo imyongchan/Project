@@ -200,6 +200,80 @@ def handle_naver_login(code, state):
         "status": "register",
         "signup_data": signup_data
     }
+
+# 구글 로그인 처리 함수
+def handle_google_login(code):
+    """
+    구글 인증 코드를 사용하여 로그인/회원가입 처리
+    """
+
+    # 1) Access Token 요청
+    token_url = "https://oauth2.googleapis.com/token"
+    data = {
+        "code": code,
+        "client_id": settings.GOOGLE_CLIENT_ID,
+        "client_secret": settings.GOOGLE_CLIENT_SECRET,
+        "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+        "grant_type": "authorization_code",
+    }
+
+    token_res = requests.post(token_url, data=data)
+    token_json = token_res.json()
+
+    if "error" in token_json:
+        return {
+            "status": "error",
+            "message": token_json.get("error_description", "구글 인증 실패"),
+        }
+
+    access_token = token_json.get("access_token")
+    id_token = token_json.get("id_token")
+
+    if not access_token:
+        return {"status": "error", "message": "구글 액세스 토큰 발급 실패"}
+
+    # 2) 사용자 정보 요청
+    profile_url = "https://www.googleapis.com/oauth2/v3/userinfo"
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    profile_res = requests.get(profile_url, headers=headers)
+    profile_json = profile_res.json()
+
+    if "error" in profile_json:
+        return {"status": "error", "message": "구글 프로필 조회 실패"}
+
+    google_id = profile_json.get("sub")           # 고유 ID
+    email = profile_json.get("email") or ""
+    name = profile_json.get("name") or ""
+
+    if not google_id:
+        return {"status": "error", "message": "구글 사용자 ID 없음"}
+
+    username = f"google_{google_id}"
+
+    # 3) 기존 회원인지 확인
+    try:
+        user = Member.objects.get(m_username=username)
+        return {
+            "status": "login",
+            "user": user
+        }
+    except Member.DoesNotExist:
+        pass
+
+    # 4) 회원가입 필요
+    signup_data = {
+        "m_username": username,
+        "m_name": name,
+        "m_provider": "google",
+        "m_provider_id": google_id,
+        "m_email": email,
+    }
+
+    return {
+        "status": "register",
+        "signup_data": signup_data
+    }
     
 
 
