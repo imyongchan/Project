@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-
+from django.core.paginator import Paginator
 from .decorators import login_required
 
 from .crawler.run import crawl_safe
@@ -20,31 +20,39 @@ def crawl_safe_view(request):
 
     return redirect("Safe:safe_main") # 크롤링 후 뉴스 리스트로 이동
 
+
 # 2) 사용자용: 로그인 필요. 회원only
 
 @login_required
-def safe_main(request):
-    qs = Safe.objects.all().order_by('-id')
+def safe_list(request):
+    qs = Safe.objects.all()
 
-    # 언어 필터
-    lang = request.GET.get("lang")
-    if lang == "한국어":
-        qs = qs.filter(s_language="한국어")
-    elif lang == "외국어":
-        qs = qs.filter(s_language="외국어")
-
-    # 자료형태 필터
-    type = request.GET.get("type")
-    if type:
-        qs = qs.filter(s_type=type)
-
-    # 제목 검색
+    # 검색
     q = request.GET.get("q")
     if q:
         qs = qs.filter(s_title__icontains=q)
 
+
+    # 정렬: latest, old, view
+    order = request.GET.get("order", "latest")
+
+    if order == "latest":
+        qs = qs.order_by("-s_created_at")
+    elif order == "old":
+        qs = qs.order_by("s_created_at")
+    elif order == "view":
+        qs = qs.order_by("-s_view_count")
+
+    # -------------------------------
+    # 페이지네이션 — 12개씩
+    paginator = Paginator(qs, 12)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(request, "safe/safe_list.html", {
-        "list": qs,
+        "page_obj": page_obj,
+        "order": order,
+        "q": q,
     })
 
     

@@ -1,0 +1,55 @@
+<h2>안전자료실 목록</h2>
+
+<!-- ============================== -->
+<!-- 검색 + 필터 영역 -->
+<!-- ============================== -->
+<form method="get" style="margin-bottom:20px;">
+
+    <!-- 언어 필터 -->
+    <select name="lang">
+        <option value="">전체 언어</option>
+        <option value="한국어" {% if lang == "한국어" %}selected{% endif %}>한국어</option>
+        <option value="외국어" {% if lang == "외국어" %}selected{% endif %}>외국어</option>
+    </select>
+
+    <!-- 자료형태 필터 -->
+    <select name="type">
+        <option value="">전체 형태</option>
+        <option value="OPS" {% if material_type == "OPS" %}selected{% endif %}>OPS</option>
+        <option value="동영상" {% if material_type == "동영상" %}selected{% endif %}>동영상</option>
+        <option value="책자" {% if material_type == "책자" %}selected{% endif %}>책자</option>
+        <option value="PPT" {% if material_type == "PPT" %}selected{% endif %}>PPT</option>
+
+        <option value="기타" {% if material_type == "기타" %}selected{% endif %}>기타</option>
+        
+        
+        
+    </select>
+
+    <!-- 검색 -->
+    <input type="text" name="q" placeholder="검색어 입력" value="{{ q }}">
+
+    <button type="submit">검색</button>
+</form>
+
+<!-- ============================== -->
+<!-- 목록 출력 -->
+<!-- ============================== -->
+<ul>
+{% for s in list %}
+    <li style="margin-bottom:15px;">
+        <img src="{{ s.s_image_url }}" width="80" style="vertical-align:middle;">
+        <strong>{{ s.s_title }}</strong><br>
+
+        {{ s.s_type }} / {{ s.s_language }}<br>
+        등록일: {{ s.s_created_at }}<br>
+
+        <!-- 태그 표시 -->
+        {% for t in s.tags.all %}
+            <a href="?tag={{ t.st_tag }}" style="margin-right:5px;">
+                #{{ t.st_tag }}
+            </a>
+        {% endfor %}
+    </li>
+{% endfor %}
+</ul>

@@ -23,7 +23,7 @@ def crawl_news_view(request):
 
 
 
-# 2) 뉴스목록: 페이지네이션
+# 2) 사용자용: 뉴스목록
 
 def news_list(request):
     posts = News.objects.all().order_by('-n_created_at') # 기사작성일 순 
