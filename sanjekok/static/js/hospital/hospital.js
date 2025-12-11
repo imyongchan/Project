@@ -104,7 +104,6 @@ function loadHospitals() {
     })
     .catch(err => {
       console.error(err);
-      setMessage("병원 조회 실패: " + err.message);
       renderHospitalList([]);
     });
 }

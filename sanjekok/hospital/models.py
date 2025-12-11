@@ -9,7 +9,10 @@ class Hospital(models.Model):
     h_rc_info = models.CharField(max_length=100,null=True,verbose_name='재활인증(만료일)')
     h_tr = models.CharField(max_length=100,null=True,verbose_name='진료제한(기간)')
     h_ei = models.CharField(max_length=100,null=True,verbose_name='의료기관평가(평가연도)')
-
+    
+    h_lat = models.FloatField(null=True, blank=True)  # 위도
+    h_lng = models.FloatField(null=True, blank=True)
+    
     class Meta:
         db_table = 't_hospital'
         verbose_name = '산재지정병원'
