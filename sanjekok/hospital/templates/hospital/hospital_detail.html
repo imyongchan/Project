@@ -1,11 +1,14 @@
+
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ name }} - 산재지정의료기관 상세</title>
-  <link rel="stylesheet" href="{% static 'CSS/hospital/hospital_detail.css' %}">
-</head>
+
+{% block title %}{{name}} - 산재지정의료기관 상세{% endblock %}
+
+{% block script1 %}
+<link rel="stylesheet" href="{% static 'CSS/hospital/hospital_detail.css' %}">
+{% endblock %}
+
+{% block contents %}
 
 <body
   data-kakao-key="{{ KAKAO_KEY }}"
@@ -136,5 +139,8 @@
   <!-- 분리된 JS 파일 로드 -->
   <script src="{% static 'JS/hospital/hospital_detail.js' %}"></script>
   <script src="{% static 'JS/hospital/hospital_review.js' %}"></script>
+
+
+{% endblock %}
 </body>
 </html>
