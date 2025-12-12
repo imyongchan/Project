@@ -152,6 +152,7 @@ body {
 }
 
 .basic-label {
+  margin-bottom: 3px;
   min-width: 150px;
   font-weight: 600;
   color: #2fb34a;
@@ -159,6 +160,7 @@ body {
 
 .basic-value {
   color: #333;
+  font-weight: 400;
 }
 
 /* ============================
@@ -396,10 +398,6 @@ body {
 
   .basic-info-line {
     flex-direction: column;
-  }
-
-  .basic-label {
-    margin-bottom: 3px;
   }
 
   .review-rating-row {
