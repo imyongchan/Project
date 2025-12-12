@@ -32,19 +32,21 @@
                     <th>병원이름</th>
                     <th>작성자</th>
                     <th>작성일</th>
-                    </tr>
-                </thead>
-                    {% for review in r_list %}
-                <tbody>
-                    <tr>
-                        <td>{{ review.id }}</td>
-                        <td>{{ review.hospital.h_hospital_name }}</a> </td>
-                        <td>{{ review.member.m_username }}</td>
-                        <td>{{ review.r_created_at|date:"Y-m-d" }}</td>
-                    </tr>
-                </tbody>
-                    {% endfor %}
-            </table>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for review in r_list %}
+                <tr style="cursor: pointer;"
+                    onclick="location.href='{% url 'Manager:detail' review.id %}'">
+                    <td>{{ review.id }}</td>
+                    <td>{{ review.hospital.h_hospital_name }}</td>
+                    <td>{{ review.member.m_username }}</td>
+                    <td>{{ review.r_created_at|date:"Y-m-d" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
         <div class="pagination justify-content-center mt-3">
 

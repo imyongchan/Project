@@ -1,0 +1,34 @@
+{% extends "manager_base.html" %}
+{% load static %}
+
+{% block contents %}
+<div class="container mt-4">
+
+    <h3>리뷰 상세보기</h3>
+    <hr>
+
+    <table class="table table-bordered">
+        <tr>
+            <th style="width:150px;">병원 이름</th>
+            <td>{{ review.hospital.h_hospital_name }}</td>
+        </tr>
+        <tr>
+            <th>작성자</th>
+            <td>{{ review.member.m_username }}</td>
+        </tr>
+        <tr>
+            <th>작성일</th>
+            <td>{{ review.r_created_at|date:"Y-m-d" }}</td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td style="white-space: pre-wrap;">{{ review.r_contents }}</td>
+        </tr>
+    </table>
+
+    <div class="mt-3">
+        <a href="{% url 'Manager:review' %}" class="btn btn-secondary">목록으로</a>
+    </div>
+
+</div>
+{% endblock %}

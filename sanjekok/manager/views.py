@@ -200,3 +200,12 @@ def logout(request):
     request.session.flush()  # 세션 완전 삭제
     messages.success(request, "로그아웃되었습니다.")
     return render(request, 'manager_logout.html')
+
+def detail(request, id):
+    review = get_object_or_404(Review, pk=id)
+
+    context = {
+        'review': review
+    }
+
+    return render(request, 'manager_detail.html', context)
