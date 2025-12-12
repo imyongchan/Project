@@ -1,14 +1,26 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .decorators import login_required  
+from .decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
+
 
 from .crawler.run import crawl_safe
 from .models import Safe
 
+def is_admin(user):
+    """
+    관리자 여부 판단
+    """
+    return user.is_staff or user.is_superuser
 
+@login_required
+@user_passes_test(is_admin)
 # 1) 관리자용: 수동 크롤링 실행
 def crawl_safe_view(request):
+    """
+    /news/crawl/ 로 접근했을 때 크롤링 실행
+    """
     try:
         crawl_safe()
         messages.success(request, "크롤링 완료!")
@@ -22,7 +34,7 @@ def crawl_safe_view(request):
 def safe_list(request):
 
     # 기본 목록
-    materials = Safe.objects.all().order_by("id")
+    materials = Safe.objects.all().order_by("s_created_at")
 
     # ----------------------------------------
     # 필터 목록 제공 (템플릿 사용용)
@@ -123,3 +135,19 @@ def safe_list(request):
     }
 
     return render(request, "safe/safe_list.html", context)
+
+
+def safe_detail(request, pk):
+    safe = get_object_or_404(Safe, pk=pk)
+
+    # 태그 기준으로 연관 콘텐츠 검색
+    tags = safe.tags.all()
+    related = Safe.objects.filter(tags__in=tags).exclude(id=safe.id).distinct()
+
+    # 추천 기준: 1) 태그 겹침 → 2) 조회수 → 3) 최신순
+    related = related.order_by('-s_view_count', '-s_created_at')[:8]
+
+    return render(request, "safe/safe_detail.html", {
+        "safe": safe,
+        "related_list": related,
+    })

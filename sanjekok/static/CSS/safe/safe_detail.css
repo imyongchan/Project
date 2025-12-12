@@ -1,0 +1,89 @@
+.safe-detail-wrapper {
+    padding: 20px 0;
+}
+
+/* 제목 영역 */
+.title-box .safe-title {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+.title-box .sub-info span {
+    margin-right: 15px;
+    color: #666;
+}
+
+/* 본문 영역 */
+.left-image-box img.safe-main-img {
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.left-image-box img.safe-main-img:hover {
+    transform: scale(1.02);
+}
+
+.info-line {
+    margin-bottom: 10px;
+}
+
+.tag-item {
+    background: #e8f0ff;
+    padding: 3px 8px;
+    margin-right: 6px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.content-box {
+    background: #f9f9f9;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+/* 연관 콘텐츠 */
+.related-section h4 {
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+.related-item {
+    margin-bottom: 20px;
+}
+.related-item a {
+    text-decoration: none;
+    color: inherit;
+}
+.related-img {
+    width: 100%;
+    border-radius: 8px;
+}
+.related-title {
+    margin-top: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Modal 이미지 */
+.modal-image {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    padding-top: 80px;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.8);
+}
+.modal-content-img {
+    margin: auto;
+    display: block;
+    max-width: 85%;
+}
+.modal-close {
+    position: absolute;
+    top: 40px;
+    right: 50px;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+}
