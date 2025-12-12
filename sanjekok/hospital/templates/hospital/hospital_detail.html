@@ -104,10 +104,17 @@
         </div>
       </div>
 
-      <form id="review-form">
+      <!-- 폼에 review-form-box 클래스 추가 -->
+      <form id="review-form" class="review-form-box">
         {% csrf_token %}
-        <textarea id="review-text" class="review-textarea" placeholder="리뷰를 입력하세요."></textarea>
-        <button type="submit" class="btn-review-submit">리뷰 등록하기</button>
+        <textarea id="review-text"
+                  class="review-textarea"
+                  placeholder="리뷰를 입력하세요."></textarea>
+
+        <!-- 버튼은 별도 컨테이너로 감싸서 우측 정렬 -->
+        <div class="review-form-actions">
+          <button type="submit" class="btn-review-submit">리뷰 등록하기</button>
+        </div>
       </form>
     </div>
 
@@ -132,5 +139,3 @@
 
 
 {% endblock %}
-</body>
-</html>

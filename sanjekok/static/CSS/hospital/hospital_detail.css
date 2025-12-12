@@ -256,10 +256,10 @@ body {
   border-radius: 8px;
   padding: 8px 20px;
   font-weight: 600;
-  float: right;
   cursor: pointer;
   transition: background 0.25s ease;
   margin-top: 10px;
+  margin-top: 0;
 }
 
 .btn-review-submit:hover {
@@ -364,6 +364,21 @@ body {
   background: #2fb34a;
   color: #fff;
 }
+
+/* 리뷰 입력 박스 */
+.review-form-box {
+  position: relative;
+  background-color: #fff;
+  border-radius: 6px;
+}
+
+/* 버튼 영역을 플렉스로 우측 정렬 */
+.review-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
 
 /* ============================
    반응형
