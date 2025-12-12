@@ -10,15 +10,15 @@ body {
 }
 
 /* ================================
-   회원가입 카드 박스
+   카드 전체
 ================================ */
 .card {
   background: #ffffff;
   border: none;
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  max-width: 480px;
-  margin: 0 auto;
+  max-width: 700px;
+  margin-bottom: 70px;
   overflow: hidden;
 }
 
@@ -27,7 +27,7 @@ body {
   background-color: #23333d;
   color: #ffffff;
   text-align: center;
-  padding: 24px;
+  padding: 24px 28px;
 }
 
 .card-header h2 {
@@ -38,73 +38,52 @@ body {
 
 /* 카드 본문 */
 .card-body {
-  padding: 35px 35px 45px;
+  padding: 35px 45px 50px;
 }
 
-/* ================================
-   섹션 제목
-================================ */
 .card-title {
   font-weight: 700;
   font-size: 1.2rem;
   color: #23333d;
-  margin-bottom: 20px;
-  border-left: 4px solid #23333d;
+  margin-bottom: 24px;
+  border-left: 4px solid #2fb34a;
   padding-left: 10px;
 }
 
 /* ================================
-   입력 필드 스타일
+   정보 그룹 (라벨 + 값)
 ================================ */
-.form-label {
+.info-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e4e4e4;
+  padding: 10px 0;
+}
+
+.info-label {
   font-weight: 600;
-  font-size: 0.95rem;
   color: #23333d;
-}
-
-.form-control {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 10px 14px;
+  flex: 0 0 120px;
   font-size: 0.95rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-control:focus {
-  border-color: #f99b18;
-  box-shadow: 0 0 0 3px rgba(47, 179, 74, 0.15);
-  outline: none;
-}
-
-/* ================================
-   중복확인 버튼
-================================ */
-.input-group .btn-outline-secondary {
-  border: 1px solid #23333d;
-  color: #23333d;
-  font-weight: 600;
+.info-value {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #444;
+  background: #f8f9fa;
+  padding: 8px 14px;
   border-radius: 8px;
-  transition: 0.25s;
 }
 
-.input-group .btn-outline-secondary:hover {
-  background-color: #f99b18;
-  color: #fff;
-}
-
-/* ================================
-   경고 메시지
-================================ */
-#usernameCheckMsg,
-#passwordError,
-#rePasswordError {
-  font-size: 0.85rem;
-  color: #e63946;
-  margin-top: 5px;
+/* 첫 번째 항목은 상단 여백 추가 */
+.info-group:first-child {
+  border-top: 1px solid #e4e4e4;
 }
 
 /* ================================
-   확인 버튼
+   버튼 (수정 등 추가 시)
 ================================ */
 .subbtn {
   background-color: #23333d !important;
@@ -116,19 +95,11 @@ body {
   border-radius: 10px;
   padding: 12px 0;
   transition: background-color 0.25s ease;
-  margin-top: 8px;
+  margin-top: 24px;
 }
 
 .subbtn:hover {
   background-color: #f99b18 !important;
-}
-
-/* ================================
-   에러 강조
-================================ */
-.input-error {
-  border-color: #e63946 !important;
-  box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1) !important;
 }
 
 /* ================================
@@ -143,11 +114,22 @@ body {
     padding: 25px 20px 35px;
   }
 
-  .card-header h2 {
-    font-size: 1.5rem;
+  .info-group {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .card-title {
-    font-size: 1.05rem;
+  .info-label {
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+  }
+
+  .info-value {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .card-header h2 {
+    font-size: 1.5rem;
   }
 }

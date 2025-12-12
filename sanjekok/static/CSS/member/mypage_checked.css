@@ -10,51 +10,60 @@ body {
 }
 
 /* ================================
-   회원가입 카드 박스
+   카드 전체
 ================================ */
 .card {
   background: #ffffff;
   border: none;
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  max-width: 480px;
+  max-width: 600px;
   margin: 0 auto;
   overflow: hidden;
 }
 
-/* 카드 헤더 */
+/* ================================
+   카드 헤더
+================================ */
 .card-header {
   background-color: #23333d;
   color: #ffffff;
   text-align: center;
-  padding: 24px;
+  padding: 24px 28px;
 }
 
-.card-header h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
+.card-header ul {
+  list-style: none;
+  padding: 0;
   margin: 0;
 }
 
-/* 카드 본문 */
+.card-header li {
+  margin-bottom: 10px;
+}
+
+.check-info {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ================================
+   카드 바디
+================================ */
 .card-body {
   padding: 35px 35px 45px;
 }
 
-/* ================================
-   섹션 제목
-================================ */
-.card-title {
+.card-body h2 {
+  font-size: 1.4rem;
   font-weight: 700;
-  font-size: 1.2rem;
   color: #23333d;
   margin-bottom: 20px;
-  border-left: 4px solid #23333d;
-  padding-left: 10px;
+  text-align: center;
 }
 
 /* ================================
-   입력 필드 스타일
+   입력 필드
 ================================ */
 .form-label {
   font-weight: 600;
@@ -77,34 +86,7 @@ body {
 }
 
 /* ================================
-   중복확인 버튼
-================================ */
-.input-group .btn-outline-secondary {
-  border: 1px solid #23333d;
-  color: #23333d;
-  font-weight: 600;
-  border-radius: 8px;
-  transition: 0.25s;
-}
-
-.input-group .btn-outline-secondary:hover {
-  background-color: #f99b18;
-  color: #fff;
-}
-
-/* ================================
-   경고 메시지
-================================ */
-#usernameCheckMsg,
-#passwordError,
-#rePasswordError {
-  font-size: 0.85rem;
-  color: #e63946;
-  margin-top: 5px;
-}
-
-/* ================================
-   확인 버튼
+   버튼
 ================================ */
 .subbtn {
   background-color: #23333d !important;
@@ -124,11 +106,15 @@ body {
 }
 
 /* ================================
-   에러 강조
+   에러 알림창
 ================================ */
-.input-error {
-  border-color: #e63946 !important;
-  box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1) !important;
+.alert-danger {
+  background: #ffe5e5;
+  color: #b30000;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
 }
 
 /* ================================
@@ -143,11 +129,15 @@ body {
     padding: 25px 20px 35px;
   }
 
-  .card-header h2 {
-    font-size: 1.5rem;
+  .card-header {
+    padding: 20px;
   }
 
-  .card-title {
-    font-size: 1.05rem;
+  .card-header li {
+    font-size: 0.9rem;
+  }
+
+  .card-body h2 {
+    font-size: 1.2rem;
   }
 }
