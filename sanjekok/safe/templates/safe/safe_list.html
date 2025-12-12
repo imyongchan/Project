@@ -5,177 +5,143 @@
 
 {% block script1 %}
 <link rel="stylesheet" href="{% static 'CSS/safe/safe_list.css' %}">
-<script src="{% static 'js/safe.js' %}"></script>
+<script src="{% static 'js/safe/safe.js' %}"></script>
 {% endblock %}
 
 {% block contents %}
+
 <section class="safe-section">
   <div class="container py-5">
 
     <!-- 제목 -->
-    <div class="safe-header text-center mb-5">
+    <div class="safe-header text-center mb-4">
       <p class="subtitle">산업안전 관련 자료를 한곳에</p>
       <h2 class="fw-bold" style="color:#23333d;">안전자료실</h2>
     </div>
 
-    <!-- 필터 + 검색 -->
-    <form method="get" class="safe-filter-box mb-4">
+
+    <!-- ------------------------------ -->
+    <!-- 필터 박스 전체 -->
+    <!-- ------------------------------ -->
+    <form method="get" id="filterForm" class="filter-wrapper">
 
       <!-- 자료유형 -->
-      <div class="filter-row">
-        <div class="filter-label">자료유형&nbsp;|</div>
-        <div class="filter-content filter-checkbox">
-
-          <label>
-            <input type="checkbox" name="type" value="동영상"
-              {% if "동영상" in material_types %}checked{% endif %}>
-            동영상
+      <div class="filter-group">
+        <div class="filter-label">자료유형</div>
+        <div class="filter-controls">
+          {% for val in type_list %}
+          <label class="cb-label">
+              <input type="checkbox" name="type" value="{{ val }}"
+                     {% if val in selected_types %}checked{% endif %}>
+              {{ val }}
           </label>
-
-          <label>
-            <input type="checkbox" name="type" value="OPS"
-              {% if "OPS" in material_types %}checked{% endif %}>
-            OPS
-          </label>
-
-          <label>
-            <input type="checkbox" name="type" value="책자"
-              {% if "책자" in material_types %}checked{% endif %}>
-            책자
-          </label>
-
-          <label>
-            <input type="checkbox" name="type" value="PPT"
-              {% if "PPT" in material_types %}checked{% endif %}>
-            PPT
-          </label>
-
-          <label>
-            <input type="checkbox" name="type" value="기타"
-              {% if "기타" in material_types %}checked{% endif %}>
-            기타
-          </label>
-
+          {% endfor %}
         </div>
       </div>
 
       <!-- 언어 -->
-      <div class="filter-row">
-        <div class="filter-label">언어&nbsp;|</div>
-        <div class="filter-content">
-
-          <label>
-            <input type="radio" name="lang" value=""
-              {% if not lang %}checked{% endif %}>
-            전체
+      <div class="filter-group">
+        <div class="filter-label">언어</div>
+        <div class="filter-controls">
+          {% for lang in language_list %}
+          <label class="cb-label">
+              <input type="checkbox" name="lang" value="{{ lang }}"
+                     {% if selected_language == lang %}checked{% endif %}>
+              {{ lang }}
           </label>
-
-          <label>
-            <input type="radio" name="lang" value="한국어"
-              {% if lang == "한국어" %}checked{% endif %}>
-            한국어
-          </label>
-
-          <label>
-            <input type="radio" name="lang" value="외국어"
-              {% if lang == "외국어" %}checked{% endif %}>
-            외국어
-          </label>
+          {% endfor %}
         </div>
       </div>
 
       <!-- 검색 -->
-      <div class="filter-row">
-        <div class="filter-label">검색&nbsp;|</div>
-
-        <div class="filter-content">
-          <input type="text" name="q"
-                 class="form-control search-input"
-                 placeholder="제목검색"
-                 value="{{ q }}">
-          <button type="submit" class="btn btn-outline-secondary btn-search">
-            검색
-          </button>
+      <div class="filter-group">
+        <div class="filter-label">검색</div>
+        <div class="filter-controls search-box">
+          <input type="text" name="q" class="form-control search-input"
+                 placeholder="제목검색" value="{{ search_keyword }}">
+          <button type="submit" class="btn btn-outline-secondary btn-search">검색</button>
         </div>
       </div>
+
     </form>
 
-  <!-- 정렬 영역 -->
-    <div class="sort-box text-end mb-3">
-      <div class="dropdown d-inline-block">
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-          {% if selected_order == "latest" %}최신순
-          {% elif selected_order == "old" %}과거순
-          {% elif selected_order == "view" %}조회순
-          {% else %}정렬{% endif %}
-        </button>
 
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="?order=latest">최신순</a></li>
-          <li><a class="dropdown-item" href="?order=old">과거순</a></li>
-          <li><a class="dropdown-item" href="?order=view">조회순</a></li>
-        </ul>
-      </div>
-    </div>
+    <!-- ------------------------------ -->
+    <!-- 자료 카드 리스트 -->
+    <!-- ------------------------------ -->
+    <div class="safe-card-list">
 
-    <!-- 자료 목록 -->
-    <div class="search-result-list">
+      {% for s in list %}
+      <a href="#" class="safe-card">
 
-      {% for item in page_obj %}
-      <div class="search-row d-flex align-items-start border mb-3 p-3">
-        
-        <!-- 왼쪽 텍스트 영역 -->
-        <div class="flex-grow-1">
-          <h4 class="item-title mb-2">{{ item.s_title }}</h4>
+        <!-- 텍스트 영역 -->
+        <div class="card-left">
+          
+          <!-- 제목 -->
+          <h3 class="card-title">{{ s.s_title }}</h3>
 
-          <p class="item-tags text-muted mb-1">
-            {% for t in item.tags.all %}
-              #{{ t.st_tag }}
+          <!-- 태그 -->
+          <div class="card-tags">
+            {% for t in s.tags.all %}
+              <span>#{{ t.st_tag }}</span>
             {% endfor %}
-          </p>
+          </div>
 
-          <p class="item-desc text-muted small">
-            {{ item.s_contents|truncatechars:80 }}
-          </p>
+          <!-- 요약 -->
+          <p class="card-desc">{{ s.s_contents|truncatechars:100 }}</p>
         </div>
 
-        <!-- 오른쪽 이미지 영역 -->
-        <div class="item-img-box text-center ms-3">
-          {% if item.s_image_url %}
-            <img src="{{ item.s_image_url }}" alt="대표 이미지" class="item-img">
+        <!-- 이미지 영역 -->
+        <div class="card-right">
+          {% if s.s_image_url %}
+            <img src="{{ s.s_image_url }}" class="card-img">
           {% else %}
-            <div class="no-img">대표 이미지</div>
+            <div class="card-noimg">NO IMAGE</div>
           {% endif %}
         </div>
 
-      </div>
+      </a>
       {% empty %}
       <p class="text-center mt-5">검색 결과가 없습니다.</p>
       {% endfor %}
 
-  </div>
-
-
-    <!-- 페이지네이션 -->
-    <div class="pagination-box text-center mt-4">
-      {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}" class="px-2">이전</a>
-      {% endif %}
-
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <strong class="mx-1">{{ num }}</strong>
-        {% else %}
-          <a href="?page={{ num }}" class="mx-1">{{ num }}</a>
-        {% endif %}
-      {% endfor %}
-
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="px-2">다음</a>
-      {% endif %}
     </div>
 
 
+    <!-- ------------------------------ -->
+    <!-- 페이지네이션 -->
+    <!-- ------------------------------ -->
+    <div class="container mt-5">
+      <ul class="pagination justify-content-center">
+
+          {% if list.number > 1 %}
+          <li class="page-item"><a class="page-link" href="?page=1">처음 <<</a></li>
+          {% endif %}
+
+          {% if start_page > 1 %}
+          <li class="page-item"><a class="page-link" href="?page={{ start_page|add:-1 }}">이전 <</a></li>
+          {% endif %}
+
+          {% for i in page_range %}
+              {% if list.number == i %}
+                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+              {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+              {% endif %}
+          {% endfor %}
+
+          {% if list.paginator.num_pages > end_page %}
+          <li class="page-item"><a class="page-link" href="?page={{ end_page|add:1 }}">다음 ></a></li>
+          {% endif %}
+
+          {% if list.number < list.paginator.num_pages %}
+          <li class="page-item"><a class="page-link" href="?page={{ list.paginator.num_pages }}">맨끝 >></a></li>
+          {% endif %}
+
+      </ul>
+    </div>
+
   </div>
 </section>
+
 {% endblock %}
