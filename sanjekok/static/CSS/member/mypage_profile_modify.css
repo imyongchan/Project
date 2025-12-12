@@ -1,0 +1,152 @@
+/* ================================
+   1. 전체 레이아웃 기본
+================================ */
+body {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  background-color: #f6f8f7;
+  color: #23333d;
+  margin: 0;
+  padding-bottom: 80px;
+}
+
+/* ================================
+   2. 카드 영역
+================================ */
+.card {
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  max-width: 700px;
+  margin: 60px auto;
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: #23333d;
+  color: #ffffff;
+  text-align: center;
+  padding: 22px;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.card-body {
+  padding: 40px 45px 50px;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #23333d;
+  margin-bottom: 24px;
+  border-left: 4px solid #2fb34a;
+  padding-left: 10px;
+}
+
+/* ================================
+   3. 입력 필드 스타일
+================================ */
+.form-label {
+  font-weight: 600;
+  color: #23333d;
+  margin-bottom: 6px;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #ccd4da;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: #333;
+  background-color: #fdfdfd;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #f99b18;
+  box-shadow: 0 0 0 3px rgba(47, 179, 74, 0.15);
+  outline: none;
+}
+
+/* ================================
+   4. 라디오버튼 (성별)
+================================ */
+input[type="radio"] {
+  accent-color: #2fb34a;
+  transform: scale(1.1);
+  margin-right: 5px;
+}
+
+label[for="sex_male"],
+label[for="sex_female"] {
+  margin-right: 16px;
+  font-weight: 500;
+  color: #23333d;
+}
+
+/* ================================
+   5. 버튼
+================================ */
+.subbtn {
+  background-color: #23333d !important;
+  border: none;
+  color: #ffffff;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 12px 0;
+  transition: background-color 0.25s ease;
+  margin-top: 10px;
+}
+
+.subbtn:hover {
+  background-color: #f99b18 !important;
+}
+
+a.btn.btn-primary {
+  background-color: #dfe4e7;
+  border: none;
+  color: #23333d;
+  font-weight: 600;
+  padding: 12px 0;
+  width: 100%;
+  border-radius: 10px;
+  transition: background-color 0.25s;
+  margin-top: 8px;
+}
+
+a.btn.btn-primary:hover {
+  background-color: #cbd2d6;
+}
+
+/* ================================
+   6. 오류 메시지
+================================ */
+#EmailError {
+  color: #e63946;
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+/* ================================
+   7. 반응형
+================================ */
+@media (max-width: 768px) {
+  .card {
+    margin: 30px auto;
+  }
+
+  .card-body {
+    padding: 30px 25px 40px;
+  }
+
+  .form-control {
+    font-size: 0.9rem;
+  }
+
+  .card-header {
+    font-size: 1.4rem;
+  }
+}
