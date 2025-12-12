@@ -1,11 +1,13 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>주변 산재지정의료기관 검색</title>
-  <link rel="stylesheet" href="{% static 'CSS/hospital/hospital.css' %}">
-</head>
+
+{% block title %}주변 산재지정의료기관 검색{% endblock %}
+
+{% block script1 %}
+<link rel="stylesheet" href="{% static 'CSS/hospital/hospital.css' %}">
+{% endblock %}
+
+{% block contents %}
 <body data-hospital-api-url="{% url 'Hospital:hospital_api' %}">
 
 <h2 class="page-title">주변 산재지정의료기관 검색</h2>
@@ -83,5 +85,6 @@
   };
 </script>
 <script src="{% static 'js/hospital/hospital.js' %}"></script>
+{% endblock %}
 </body>
 </html>

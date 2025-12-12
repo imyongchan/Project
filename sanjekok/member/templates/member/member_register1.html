@@ -4,7 +4,6 @@
 
 {% block script1 %}
 <link rel="stylesheet" href="{% static 'CSS/member/member_register.css' %}">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     
     window.firstErrorField = '{{ first_error_field|default_if_none:"" }}';
@@ -50,7 +49,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary subbtn w-100">확인하기</button>
+            <button type="submit" class="btn btn-primary subbtn w-100">다음</button>
         </form>
     </div>
 </div>

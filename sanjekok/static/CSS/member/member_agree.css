@@ -1,0 +1,224 @@
+/* ================================
+   기본 설정
+================================ */
+body {
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  background-color: #f6f8f7;
+  color: #23333d;
+  margin: 0;
+  padding: 60px 20px 100px;
+}
+
+/* ================================
+   카드 박스 스타일
+================================ */
+.card {
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  max-width: 700px;
+  margin: 0 auto 40px;
+  padding: 30px 35px;
+}
+
+.card h5 {
+  font-weight: 700;
+  color: #23333d;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* ================================
+   체크박스 스타일
+================================ */
+.form-check {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.form-check-input {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+  accent-color: #23333d;
+  
+}
+
+.form-check-label {
+  font-size: 0.95rem;
+  color: #333;
+  flex: 1;
+}
+
+/* 전체동의 강조 */
+#agree_all + label strong {
+  color: #23333d;
+}
+
+/* 안내문 */
+.form-text.text-muted {
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+/* 약관보기 버튼 */
+.btn-link {
+  color: #23333d;
+  text-decoration: underline;
+  font-weight: 600;
+  margin-left: 6px;
+  transition: color 0.25s;
+}
+
+.btn-link:hover {
+  color: #f99b18;
+}
+
+/* ================================
+   확인 버튼
+================================ */
+.subbtn {
+  background-color: #23333d !important;
+  border: none;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 12px 0;
+  transition: background-color 0.25s ease;
+  max-width: 700px;
+  display: block;
+  margin: 0 auto;
+}
+
+.subbtn:hover {
+  background-color: #f99b18 !important;
+}
+
+/* ================================
+   모달 오버레이
+================================ */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(35, 51, 61, 0.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.custom-modal-overlay.is-active {
+  display: flex;
+}
+
+/* ================================
+   모달 박스
+================================ */
+.custom-modal {
+  background: #ffffff;
+  width: 70%;
+  max-width: 900px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.25s ease;
+}
+
+/* ================================
+   모달 헤더
+================================ */
+.custom-modal-header {
+  background: #23333d;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-modal-header h5 {
+  font-weight: 700;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.custom-modal-close {
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+
+.custom-modal-close:hover {
+  transform: scale(1.2);
+}
+
+/* ================================
+   모달 바디
+================================ */
+.custom-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+/* 스크롤 가능한 약관 영역 */
+.terms-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 10px;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #333;
+  font-size: 0.93rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fafafa;
+}
+
+/* ================================
+   애니메이션
+================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ================================
+   반응형
+================================ */
+@media (max-width: 768px) {
+  .card {
+    padding: 25px 20px;
+  }
+
+  .custom-modal {
+    width: 90%;
+  }
+
+  .terms-content {
+    font-size: 0.9rem;
+  }
+
+  .custom-modal-header h5 {
+    font-size: 1rem;
+  }
+}

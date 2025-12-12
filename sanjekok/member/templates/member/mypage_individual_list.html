@@ -3,6 +3,8 @@
 {% block title %}산재 관리{% endblock %}
 
 {% block script1 %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'CSS/member/mypage_individual_list.css' %}">
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const selectAllCheckbox = document.getElementById('select-all');

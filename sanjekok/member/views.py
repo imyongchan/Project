@@ -7,9 +7,24 @@ from .forms import Step1MemberForm, Step2MemberForm
 from .decorators import login_required, mypage_auth_required
 from . import services
 from django.conf import settings
-import requests
 import urllib.parse
 # Create your views here.
+
+# 약관 동의
+def agree(request):
+
+    if request.method == "GET":
+        return render(request, 'member/member_agree.html')
+    
+    if request.method == "POST":
+        agree_term = request.POST.get("agree_term")
+        agree_privacy = request.POST.get("agree_priv")
+
+        if agree_term == "1" and agree_privacy == "1":
+            return redirect('Member:registerf')
+        else:
+            messages.error(request, "약관 및 개인정보처리방침에 동의하셔야 회원가입이 가능합니다.")
+            return render(request, 'member/member_agree.html')
 
 # 회원가입 1단계
 def registerf(request):

@@ -1,73 +1,66 @@
 /* ================================
-   기본 설정
+   1. 전체 레이아웃 기본
 ================================ */
 body {
   font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
   background-color: #f6f8f7;
   color: #23333d;
   margin: 0;
-  padding: 60px 20px 100px;
+  padding-bottom: 80px;
 }
 
 /* ================================
-   회원가입 카드 박스
+   2. 카드 영역
 ================================ */
 .card {
   background: #ffffff;
   border: none;
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  max-width: 480px;
-  margin: 0 auto;
+  max-width: 700px;
+  margin: 60px auto;
   overflow: hidden;
 }
 
-/* 카드 헤더 */
 .card-header {
   background-color: #23333d;
   color: #ffffff;
   text-align: center;
-  padding: 24px;
-}
-
-.card-header h2 {
-  font-size: 1.8rem;
+  padding: 22px;
+  font-size: 1.6rem;
   font-weight: 700;
-  margin: 0;
 }
 
-/* 카드 본문 */
 .card-body {
-  padding: 35px 35px 45px;
+  padding: 40px 45px 50px;
 }
 
-/* ================================
-   섹션 제목
-================================ */
 .card-title {
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #23333d;
-  margin-bottom: 20px;
-  border-left: 4px solid #23333d;
+  margin-bottom: 24px;
+  border-left: 4px solid #2fb34a;
   padding-left: 10px;
 }
 
 /* ================================
-   입력 필드 스타일
+   3. 입력 필드 스타일
 ================================ */
 .form-label {
   font-weight: 600;
-  font-size: 0.95rem;
   color: #23333d;
+  margin-bottom: 6px;
 }
 
 .form-control {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccd4da;
+  padding: 10px 12px;
   font-size: 0.95rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #333;
+  background-color: #fdfdfd;
+  transition: all 0.2s ease-in-out;
 }
 
 .form-control:focus {
@@ -77,34 +70,23 @@ body {
 }
 
 /* ================================
-   중복확인 버튼
+   4. 라디오버튼 (성별)
 ================================ */
-.input-group .btn-outline-secondary {
-  border: 1px solid #23333d;
+input[type="radio"] {
+  accent-color: #2fb34a;
+  transform: scale(1.1);
+  margin-right: 5px;
+}
+
+label[for="sex_male"],
+label[for="sex_female"] {
+  margin-right: 16px;
+  font-weight: 500;
   color: #23333d;
-  font-weight: 600;
-  border-radius: 8px;
-  transition: 0.25s;
-}
-
-.input-group .btn-outline-secondary:hover {
-  background-color: #f99b18;
-  color: #fff;
 }
 
 /* ================================
-   경고 메시지
-================================ */
-#usernameCheckMsg,
-#passwordError,
-#rePasswordError {
-  font-size: 0.85rem;
-  color: #e63946;
-  margin-top: 5px;
-}
-
-/* ================================
-   확인 버튼
+   5. 버튼
 ================================ */
 .subbtn {
   background-color: #23333d !important;
@@ -116,38 +98,55 @@ body {
   border-radius: 10px;
   padding: 12px 0;
   transition: background-color 0.25s ease;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .subbtn:hover {
   background-color: #f99b18 !important;
 }
 
-/* ================================
-   에러 강조
-================================ */
-.input-error {
-  border-color: #e63946 !important;
-  box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1) !important;
+a.btn.btn-primary {
+  background-color: #dfe4e7;
+  border: none;
+  color: #23333d;
+  font-weight: 600;
+  padding: 12px 0;
+  width: 100%;
+  border-radius: 10px;
+  transition: background-color 0.25s;
+  margin-top: 8px;
+}
+
+a.btn.btn-primary:hover {
+  background-color: #cbd2d6;
 }
 
 /* ================================
-   반응형
+   6. 오류 메시지
 ================================ */
-@media (max-width: 576px) {
-  body {
-    padding: 40px 16px;
+#EmailError {
+  color: #e63946;
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+/* ================================
+   7. 반응형
+================================ */
+@media (max-width: 768px) {
+  .card {
+    margin: 30px auto;
   }
 
   .card-body {
-    padding: 25px 20px 35px;
+    padding: 30px 25px 40px;
   }
 
-  .card-header h2 {
-    font-size: 1.5rem;
+  .form-control {
+    font-size: 0.9rem;
   }
 
-  .card-title {
-    font-size: 1.05rem;
+  .card-header {
+    font-size: 1.4rem;
   }
 }

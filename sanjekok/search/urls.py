@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = "Search"
+
 urlpatterns = [
     path('', views.search_page, name='search_page'),
     path('geocode/', views.geocode_api, name='geocode_api'),   # 주소검색/

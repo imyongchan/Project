@@ -3,12 +3,8 @@
 {% block title %}산재 정보 추가{% endblock %}
 
 {% block script1 %}
+{{ block.super }}
 <link rel="stylesheet" href="{% static 'CSS/member/mypage_individual_add.css' %}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'js/member/mypage_individual_add.js' %}"></script>
 {% endblock %}
 

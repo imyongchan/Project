@@ -310,7 +310,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const riskInjuryTop5 = {{ risk_analysis.injury_top5|safe }};
     const riskDiseaseTop5 = {{ risk_analysis.disease_top5|safe }};
 
-    // ✅ 파이차트 렌더링
+   
     if (window.RiskAccidentPieChart && riskInjuryTop5?.length) {
         window.RiskAccidentPieChart(riskInjuryTop5);
     }

@@ -4,6 +4,7 @@ from . import views
 app_name = 'Member'
 
 urlpatterns = [
+    path('agree/', views.agree, name='agree'),  # 약관 동의
     path('registerf/', views.registerf, name='registerf'),  # 회원가입
     path('registers/', views.registers, name='registers'),  # 회원가입 두번쨰
     path('login/', views.login, name='login'),  # 로그인
