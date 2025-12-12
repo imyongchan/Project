@@ -1,10 +1,14 @@
+/* ================================
+   필터 박스
+================================ */
 .safe-filter-box {
-        background: #f8f9fa;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 25px 25px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 25px 25px;
 }
 
+/* 각 행 */
 .filter-row {
     display: flex;
     align-items: center;
@@ -12,6 +16,7 @@
     padding-bottom: 6px;
 }
 
+/* 왼쪽 라벨 */
 .filter-label {
     width: 90px;
     font-weight: 700;
@@ -21,10 +26,12 @@
     font-size: 15px;
 }
 
+/* 오른쪽 내용 영역 */
 .filter-content {
     flex: 1;
     display: flex;
     gap: 15px;
+    align-items: center;
     flex-wrap: wrap;
 }
 
@@ -44,82 +51,158 @@
     white-space: nowrap;
 }
 
-/* 검색결과 자료목록 */
-.search-row {
-  border: 1px solid #dcdcdc;
-  border-radius: 6px;
-  background: white;
-  min-height: 130px;
+/* =====================================
+   검색 결과 리스트형(row) 레이아웃
+===================================== */
+
+/* 리스트 전체 */
+.safe-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 30px;
 }
 
-.item-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #222;
+/* 리스트 한 줄(row) */
+.safe-row {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    transition: background 0.2s ease;
 }
 
-.item-tags {
-  font-size: 14px;
-  color: #777;
+.safe-row:hover {
+    background: #f8f9ff;
 }
 
-.item-desc {
-  font-size: 13px;
-  line-height: 1.4;
-  color: #555;
-  max-width: 90%;
+/* 왼쪽 텍스트 박스 */
+.row-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.item-img-box {
-  width: 120px;
+.row-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #222;
+    margin: 0;
 }
 
-.item-img {
-  width: 120px;
-  height: 170px;
-  object-fit: cover;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.row-tags span {
+    font-size: 14px;
+    color: #666;
+    margin-right: 6px;
 }
 
-.no-img {
-  width: 120px;
-  height: 120px;
-  background: #eef4f7;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #444;
-  font-size: 14px;
+.row-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.4;
+    max-width: 90%;
 }
 
+/* 오른쪽 이미지 박스 */
+.row-right {
+    width: 130px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-/* 페이지네이션 */
+.row-img {
+    width: 120px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.row-noimg {
+    width: 120px;
+    height: 150px;
+    background: #eef3f7;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #444;
+    font-size: 14px;
+}
+
+/* =====================================
+   페이지네이션
+===================================== */
 .pagination-box {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 22px;
 }
 
 .page-btn {
-  display: inline-block;
-  padding: 6px 12px;
-  border: 1px solid #d0d0d0;
-  border-radius: 6px;
-  background: #fff;
-  color: #333;
-  font-size: 14px;
-  text-decoration: none;
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.15s linear;
 }
 
 .page-btn:hover {
-  background: #e7e7e7;
+    background: #e7e7e7;
 }
 
 .page-btn.active {
-  background: #4c6ef5;
-  color: white;
-  border-color: #4c6ef5;
+    background: #4c6ef5;
+    color: white;
+    border-color: #4c6ef5;
+}
+
+/* =====================================
+   반응형
+===================================== */
+@media (max-width: 600px) {
+    /* 필터박스 */
+    .filter-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-label {
+        text-align: left;
+        width: auto;
+        margin-bottom: 6px;
+    }
+
+    .search-input {
+        width: 100%;
+    }
+
+    .btn-search {
+        width: 100%;
+        margin-top: 6px;
+    }
+
+    /* 리스트형 */
+    .safe-row {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+
+    .row-right {
+        margin-top: 12px;
+    }
 }
