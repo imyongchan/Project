@@ -6,19 +6,19 @@ body {
   background-color: #f6f8f7;
   color: #23333d;
   margin: 0;
-  padding: 60px 20px 100px;
+   
 }
-
 /* ================================
    카드 전체
 ================================ */
-.card {
+.mypage-card {
   background: #ffffff;
   border: none;
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   max-width: 600px;
   margin: 0 auto;
+  margin-bottom: 50px;
   overflow: hidden;
 }
 

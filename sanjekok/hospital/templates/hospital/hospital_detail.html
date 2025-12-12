@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% load static %}
 
@@ -10,17 +9,16 @@
 
 {% block contents %}
 
-<body
-  data-kakao-key="{{ KAKAO_KEY }}"
-  data-lat="{{ lat|default:0 }}"
-  data-lng="{{ lng|default:0 }}"
-  data-hospital-name="{{ name }}"
-  data-hospital-id="{{ hospital_id }}"
->
+<div id="hospital-detail-page"
+     data-kakao-key="{{ KAKAO_KEY }}"
+     data-lat="{{ lat|default:0 }}"
+     data-lng="{{ lng|default:0 }}"
+     data-hospital-name="{{ name }}"
+     data-hospital-id="{{ hospital_id }}">
 
   <h2 class="page-title">주변 산재지정의료기관 검색</h2>
 
-  <!-- 1. 의료기관 기본 정보 영역 -->
+  <!-- 1. 의료기관 기본 정보 -->
   <section class="section-box">
     <div class="section-content">
       <div class="section-header">
@@ -32,7 +30,7 @@
           <span class="meta-distance">
             거리 :
             {% if distance_km is not None %}
-              {{ distance_km }}km.
+              {{ distance_km }}km
             {% else %}
               -
             {% endif %}
@@ -83,58 +81,50 @@
     </div>
   </section>
 
-  <!-- 3. 위치(지도) 영역 -->
+  <!-- 3. 위치(지도) -->
   <section class="section-box">
-    <div class="section-content">
-      <div class="section-inner-title">위치</div>
-      <div id="detail-map" class="map-area"></div>
-    </div>
+    <div class="section-inner-title">위치</div>
+    <div id="detail-map" class="map-area"></div>
   </section>
 
-  <!-- 4. 리뷰 영역 -->
+  <!-- 4. 리뷰 -->
   <section class="section-box review-section">
     <div class="section-inner-title">리뷰</div>
 
-    <div class="section-content">
-      <div class="review-input-wrapper">
-        <div class="review-rating-row">
-          <span class="review-label">리뷰</span>
-          <div class="star-group" id="review-star-group">
-            <span class="star" data-star="1">★</span>
-            <span class="star" data-star="2">★</span>
-            <span class="star" data-star="3">★</span>
-            <span class="star" data-star="4">★</span>
-            <span class="star" data-star="5">★</span>
-            <span class="star-score" id="review-score">0</span>
-          </div>
+    <div class="review-input-wrapper">
+      <div class="review-rating-row">
+        <span class="review-label">리뷰</span>
+        <div class="star-group" id="review-star-group">
+          <span class="star" data-star="1">★</span>
+          <span class="star" data-star="2">★</span>
+          <span class="star" data-star="3">★</span>
+          <span class="star" data-star="4">★</span>
+          <span class="star" data-star="5">★</span>
+          <span class="star-score" id="review-score">0</span>
         </div>
-
-        <form id="review-form">
-          {% csrf_token %}
-          <textarea id="review-text"
-                    class="review-textarea"
-                    placeholder="리뷰를 입력하세요."></textarea>
-          <button type="submit" class="btn-review-submit">리뷰 등록하기</button>
-        </form>
-        <div style="clear: both;"></div>
       </div>
 
-      <!-- 리뷰 리스트 -->
-      <div id="review-list"
-        data-hospital-id="{{ hospital_id }}"
-        data-list-url="{% url 'Reviews:review_list' hospital_id %}"
-        data-create-url="{% url 'Reviews:review_create' %}"
-        data-delete-url="{% url 'Reviews:review_delete' %}">
-      </div>
+      <form id="review-form">
+        {% csrf_token %}
+        <textarea id="review-text" class="review-textarea" placeholder="리뷰를 입력하세요."></textarea>
+        <button type="submit" class="btn-review-submit">리뷰 등록하기</button>
+      </form>
+    </div>
 
-      <!-- 더보기 버튼 -->
-      <div class="review-more-wrapper">
-        <button type="button" class="btn-review-more" id="btn-review-more">
-          더보기
-        </button>
-      </div>
+    <div id="review-list"
+         data-hospital-id="{{ hospital_id }}"
+         data-list-url="{% url 'Reviews:review_list' hospital_id %}"
+         data-create-url="{% url 'Reviews:review_create' %}"
+         data-delete-url="{% url 'Reviews:review_delete' %}">
+    </div>
+
+    <div class="review-more-wrapper">
+      <button type="button" class="btn-review-more" id="btn-review-more">더보기</button>
     </div>
   </section>
+
+</div>
+
 
   <!-- 분리된 JS 파일 로드 -->
   <script src="{% static 'JS/hospital/hospital_detail.js' %}"></script>
