@@ -1,158 +1,243 @@
-/* 전체 래핑 */
+/* ================================
+   1. 전체 레이아웃
+================================ */
+body {
+  background-color: #f6f8f7;
+  color: #23333d;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
 .wrapper {
-    width: 95%;
-    max-width: 1100px;
-    margin: 20px auto;
-    font-family: 'Noto Sans KR', sans-serif;
+  width: 95%;
+  max-width: 1100px;
+  margin: 40px auto 80px;
 }
 
-/* 상단 박스 */
+/* ================================
+   2. 상단 바
+================================ */
 .top-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 14px 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
 }
 
-/* 위치선택 박스 */
+/* 위치선택 */
 .location-box {
-    border: 2px solid #000;
-    padding: 6px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .location-box .title {
-    font-size: 14px;
-    font-weight: 600;
+  font-size: 15px;
+  font-weight: 600;
+  color: #23333d;
 }
 
-/* 버튼 스타일 */
-.btn {
-    padding: 6px 18px;
-    border: 2px solid #000;
-    background: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-}
-.btn:hover {
-    background: #eaeaea;
+/* ================================
+   3. 버튼 스타일
+================================ */
+.search-btn {
+  padding: 7px 18px;
+  border: 1.5px solid #d0d7d4;
+  background: #fff;
+  color: #23333d;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-/* 사고지역 드롭다운 */
+.search-btn:hover {
+  border-color: #2fb34a;
+  color: #2fb34a;
+  background-color: #f3fdf6;
+}
+
+.search-btn.active {
+  background-color: #2fb34a;
+  color: #fff;
+  border-color: #2fb34a;
+}
+
+/* ================================
+   4. 드롭다운 메뉴
+================================ */
 .dropdown {
-    position: relative;
+  position: relative;
 }
 
 .dropdown-btn {
-    font-weight: 600;
+  font-weight: 600;
+  position: relative;
+  padding-right: 28px;
+}
+
+.dropdown-btn::after {
+  content: "▼";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-48%);
+  font-size: 0.8rem;
+  color: #666;
 }
 
 .dropdown-menu {
-    position: absolute;
-    top: 42px;
-    left: 0;
-    background: #f0f0f0;
-    border: 1px solid #333;
-    width: 120px;
-    display: none;
-    z-index: 50;
+  position: absolute;
+  top: 44px;
+  left: 0;
+  background: #ffffff;
+  border: 1px solid #ccd4da;
+  border-radius: 8px;
+  width: 140px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  display: none;
+  z-index: 100;
 }
 
 .dropdown-menu div {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
 .dropdown-menu div:hover {
-    background: #cfcfcf;
+  background: #2fb34a;
+  color: #fff;
 }
 
-/* 총 발생 건수 박스 */
+/* ================================
+   5. 총 발생 건수
+================================ */
 .count-box {
-    border: 2px solid #000;
-    padding: 6px 18px;
-    border-radius: 6px;
-    text-align: center;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 20px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
+
 .count-box .title {
-    font-size: 14px;
-    font-weight: 600;
+  font-size: 14px;
+  font-weight: 600;
+  color: #23333d;
 }
+
 .count-box .count {
-    margin-top: 6px;
-    font-size: 16px;
-    font-weight: bold;
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #2fb34a;
 }
 
-/* 중간 제목 */
+/* ================================
+   6. 중간 제목
+================================ */
 .mid-title {
-    border: 2px solid #000;
-    border-radius: 6px;
-    padding: 10px 20px;
-    margin-bottom: 10px;
-}
-.main-title {
-    font-size: 18px;
-    font-weight: 700;
-}
-.subtitle {
-    color: #666;
-    margin-top: 4px;
-    font-size: 13px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 18px 26px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 16px;
 }
 
-/* 지도 영역 */
+.main-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #23333d;
+}
+
+.subtitle {
+  color: #7b8a91;
+  margin-top: 6px;
+  font-size: 0.9rem;
+}
+
+/* ================================
+   7. 지도 및 상세정보
+================================ */
 .map-wrapper {
-    border: 2px solid #000;
-    padding: 6px;
-    border-radius: 6px;
-    position: relative;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 #map {
-    width: 100%;
-    height: 450px;
-    border: 1px solid #888;
+  width: 100%;
+  height: 460px;
+  border-radius: 8px;
+  border: 1px solid #e0e5e2;
 }
 
-/* 상세 정보 박스 (말풍선 느낌) */
 .detail-box {
-    margin-top: 8px;
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #aaa;
-    background: #fafafa;
-    border-radius: 6px;
+  margin-top: 10px;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #23333d;
+  background: #f6f8f7;
+  border-radius: 10px;
+  border: 1px solid #dce1de;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
 }
 
+/* ================================
+   8. 지도 말풍선 (InfoWindow)
+================================ */
 .infowindow-wrap {
-    text-align: left;
+  text-align: left;
 }
 
 .infowindow-box {
-    padding: 10px 14px;
-    background: #fff;
-    border: 2px solid #000;
-    border-radius: 6px;
-    font-size: 13px;
-    box-shadow: 2px 3px 6px rgba(0,0,0,0.3);
+  padding: 10px 14px;
+  background: #fff;
+  border: 1.5px solid #2fb34a;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #23333d;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .info-title {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #2fb34a;
 }
 
 .infowindow-arrow {
-    width: 0;
-    height: 0;
-    margin: 0 auto;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 12px solid #000;
+  width: 0;
+  height: 0;
+  margin: 0 auto;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #2fb34a;
+}
+
+/* ================================
+   9. 반응형
+================================ */
+@media (max-width: 768px) {
+  .top-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .map-wrapper {
+    padding: 8px;
+  }
+
+  #map {
+    height: 400px;
+  }
 }
