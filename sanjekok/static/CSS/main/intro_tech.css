@@ -1,5 +1,5 @@
 /* ================================
-   1. 전체 레이아웃
+   1. 전체 공통
 ================================ */
 body {
   background-color: #f6f8f7;
@@ -55,7 +55,7 @@ body {
   color: #2fb34a;
 }
 
-/* 현재 선택된 메뉴 (active) */
+/* 활성 메뉴 (핵심기능) */
 .subheader p.active,
 .subheader p a.active {
   background-color: #2fb34a;
@@ -64,125 +64,95 @@ body {
 }
 
 /* ================================
-   3. 본문 영역
+   3. 핵심기능 본문
 ================================ */
-.content {
+.tech {
   background: #ffffff;
   border-radius: 14px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   padding: 40px 50px;
 }
 
-.content h3 {
-  font-size: 1.8rem;
+.tech h1 {
+  font-size: 1.6rem;
   font-weight: 700;
-  margin-bottom: 10px;
   color: #23333d;
+  margin-bottom: 14px;
 }
 
-.content h4 {
-  margin-top: 30px;
-  font-size: 1.05rem;
-  color: #2fb34a;
-  font-weight: 600;
-}
-
-.content p {
+.tech h4 {
   font-size: 1rem;
-  color: #333;
-  line-height: 1.7;
-}
-
-/* ================================
-   4. 강조 블록 (why / gach)
-================================ */
-.why, .gach {
-  background: #f6f8f7;
-  border: 1px solid #e3e8e5;
-  padding: 24px;
-  border-radius: 12px;
-  margin-top: 24px;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-}
-
-.why .info {
   color: #2fb34a;
-  font-weight: 600;
-}
-
-/* ================================
-   5. “이런 분들이 쓰기 좋습니다”
-================================ */
-.sug {
-  margin-top: 60px;
-}
-
-.sug h3 {
-  font-size: 1.3rem;
-  color: #23333d;
   margin-bottom: 20px;
 }
 
-.who {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+/* ================================
+   4. 기능 섹션 리스트
+================================ */
+.tech ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 25px;
 }
 
-.who div {
-  background-color: #ffffff;
-  border-radius: 12px;
-  flex: 1;
-  min-width: 250px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.who div:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
-}
-
-.who img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+.tech ul li {
   background: #f6f8f7;
-  margin-bottom: 10px;
-}
-
-.who p:first-of-type {
-  font-weight: 700;
-  color: #2fb34a;
-  margin-bottom: 6px;
-}
-
-.who p:last-of-type {
+  border: 1px solid #e3e8e5;
+  border-radius: 12px;
+  padding: 20px;
   font-size: 0.95rem;
-  color: #555;
-  line-height: 1.5;
+  line-height: 1.6;
+  color: #333;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  transition: all 0.25s ease;
+  text-align: center;
 }
 
-/* ================================
-   6. 핵심가치 영역
-================================ */
-.gach h3 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-  color: #23333d;
+.tech ul li:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
-.gach h4 {
+/* 이미지 스타일 */
+.tech ul li img {
+  width: 160px;
+  height: auto;
+  border-radius: 10px;
+  margin: 12px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* 링크 스타일 */
+.tech ul li a {
+  display: inline-block;
   color: #2fb34a;
-  margin-top: 18px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 6px;
+  transition: color 0.25s ease;
+}
+
+.tech ul li a:hover {
+  color: #1e9b40;
+  text-decoration: underline;
 }
 
 /* ================================
-   7. 반응형
+   5. 섹션 간 구분
+================================ */
+.tech h1 + h1 {
+  margin-top: 70px;
+}
+
+.tech h1:first-of-type {
+  margin-top: 0;
+}
+
+/* ================================
+   6. 반응형
 ================================ */
 @media (max-width: 1024px) {
   .subbody {
@@ -198,12 +168,16 @@ body {
 }
 
 @media (max-width: 768px) {
-  .content {
+  .tech {
     padding: 25px 20px;
   }
 
-  .who {
-    flex-direction: column;
-    gap: 20px;
+  .tech ul {
+    grid-template-columns: 1fr;
+  }
+
+  .tech ul li img {
+    width: 100%;
+    max-width: 200px;
   }
 }

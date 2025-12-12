@@ -3,12 +3,12 @@
 
 {% block title %}산재콕 | 핵심기능{% endblock %}
 {% block contents %}
-<link rel="stylesheet" href="{% static 'CSS/main/intro_service.css' %}">
+<link rel="stylesheet" href="{% static 'CSS/main/intro_tech.css' %}">
     <!-- 왼쪽 고정 네비게이션 -->
 <div class="subbody">
     <div class="subheader">
         <p><a href="{% url 'Main:service' %}">서비스 소개</a></p>
-        <p style="background-color: #e9e8e8; width: 180px;"><a href="{% url 'Main:tech' %}">핵심기능</a></p>
+        <p class="active"><a href="{% url 'Main:tech' %}" class="active">핵심기능</a></p>
     </div>
     
     <div class="tech">
