@@ -46,8 +46,8 @@
                 <strong>출처 :</strong> {{ safe.publisher|default:"KOSHA" }}
             </div>
 
-            <!-- 동영상 자료일 경우 -->
-            {% if safe.video_url %}
+            <!--동영상 자료가 있을 경우-->
+            {% if safe.video_url %} 
                 <div class="video-box mt-3">
                     <iframe width="100%" height="300"
                             src="{{ safe.video_url }}"

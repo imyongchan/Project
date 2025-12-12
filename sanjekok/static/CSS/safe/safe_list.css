@@ -133,11 +133,34 @@
 }
 
 /* 페이지네이션 */
-.pagination .page-item .page-link {
-    color: #23333d;
+.pagination {
+    margin-top: 20px;
 }
 
-.pagination .page-item.active .page-link {
-    background-color: #23333d;
-    border-color: #23333d;
+/* 기본 페이지 버튼 */
+.pagination .page-link {
+    color: #4a4a4a;
+    border-radius: 6px;
+    font-size: 14px;
+    padding: 6px 12px;
 }
+
+.pagination .page-link:hover {
+    background-color: #e6ecff;
+    color: #1a1a1a;
+}
+
+/* active (현재 페이지) */
+.pagination .page-item.active .page-link {
+    background-color: #5a76ff;
+    border-color: #5a76ff;
+    color: white !important;
+}
+
+
+/* 아이콘 크기 조정 */
+.pagination i {
+    font-size: 14px;
+    vertical-align: middle;
+}
+
