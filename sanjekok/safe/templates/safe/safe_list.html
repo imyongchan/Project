@@ -115,27 +115,27 @@
       <ul class="pagination justify-content-center">
 
           {% if list.number > 1 %}
-          <li class="page-item"><a class="page-link" href="?page=1">처음 <<</a></li>
+          <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page=1">처음 <<</a></li>
           {% endif %}
 
           {% if start_page > 1 %}
-          <li class="page-item"><a class="page-link" href="?page={{ start_page|add:-1 }}">이전 <</a></li>
+          <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ start_page|add:-1 }}">이전 <</a></li>
           {% endif %}
 
           {% for i in page_range %}
               {% if list.number == i %}
                 <li class="page-item active"><span class="page-link">{{ i }}</span></li>
               {% else %}
-                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ i }}">{{ i }}</a></li>
               {% endif %}
           {% endfor %}
 
           {% if list.paginator.num_pages > end_page %}
-          <li class="page-item"><a class="page-link" href="?page={{ end_page|add:1 }}">다음 ></a></li>
+          <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ end_page|add:1 }}">다음 ></a></li>
           {% endif %}
 
           {% if list.number < list.paginator.num_pages %}
-          <li class="page-item"><a class="page-link" href="?page={{ list.paginator.num_pages }}">맨끝 >></a></li>
+          <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ list.paginator.num_pages }}">맨끝 >></a></li>
           {% endif %}
 
       </ul>
