@@ -16,7 +16,6 @@ body {
   text-align: center;
   font-size: 1.9rem;
   font-weight: 700;
-  margin-top:50px;
   margin-bottom: 50px;
   color: #23333d;
   position: relative;
@@ -85,10 +84,35 @@ body {
   margin-left: 8px;
 }
 
+/* 평균 별점 표시용 (반칸 지원) */
 .meta-stars {
-  color: #f99b18;
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 6px;
+}
+
+.meta-star {
+  position: relative;
   font-size: 1rem;
-  margin-left: 4px;
+  color: #ccc;
+}
+
+.meta-star.full {
+  color: #f99b18;
+}
+
+.meta-star.half::before {
+  content: "★";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  overflow: hidden;
+  color: #f99b18;
+}
+
+.meta-star.empty {
+  color: #ccc;
 }
 
 .meta-review {
@@ -189,10 +213,22 @@ body {
   color: #ccc;
   margin-right: 3px;
   transition: color 0.2s;
+  position: relative;
 }
 
-.star.on,
+/* 클릭 시 꽉 찬 별 */
+.star.on {
+  color: #f99b18;
+}
+
+/* 반칸 별 (입력용) */
 .star.half::before {
+  content: "★";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  overflow: hidden;
   color: #f99b18;
 }
 
@@ -230,6 +266,7 @@ body {
   background: #25913c;
 }
 
+/* 리뷰 리스트 */
 .review-list {
   border-top: 1px solid #e5e8eb;
   margin-top: 10px;
@@ -262,6 +299,34 @@ body {
   line-height: 1.5;
 }
 
+/* 리뷰 별점 표시 (반칸 지원) */
+.review-rating-line {
+  margin-bottom: 4px;
+}
+
+.review-star {
+  display: inline-block;
+  position: relative;
+  font-size: 16px;
+  margin-right: 1px;
+  color: #ccc;
+}
+
+.review-star.full {
+  color: #f99b18;
+}
+
+.review-star.half::before {
+  content: "★";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  overflow: hidden;
+  color: #f99b18;
+}
+
+/* 리뷰 삭제 버튼 */
 .btn-review-delete {
   background: transparent;
   color: #999;
@@ -277,12 +342,7 @@ body {
   background: #f6f8f7;
 }
 
-.review-star {
-  color: #f99b18;
-  font-size: 1rem;
-  margin-right: 1px;
-}
-
+/* 더보기 버튼 */
 .review-more-wrapper {
   display: flex;
   justify-content: center;
