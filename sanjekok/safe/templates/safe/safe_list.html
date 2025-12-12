@@ -5,7 +5,7 @@
 
 {% block script1 %}
 <link rel="stylesheet" href="{% static 'CSS/safe/safe_list.css' %}">
-<script src="{% static 'js/safe.js' %}"></script>
+<script src="{% static 'js/safe/safe.js' %}"></script>
 {% endblock %}
 
 {% block contents %}
@@ -19,94 +19,44 @@
       <h2 class="fw-bold" style="color:#23333d;">안전자료실</h2>
     </div>
 
-    <!-- 필터 + 검색 -->
-    <form method="get" class="safe-filter-box mb-4">
+
+    <!-- ------------------------------ -->
+    <!-- 필터 박스 전체 -->
+    <!-- ------------------------------ -->
+    <form method="get" id="filterForm" class="filter-wrapper">
 
       <!-- 자료유형 -->
-      <div class="filter-row">
-        <div class="filter-label">자료유형&nbsp;|</div>
-        <div class="filter-content filter-checkbox">
-
-          <label>
-            <input type="checkbox" name="type" value="전체"
-                   {% if selected_types|length == 1 and selected_types.0 == "전체" %}
-                     checked
-                   {% endif %}
-                   onclick="toggleAllTypes(this)">
-            전체
+      <div class="filter-group">
+        <div class="filter-label">자료유형</div>
+        <div class="filter-controls">
+          {% for val in type_list %}
+          <label class="cb-label">
+              <input type="checkbox" name="type" value="{{ val }}"
+                     {% if val in selected_types %}checked{% endif %}>
+              {{ val }}
           </label>
-
-          <label>
-            <input type="checkbox" name="type" value="동영상"
-                   {% if "동영상" in selected_types %}checked{% endif %}
-                   onclick="clickTypeOption(this)">
-            동영상
-          </label>
-
-          <label>
-            <input type="checkbox" name="type" value="OPS"
-                   {% if "OPS" in selected_types %}checked{% endif %}
-                   onclick="clickTypeOption(this)">
-            OPS
-          </label>
-
-          <label>
-            <input type="checkbox" name="type" value="책자"
-                   {% if "책자" in selected_types %}checked{% endif %}
-                   onclick="clickTypeOption(this)">
-            책자
-          </label>
-
-          <label>
-            <input type="checkbox" name="type" value="PPT"
-                   {% if "PPT" in selected_types %}checked{% endif %}
-                   onclick="clickTypeOption(this)">
-            PPT
-          </label>
-
-          <label>
-            <input type="checkbox" name="type" value="기타"
-                   {% if "기타" in selected_types %}checked{% endif %}
-                   onclick="clickTypeOption(this)">
-            기타
-          </label>
-
+          {% endfor %}
         </div>
       </div>
 
       <!-- 언어 -->
-      <div class="filter-row">
-        <div class="filter-label">언어&nbsp;|</div>
-        <div class="filter-content filter-checkbox">
-
-          <label>
-            <input type="checkbox" name="lang" value=""
-                   {% if selected_language == "" %}checked{% endif %}
-                   onclick="selectLang(this)">
-            전체
+      <div class="filter-group">
+        <div class="filter-label">언어</div>
+        <div class="filter-controls">
+          {% for lang in language_list %}
+          <label class="cb-label">
+              <input type="checkbox" name="lang" value="{{ lang }}"
+                     {% if selected_language == lang %}checked{% endif %}>
+              {{ lang }}
           </label>
-
-          <label>
-            <input type="checkbox" name="lang" value="한국어"
-                   {% if selected_language == "한국어" %}checked{% endif %}
-                   onclick="selectLang(this)">
-            한국어
-          </label>
-
-          <label>
-            <input type="checkbox" name="lang" value="외국어"
-                   {% if selected_language == "외국어" %}checked{% endif %}
-                   onclick="selectLang(this)">
-            외국어
-          </label>
-
+          {% endfor %}
         </div>
       </div>
 
       <!-- 검색 -->
-      <div class="filter-row">
-        <div class="filter-label">검색&nbsp;|</div>
-        <div class="filter-content">
+      <div class="filter-group">
+        <div class="filter-label">검색</div>
+        <div class="filter-controls search-box">
           <input type="text" name="q" class="form-control search-input"
                  placeholder="제목검색" value="{{ search_keyword }}">
           <button type="submit" class="btn btn-outline-secondary btn-search">검색</button>
@@ -116,33 +66,37 @@
     </form>
 
 
-    <!-- 검색 결과 리스트 -->
-    <div class="safe-list">
+    <!-- ------------------------------ -->
+    <!-- 자료 카드 리스트 -->
+    <!-- ------------------------------ -->
+    <div class="safe-card-list">
 
-      {% for s in page_obj %}
-      <a href="#" class="safe-row">
+      {% for s in list %}
+      <a href="#" class="safe-card">
 
-        <!-- 왼쪽 텍스트 영역 -->
-        <div class="row-left">
-          <h3 class="row-title">{{ s.s_title }}</h3>
+        <!-- 텍스트 영역 -->
+        <div class="card-left">
+          
+          <!-- 제목 -->
+          <h3 class="card-title">{{ s.s_title }}</h3>
 
-          <div class="row-tags">
+          <!-- 태그 -->
+          <div class="card-tags">
             {% for t in s.tags.all %}
               <span>#{{ t.st_tag }}</span>
             {% endfor %}
           </div>
 
-          <p class="row-desc">
-            {{ s.s_contents|truncatechars:80 }}
-          </p>
+          <!-- 요약 -->
+          <p class="card-desc">{{ s.s_contents|truncatechars:100 }}</p>
         </div>
 
-        <!-- 오른쪽 이미지 영역 -->
-        <div class="row-right">
+        <!-- 이미지 영역 -->
+        <div class="card-right">
           {% if s.s_image_url %}
-            <img src="{{ s.s_image_url }}" class="row-img">
+            <img src="{{ s.s_image_url }}" class="card-img">
           {% else %}
-            <div class="row-noimg">대표 이미지</div>
+            <div class="card-noimg">NO IMAGE</div>
           {% endif %}
         </div>
 
@@ -154,26 +108,37 @@
     </div>
 
 
-
+    <!-- ------------------------------ -->
     <!-- 페이지네이션 -->
-    <div class="pagination-box text-center mt-4">
-      {% if page_obj.has_previous %}
-        <a href="?page=1&{{ request.GET.urlencode }}" class="page-btn">처음</a>
-        <a href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}" class="page-btn">이전</a>
-      {% endif %}
+    <!-- ------------------------------ -->
+    <div class="container mt-5">
+      <ul class="pagination justify-content-center">
 
-      {% for num in page_obj.paginator.page_range %}
-        {% if num == page_obj.number %}
-          <span class="page-btn active">{{ num }}</span>
-        {% else %}
-          <a href="?page={{ num }}&{{ request.GET.urlencode }}" class="page-btn">{{ num }}</a>
-        {% endif %}
-      {% endfor %}
+          {% if list.number > 1 %}
+          <li class="page-item"><a class="page-link" href="?page=1">처음 <<</a></li>
+          {% endif %}
 
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}" class="page-btn">다음</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode }}" class="page-btn">끝</a>
-      {% endif %}
+          {% if start_page > 1 %}
+          <li class="page-item"><a class="page-link" href="?page={{ start_page|add:-1 }}">이전 <</a></li>
+          {% endif %}
+
+          {% for i in page_range %}
+              {% if list.number == i %}
+                <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+              {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+              {% endif %}
+          {% endfor %}
+
+          {% if list.paginator.num_pages > end_page %}
+          <li class="page-item"><a class="page-link" href="?page={{ end_page|add:1 }}">다음 ></a></li>
+          {% endif %}
+
+          {% if list.number < list.paginator.num_pages %}
+          <li class="page-item"><a class="page-link" href="?page={{ list.paginator.num_pages }}">맨끝 >></a></li>
+          {% endif %}
+
+      </ul>
     </div>
 
   </div>
