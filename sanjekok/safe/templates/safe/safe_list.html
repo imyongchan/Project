@@ -4,7 +4,8 @@
 {% block title %}안전자료실{% endblock %}
 
 {% block script1 %}
-<link rel="stylesheet" href="{% static 'CSS/safe/safe.css' %}">
+<link rel="stylesheet" href="{% static 'CSS/safe/safe_list.css' %}">
+<script src="{% static 'js/safe.js' %}"></script>
 {% endblock %}
 
 {% block contents %}
@@ -17,63 +18,163 @@
       <h2 class="fw-bold" style="color:#23333d;">안전자료실</h2>
     </div>
 
-    <!-- ============================== -->
-    <!-- 검색 + 필터 영역 -->
-    <!-- ============================== -->
-    <form method="get" class="safe-filter mb-5">
-      <div class="filter-group">
-        <!-- 언어 필터 -->
-        <select name="lang" class="form-select">
-          <option value="">전체 언어</option>
-          <option value="한국어" {% if lang == "한국어" %}selected{% endif %}>한국어</option>
-          <option value="외국어" {% if lang == "외국어" %}selected{% endif %}>외국어</option>
-        </select>
+    <!-- 필터 + 검색 -->
+    <form method="get" class="safe-filter-box mb-4">
 
-        <!-- 자료형태 필터 -->
-        <select name="type" class="form-select">
-          <option value="">전체 형태</option>
-          <option value="OPS" {% if material_type == "OPS" %}selected{% endif %}>OPS</option>
-          <option value="동영상" {% if material_type == "동영상" %}selected{% endif %}>동영상</option>
-          <option value="책자" {% if material_type == "책자" %}selected{% endif %}>책자</option>
-          <option value="PPT" {% if material_type == "PPT" %}selected{% endif %}>PPT</option>
-          <option value="기타" {% if material_type == "기타" %}selected{% endif %}>기타</option>
-        </select>
+      <!-- 자료유형 -->
+      <div class="filter-row">
+        <div class="filter-label">자료유형&nbsp;|</div>
+        <div class="filter-content filter-checkbox">
 
-        <!-- 검색 -->
-        <input type="text" name="q" placeholder="검색어 입력" value="{{ q }}" class="form-control">
+          <label>
+            <input type="checkbox" name="type" value="동영상"
+              {% if "동영상" in material_types %}checked{% endif %}>
+            동영상
+          </label>
 
-        <button type="submit" class="btn btn-search">검색</button>
+          <label>
+            <input type="checkbox" name="type" value="OPS"
+              {% if "OPS" in material_types %}checked{% endif %}>
+            OPS
+          </label>
+
+          <label>
+            <input type="checkbox" name="type" value="책자"
+              {% if "책자" in material_types %}checked{% endif %}>
+            책자
+          </label>
+
+          <label>
+            <input type="checkbox" name="type" value="PPT"
+              {% if "PPT" in material_types %}checked{% endif %}>
+            PPT
+          </label>
+
+          <label>
+            <input type="checkbox" name="type" value="기타"
+              {% if "기타" in material_types %}checked{% endif %}>
+            기타
+          </label>
+
+        </div>
+      </div>
+
+      <!-- 언어 -->
+      <div class="filter-row">
+        <div class="filter-label">언어&nbsp;|</div>
+        <div class="filter-content">
+
+          <label>
+            <input type="radio" name="lang" value=""
+              {% if not lang %}checked{% endif %}>
+            전체
+          </label>
+
+          <label>
+            <input type="radio" name="lang" value="한국어"
+              {% if lang == "한국어" %}checked{% endif %}>
+            한국어
+          </label>
+
+          <label>
+            <input type="radio" name="lang" value="외국어"
+              {% if lang == "외국어" %}checked{% endif %}>
+            외국어
+          </label>
+        </div>
+      </div>
+
+      <!-- 검색 -->
+      <div class="filter-row">
+        <div class="filter-label">검색&nbsp;|</div>
+
+        <div class="filter-content">
+          <input type="text" name="q"
+                 class="form-control search-input"
+                 placeholder="제목검색"
+                 value="{{ q }}">
+          <button type="submit" class="btn btn-outline-secondary btn-search">
+            검색
+          </button>
+        </div>
       </div>
     </form>
 
-    <!-- ============================== -->
-    <!-- 자료 카드 리스트 -->
-    <!-- ============================== -->
-    <div class="safe-grid">
-      {% for s in list %}
-      <div class="safe-card">
-        <div class="safe-img">
-          <img src="{{ s.s_image_url }}" alt="자료 이미지">
-        </div>
-        <div class="safe-body">
-          <h3 class="safe-title">{{ s.s_title }}</h3>
-          <p class="safe-meta">
-            {{ s.s_type }} / {{ s.s_language }}<br>
-            등록일: {{ s.s_created_at }}
+  <!-- 정렬 영역 -->
+    <div class="sort-box text-end mb-3">
+      <div class="dropdown d-inline-block">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          {% if selected_order == "latest" %}최신순
+          {% elif selected_order == "old" %}과거순
+          {% elif selected_order == "view" %}조회순
+          {% else %}정렬{% endif %}
+        </button>
+
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="?order=latest">최신순</a></li>
+          <li><a class="dropdown-item" href="?order=old">과거순</a></li>
+          <li><a class="dropdown-item" href="?order=view">조회순</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 자료 목록 -->
+    <div class="search-result-list">
+
+      {% for item in page_obj %}
+      <div class="search-row d-flex align-items-start border mb-3 p-3">
+        
+        <!-- 왼쪽 텍스트 영역 -->
+        <div class="flex-grow-1">
+          <h4 class="item-title mb-2">{{ item.s_title }}</h4>
+
+          <p class="item-tags text-muted mb-1">
+            {% for t in item.tags.all %}
+              #{{ t.st_tag }}
+            {% endfor %}
           </p>
 
-          <!-- 태그 -->
-          <div class="safe-tags">
-            {% for t in s.tags.all %}
-            <a href="?tag={{ t.st_tag }}" class="tag">#{{ t.st_tag }}</a>
-            {% endfor %}
-          </div>
+          <p class="item-desc text-muted small">
+            {{ item.s_contents|truncatechars:80 }}
+          </p>
         </div>
+
+        <!-- 오른쪽 이미지 영역 -->
+        <div class="item-img-box text-center ms-3">
+          {% if item.s_image_url %}
+            <img src="{{ item.s_image_url }}" alt="대표 이미지" class="item-img">
+          {% else %}
+            <div class="no-img">대표 이미지</div>
+          {% endif %}
+        </div>
+
       </div>
       {% empty %}
-      <p class="text-center mt-5">등록된 자료가 없습니다.</p>
+      <p class="text-center mt-5">검색 결과가 없습니다.</p>
       {% endfor %}
+
+  </div>
+
+
+    <!-- 페이지네이션 -->
+    <div class="pagination-box text-center mt-4">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="px-2">이전</a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <strong class="mx-1">{{ num }}</strong>
+        {% else %}
+          <a href="?page={{ num }}" class="mx-1">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="px-2">다음</a>
+      {% endif %}
     </div>
+
 
   </div>
 </section>
