@@ -2,13 +2,14 @@
         background: #f8f9fa;
         border: 1px solid #e0e0e0;
         border-radius: 12px;
-        padding: 20px 25px;
+        padding: 25px 25px;
 }
 
 .filter-row {
     display: flex;
     align-items: center;
-    margin-bottom: 18px;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 .filter-label {
@@ -31,7 +32,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 14px;
+    font-size: 15px;
     cursor: pointer;
 }
 
@@ -75,7 +76,7 @@
 
 .item-img {
   width: 120px;
-  height: 120px;
+  height: 170px;
   object-fit: cover;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -92,4 +93,33 @@
   justify-content: center;
   color: #444;
   font-size: 14px;
+}
+
+
+/* 페이지네이션 */
+.pagination-box {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.page-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.page-btn:hover {
+  background: #e7e7e7;
+}
+
+.page-btn.active {
+  background: #4c6ef5;
+  color: white;
+  border-color: #4c6ef5;
 }

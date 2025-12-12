@@ -27,6 +27,13 @@
         <div class="filter-content filter-checkbox">
 
           <label>
+            <input type="checkbox" name="type" value="전체"
+                  onclick="toggleAllTypes(this)"
+                  {% if '전체' in selected_types %}checked{% endif %}>
+            전체
+          </label>
+
+          <label>
             <input type="checkbox" name="type" value="동영상"
               {% if "동영상" in material_types %}checked{% endif %}>
             동영상
@@ -158,22 +165,27 @@
 
     <!-- 페이지네이션 -->
     <div class="pagination-box text-center mt-4">
+
       {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}" class="px-2">이전</a>
+        <a href="?page=1" class="page-btn">&laquo; 처음</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="page-btn">‹ 이전</a>
       {% endif %}
 
       {% for num in page_obj.paginator.page_range %}
         {% if page_obj.number == num %}
-          <strong class="mx-1">{{ num }}</strong>
+          <span class="page-btn active">{{ num }}</span>
         {% else %}
-          <a href="?page={{ num }}" class="mx-1">{{ num }}</a>
+          <a href="?page={{ num }}" class="page-btn">{{ num }}</a>
         {% endif %}
       {% endfor %}
 
       {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="px-2">다음</a>
+        <a href="?page={{ page_obj.next_page_number }}" class="page-btn">다음 ›</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="page-btn">끝 &raquo;</a>
       {% endif %}
+
     </div>
+
 
 
   </div>
