@@ -45,8 +45,7 @@ $(document).ready(function () {
     const $occInput = $("#occInput");
     const $disInput = $("#disInput");
 
-    /* 라디오 변경 시 input 활성화 */
-    $("input[name='mode']").on("change", function () {
+    function updateModeInputs() {
         const mode = $("input[name='mode']:checked").val();
         if (mode === "occ") {
             $occInput.prop("disabled", false);
@@ -58,16 +57,26 @@ $(document).ready(function () {
             $occInput.prop("disabled", false);
             $disInput.prop("disabled", false);
         }
-    });
+    }
 
-    /* input 클릭 → 모달 오픈 */
-    $occInput.on("click", function () {
+    // 변경 시 즉시 적용
+    $("input[name='mode']").on("change", updateModeInputs);
+
+    // 페이지 로드 시 기본 설정 ('모두' 선택 상태 반영)
+    updateModeInputs();
+    
+    /* input 클릭 → 모달 오픈  */
+    $occInput.on("mousedown", function (e) {   
+        e.preventDefault();                    
+        e.stopPropagation();                   
         if (!$occInput.prop("disabled")) {
             openModal("occ");
         }
     });
 
-    $disInput.on("click", function () {
+    $disInput.on("mousedown", function (e) {   
+        e.preventDefault();
+        e.stopPropagation();
         if (!$disInput.prop("disabled")) {
             openModal("dis");
         }
