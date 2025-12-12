@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block script1 %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'CSS/member/mypage_nav.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+{% endblock %}
 
 {% block contents %}
 
