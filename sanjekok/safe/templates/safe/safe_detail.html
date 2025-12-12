@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/safe/safe_detail.css' %}">
+
+<div class="container safe-detail-wrapper">
+
+    <!-- 1. 제목 + 작성일 + 조회수 ----------------------------------------- -->
+    <div class="title-box">
+        <h2 class="safe-title">{{ safe.s_title }}</h2>
+        <div class="sub-info">
+            <span>작성일: {{ safe.s_created_at|default:"-" }}</span>
+            <span>조회수: {{ safe.s_view_count }}</span>
+        </div>
+    </div>
+
+    <!-- 2. 본문 영역 ---------------------------------------------------- -->
+    <div class="detail-main-area row">
+        
+        <!-- 왼쪽: 대표 이미지 -->
+        <div class="col-md-4 left-image-box">
+            <img src="{{ safe.s_image_url }}" 
+                 alt="자료 이미지" 
+                 class="safe-main-img"
+                 onclick="openModal('{{ safe.s_image_url }}')">
+        </div>
+
+        <!-- 오른쪽: 정보 + 내용 -->
+        <div class="col-md-8 right-info-box">
+
+            <div class="info-line">
+                <strong>자료 형태 :</strong> {{ safe.s_type }}
+            </div>
+
+            <div class="info-line">
+                <strong>키워드 :</strong>
+                {% for tag in safe.tags.all %}
+                    <span class="tag-item">#{{ tag.st_tag }}</span>
+                {% empty %}
+                    <span>등록된 태그 없음</span>
+                {% endfor %}
+            </div>
+
+            <div class="info-line">
+                <strong>출처 :</strong> {{ safe.publisher|default:"KOSHA" }}
+            </div>
+
+            <!-- 동영상 자료일 경우 -->
+            {% if safe.video_url %}
+                <div class="video-box mt-3">
+                    <iframe width="100%" height="300"
+                            src="{{ safe.video_url }}"
+                            title="동영상 자료"
+                            frameborder="0"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            {% endif %}
+
+            <!-- 내용 -->
+            <div class="content-box mt-3">
+                <h5>내용</h5>
+                <p>{{ safe.s_contents|linebreaks }}</p>
+            </div>
+
+            <!-- 원본 페이지 이동 버튼 -->
+            {% if safe.original_link %}
+            <div class="mt-4">
+                <a href="{{ safe.original_link }}" target="_blank" class="btn btn-primary">
+                    원본 페이지로 이동 (KOSHA)
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- 3. 연관 콘텐츠 --------------------------------------------------- -->
+    <div class="related-section mt-5">
+        <h4>연관 콘텐츠</h4>
+
+        <div class="related-list row">
+
+            {% for item in related_list %}
+            <div class="col-md-3 related-item">
+                <a href="{% url 'Safe:safe_detail' item.id %}">
+                    <img src="{{ item.s_image_url }}" alt="연관 자료" class="related-img">
+                    <div class="related-title">{{ item.s_title }}</div>
+                </a>
+            </div>
+            {% empty %}
+            <p>연관 콘텐츠가 없습니다.</p>
+            {% endfor %}
+
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Modal (이미지 클릭 시 확대) -------------------------------------------- -->
+<div id="imgModal" class="modal-image" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img id="modalImg" class="modal-content-img">
+</div>
+
+
+<script src="{% static 'js/safe/safe_detail.js' %}"></script>
+{% endblock %}
