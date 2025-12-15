@@ -94,12 +94,16 @@ body {
   color: #f99b18;
 }
 
-.news-content {
+.news-content a {
   font-size: 0.93rem;
   color: #4a4a4a;
   line-height: 1.4;
   margin-top: 6px;
   margin-bottom: 8px;
+}
+
+.news-content a :hover {
+  color: #f99b18;
 }
 
 .news-meta {

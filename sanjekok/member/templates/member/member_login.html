@@ -1,41 +1,51 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}로그인{% endblock %}
+{% block title %}로그인 | 산재콕{% endblock %}
 
 {% block script1 %}
-    <link rel="stylesheet" href="{% static 'CSS/member/member_login.css' %}">
+<link rel="stylesheet" href="{% static 'CSS/member/member_login.css' %}">
 {% endblock %}
+
 {% block contents %}
-    <div class="card col-md-6 mx-auto mt-5">
-        <div class="card-header text-center">
-            <h2>Login</h2>
-        </div>
-        <div class="card-body">
-            <form action="" method="post">
-                {% csrf_token %}
-                {% if error %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
-                {% endif %}
-                <div class="mb-3">
-                    <label for="m_username" class="form-label">아이디 :</label>
-                    <input type="text" class="form-control" placeholder="회원아이디를 입력해 주세요" id="m_username" name="m_username">
-                </div>
-                <div class="mb-3">
-                    <label for="m_password1" class="form-label">비밀번호 :</label>
-                    <input type="password" class="form-control" placeholder="회원비밀번호를 입력해 주세요" id="m_password1" name="m_password1">
-                </div>
-                <button type="submit" class="btn btn-primary subbtn">login</button>
-            </form>
-            <hr>
-            SNS LOGIN
-            <br>
-                <a href="{% url 'Member:kakao_login' %}" class="btn btn-warning">카카오 로그인</a>
-                <a href="{% url 'Member:naver_login' %}" class="btn btn-warning">네이버 로그인</a>
-                <a href="{% url 'Member:google_login' %}" class="btn btn-warning">구글 로그인</a>
-            <br>
-                계정이 없으세요? <a href="{% url 'Member:agree' %}">회원가입</a> 하러가기
-        </div>
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Login</h2>
+      <p>산재콕 서비스를 이용하시려면 로그인 해주세요</p>
     </div>
+
+    <div class="login-body">
+      <form action="" method="post">
+        {% csrf_token %}
+        {% if error %}
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <div class="input-group">
+          <label for="m_username">아이디</label>
+          <input type="text" id="m_username" name="m_username" placeholder="회원아이디를 입력해 주세요">
+        </div>
+
+        <div class="input-group">
+          <label for="m_password1">비밀번호</label>
+          <input type="password" id="m_password1" name="m_password1" placeholder="회원비밀번호를 입력해 주세요">
+        </div>
+
+        <button type="submit" class="btn-login">로그인</button>
+      </form>
+
+      <div class="divider"><span>SNS LOGIN</span></div>
+
+      <div class="sns-buttons">
+        <a href="{% url 'Member:kakao_login' %}" class="btn-sns kakao">카카오 로그인</a>
+        <a href="{% url 'Member:naver_login' %}" class="btn-sns naver">네이버 로그인</a>
+        <a href="{% url 'Member:google_login' %}" class="btn-sns google">구글 로그인</a>
+      </div>
+
+      <p class="signup-text">
+        계정이 없으신가요? <a href="{% url 'Member:agree' %}">회원가입 하러가기</a>
+      </p>
+    </div>
+  </div>
+</div>
 {% endblock %}

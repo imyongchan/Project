@@ -1,107 +1,133 @@
-/* ================================
+/* ==============================
    기본 설정
-================================ */
+============================== */
 body {
   font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
   background-color: #f6f8f7;
   color: #23333d;
   margin: 0;
-  padding: 60px 20px 100px;
+  padding: 0;
 }
 
-/* ================================
-   카드 박스 스타일
-================================ */
-.card {
+/* ✅ 중앙 정렬을 위한 래퍼 */
+.agree-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  padding: 50px 20px;
+}
+
+/* ==============================
+   카드 박스
+============================== */
+.agree-card {
   background: #ffffff;
-  border: none;
   border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  max-width: 700px;
-  margin: 0 auto 40px;
-  padding: 30px 35px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+  max-width: 680px;
+  width: 100%;
+  padding: 40px 35px 45px;
 }
 
-.card h5 {
-  font-weight: 700;
-  color: #23333d;
-  margin-bottom: 20px;
+.agree-card h2 {
   text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #23333d;
 }
 
-/* ================================
-   체크박스 스타일
-================================ */
+.agree-desc {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 28px;
+}
+
+/* ==============================
+   체크박스 그룹
+============================== */
+.agree-section {
+  border: 1px solid #e5e8eb;
+  border-radius: 10px;
+  background: #fafafa;
+  padding: 25px 20px 20px;
+  margin-bottom: 25px;
+}
+
 .form-check {
-  margin-bottom: 12px;
   display: flex;
   align-items: center;
+  margin-bottom: 12px;
+}
+
+.form-check.all {
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .form-check-input {
   width: 18px;
   height: 18px;
   margin-right: 10px;
+  accent-color: #2fb34a;
   cursor: pointer;
-  accent-color: #23333d;
-  
 }
 
-.form-check-label {
+.form-check label {
+  flex: 1;
   font-size: 0.95rem;
   color: #333;
-  flex: 1;
 }
 
-/* 전체동의 강조 */
-#agree_all + label strong {
-  color: #23333d;
-}
-
-/* 안내문 */
-.form-text.text-muted {
-  color: #666;
-  font-size: 0.85rem;
-  margin-top: 8px;
-}
-
-/* 약관보기 버튼 */
 .btn-link {
+  background: none;
+  border: none;
   color: #23333d;
-  text-decoration: underline;
+  font-size: 0.9rem;
   font-weight: 600;
+  text-decoration: underline;
   margin-left: 6px;
-  transition: color 0.25s;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
 .btn-link:hover {
   color: #f99b18;
 }
 
-/* ================================
-   확인 버튼
-================================ */
-.subbtn {
-  background-color: #23333d !important;
-  border: none;
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 10px;
-  padding: 12px 0;
-  transition: background-color 0.25s ease;
-  max-width: 700px;
+.form-text.text-muted {
+  font-size: 0.83rem;
+  color: #666;
   display: block;
-  margin: 0 auto;
+  margin-top: 6px;
 }
 
-.subbtn:hover {
-  background-color: #f99b18 !important;
+/* ==============================
+   확인 버튼
+============================== */
+.btn-confirm {
+  background-color: #2fb34a;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  padding: 13px 0;
+  cursor: pointer;
+  transition: background-color 0.25s;
 }
 
-/* ================================
-   모달 오버레이
-================================ */
+.btn-confirm:hover {
+  background-color: #25913c;
+}
+
+/* ==============================
+   모달 공통
+============================== */
 .custom-modal-overlay {
   position: fixed;
   top: 0;
@@ -119,25 +145,22 @@ body {
   display: flex;
 }
 
-/* ================================
-   모달 박스
-================================ */
 .custom-modal {
-  background: #ffffff;
-  width: 70%;
-  max-width: 900px;
+  background: #fff;
   border-radius: 16px;
+  width: 80%;
+  max-width: 1000px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   max-height: 85vh;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   animation: fadeIn 0.25s ease;
 }
 
-/* ================================
+/* ==============================
    모달 헤더
-================================ */
+============================== */
 .custom-modal-header {
   background: #23333d;
   color: #fff;
@@ -148,8 +171,8 @@ body {
 }
 
 .custom-modal-header h5 {
-  font-weight: 700;
   margin: 0;
+  font-weight: 700;
   font-size: 1.1rem;
 }
 
@@ -164,33 +187,31 @@ body {
   transform: scale(1.2);
 }
 
-/* ================================
-   모달 바디
-================================ */
+/* ==============================
+   모달 본문
+============================== */
 .custom-modal-body {
   padding: 20px;
   overflow-y: auto;
   background: #fff;
 }
 
-/* 스크롤 가능한 약관 영역 */
 .terms-content {
   max-height: 60vh;
   overflow-y: auto;
-  padding-right: 10px;
-  white-space: pre-wrap;
-  line-height: 1.6;
-  color: #333;
-  font-size: 0.93rem;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
-  padding: 16px;
   background: #fafafa;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  color: #333;
 }
 
-/* ================================
+/* ==============================
    애니메이션
-================================ */
+============================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -202,23 +223,23 @@ body {
   }
 }
 
-/* ================================
+/* ==============================
    반응형
-================================ */
+============================== */
 @media (max-width: 768px) {
-  .card {
-    padding: 25px 20px;
+  .agree-card {
+    padding: 30px 20px 35px;
   }
 
   .custom-modal {
-    width: 90%;
-  }
-
-  .terms-content {
-    font-size: 0.9rem;
+    width: 92%;
   }
 
   .custom-modal-header h5 {
     font-size: 1rem;
+  }
+
+  .terms-content {
+    font-size: 0.9rem;
   }
 }

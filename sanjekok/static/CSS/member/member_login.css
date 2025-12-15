@@ -1,171 +1,213 @@
-/* ============================
-   전체 배경 및 폰트
-============================ */
+/* ==========================
+   기본 레이아웃
+========================== */
 body {
   font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-  background: #f6f8f7;
+  background-color: #f6f8f7;
   color: #23333d;
   margin: 0;
-  padding: 60px 20px;
+  padding: 0;
 }
 
-/* ============================
-   로그인 카드 박스
-============================ */
-.card {
-  background: #ffffff;
-  border: none;
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px); /* 헤더+푸터 높이 제외 */
+  padding: 40px 20px;
+}
+
+/* ==========================
+   카드
+========================== */
+.login-card {
+  background: #fff;
   border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  max-width: 480px;
-  margin: 0 auto;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+  max-width: 440px;
+  width: 100%;
   overflow: hidden;
 }
 
-/* 헤더 */
-.card-header {
+.login-header {
   background-color: #23333d;
-  color: #ffffff;
+  color: #fff;
   text-align: center;
-  padding: 24px;
+  padding: 26px 20px 20px;
 }
 
-.card-header h2 {
-  font-size: 1.8rem;
+.login-header h2 {
+  font-size: 1.7rem;
   font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.login-header p {
+  font-size: 0.9rem;
+  opacity: 0.85;
   margin: 0;
 }
 
-/* 본문 */
-.card-body {
-  padding: 30px 35px 40px;
+.login-body {
+  padding: 35px 30px 40px;
 }
 
-/* ============================
-   입력창 스타일
-============================ */
-.form-label {
+/* ==========================
+   입력 폼
+========================== */
+.input-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
   font-weight: 600;
   font-size: 0.95rem;
+  margin-bottom: 6px;
   color: #23333d;
 }
 
-.form-control {
+.input-group input {
   border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 11px 14px;
   font-size: 0.95rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-control:focus {
-  border-color: #f99b18;
-  box-shadow: 0 0 0 3px rgba(47, 179, 74, 0.15);
+.input-group input:focus {
+  border-color: #2fb34a;
+  box-shadow: 0 0 0 3px rgba(47, 179, 74, 0.2);
   outline: none;
 }
 
-/* ============================
-   로그인 버튼
-============================ */
-.subbtn {
-  background-color: #23333d !important;
+/* ==========================
+   버튼
+========================== */
+.btn-login {
+  background-color: #23333d;
+  color: #fff;
   border: none;
-  color: #ffffff;
   width: 100%;
-  font-size: 1rem;
-  font-weight: 600;
+  padding: 13px 0;
   border-radius: 10px;
-  padding: 12px 0;
-  transition: background-color 0.25s ease;
-  margin-top: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.25s;
+  margin-top: 5px;
 }
 
-.subbtn:hover {
-  background-color: #f99b18 !important;
+.btn-login:hover {
+  background-color: #f99b18;
 }
 
-/* ============================
-   SNS 로그인 영역
-============================ */
-hr {
-  border: none;
-  height: 1px;
-  background: #e5e5e5;
-  margin: 30px 0;
-}
-
-.card-body > p,
-.card-body > span {
+/* ==========================
+   SNS 버튼
+========================== */
+.divider {
   text-align: center;
+  margin: 30px 0 20px;
+  position: relative;
 }
 
-.card-body .btn-warning {
-  display: inline-block;
+.divider span {
+  background: #fff;
+  padding: 0 12px;
+  color: #999;
+  font-size: 0.85rem;
+  position: relative;
+  z-index: 2;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
   width: 100%;
-  border: none;
+  height: 1px;
+  background: #ddd;
+  z-index: 1;
+}
+
+.sns-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-sns {
+  display: block;
+  text-align: center;
   border-radius: 8px;
+  padding: 11px 0;
   font-weight: 600;
   color: #fff;
-  margin-bottom: 10px;
-  padding: 10px 0;
-  transition: 0.25s;
+  transition: transform 0.15s, opacity 0.2s;
+  text-decoration: none;
 }
 
-.btn-warning:nth-of-type(1) {
-  background: #f9e000; /* 카카오 */
-  color: #3b1e1e;
-}
-
-.btn-warning:nth-of-type(2) {
-  background: #2db400; /* 네이버 */
-}
-
-.btn-warning:nth-of-type(3) {
-  background: #db4437; /* 구글 */
-}
-
-.btn-warning:hover {
+.btn-sns:hover {
+  transform: translateY(-2px);
   opacity: 0.9;
 }
 
-/* ============================
-   회원가입 링크
-============================ */
-.card-body a {
-  color: #23333d;
-  text-decoration: none;
-  font-weight: 600;
+.kakao {
+  background: #f9e000;
+  color: #3b1e1e;
 }
 
-.card-body a:hover {
+.naver {
+  background: #2db400;
+}
+
+.google {
+  background: #db4437;
+}
+
+/* ==========================
+   회원가입 링크
+========================== */
+.signup-text {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.9rem;
+}
+
+.signup-text a {
+  color: #2fb34a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.signup-text a:hover {
   color: #f99b18;
 }
 
-/* ============================
-   에러 알림창
-============================ */
+/* ==========================
+   에러 메시지
+========================== */
 .alert-danger {
   background: #ffe5e5;
   color: #b30000;
   border: none;
   border-radius: 8px;
   font-size: 0.9rem;
-  margin-bottom: 20px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
 }
 
-/* ============================
+/* ==========================
    반응형
-============================ */
-@media (max-width: 768px) {
-  body {
-    padding: 40px 16px;
-  }
-
-  .card-body {
+========================== */
+@media (max-width: 576px) {
+  .login-body {
     padding: 25px 20px 35px;
   }
 
-  .card-header h2 {
+  .login-header h2 {
     font-size: 1.5rem;
   }
 }
