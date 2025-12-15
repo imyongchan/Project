@@ -6,11 +6,15 @@ import traceback
 
 def crawl_news():
     """
-    뉴스 전체 크롤링 (1~5페이지)(임시)
+    뉴스 전체 크롤링
     fetch → parse → detail fetch → detail parse → save
     """
-    print(f"🧡 크롤링 시작")
-    for page in range(1, 2):
+    print(f"\n===== 🟠 뉴스 크롤링 시작 🟠 =====")
+
+    page = 1
+
+    while True:
+        print(f"\n▶ 목록 페이지 {page} 수집 중...")
 
         try:
             list_url = f"http://sanjaenews.co.kr/news/list.php?&mcode=m641vf2&vg=&page={page}"
@@ -19,33 +23,37 @@ def crawl_news():
             list_soup = fetch_html(list_url)
 
             # 2) 목록 파싱
-            articles = parse_list_page(list_soup) 
-            if not articles:    # articles = 각 기사 정보(dict) 가 담긴 list
-                print("더 이상 항목 없음. 종료.")
+            articles = parse_list_page(list_soup)
+
+            # 종료 조건
+            if not articles:
+                print("🌐 더 이상 기사 없음 → 크롤링 종료")
                 break
 
         except Exception as e:
             print("❌ 목록 페이지 수집 실패:", e)
             traceback.print_exc()
-            continue
+            break   # 뉴스는 여기서 끊는 게 안전
 
         # 상세페이지 처리
         for art in articles:
             try:
                 detail_soup = fetch_html(art["link"])
                 detail = parse_detail_page(detail_soup)
-                art["writer"] = detail["writer"]  # writer 키 값 새로 추가
 
-                save_news(art) # DB 저장
+                art["writer"] = detail.get("writer")
+                save_news(art)
 
             except Exception as e:
                 print(f"❌ 상세페이지 실패: {art.get('link')}", e)
                 continue
 
-            time.sleep(0.15)
+            time.sleep(0.2)  
 
-    print("🌐 전체 크롤링 완료")
-    
+        page += 1
+        time.sleep(0.5)      # ⭐ 페이지 단위 휴식
+
     from datetime import datetime
     end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"🕒 크롤링 종료 시간: {end_time}")
+    print(f"\n====== 뉴스 전체 크롤링 완료 =====")
+    print(f"🕒 종료 시간: {end_time}")

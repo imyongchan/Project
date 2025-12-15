@@ -1,5 +1,5 @@
 # safe/crawler/run.py
-
+import time
 from .fetch import fetch_page
 from .parse import parse_list
 from .save import save_items
@@ -15,41 +15,37 @@ TYPE_CODES = [
 
 
 def crawl_safe():
-    print("\n=============== 안전자료 전체 크롤링 시작 ===============\n")
+    print("\n===== 안전자료 전체 크롤링 시작 =====\n")
 
     for shpCd in TYPE_CODES:
-        print(f"\n===== 🟠 자료형태 [{shpCd or '기타'}] 크롤링 시작 🟠 =====")
+        print(f"\n===== 🟠 자료형태 [{shpCd or '기타'}] 시작 🟠 =====")
 
-        try:
-            for page in range(1, 3):  # 페이지 1~2까지 테스트(임시)
-                print(f" 페이지 {page} 요청 중...")
+        page = 1
 
-                # 1) API 요청
-                try:
-                    data = fetch_page(shpCd=shpCd, page=page)
-                except Exception as e:
-                    print(f" ❌ fetch 실패: {e}")
-                    break
+        while True:
+            print(f" ▶ 페이지 {page} 요청 중...")
 
-                # 2) 파싱
-                items = parse_list(data, shpCd)
+            try:
+                data = fetch_page(shpCd=shpCd, page=page)
+            except Exception as e:
+                print(f" ❌ fetch 실패: {e}")
+                break
 
-                # 3) 페이지 종료 감지
-                if not items:
-                    print(" 더 이상 데이터 없음 → 다음 자료형태로 이동")
-                    break
+            items = parse_list(data, shpCd)
 
-                # 4) 저장
-                save_items(items)
+            # 종료 조건
+            if not items:
+                print(" 🌐 더 이상 데이터 없음 → 다음 자료형태로 이동")
+                break
 
-        except Exception as e:
-            print(f" ❌ [{shpCd or '기타'}] 크롤링 중 오류 발생: {e}")
-            continue
+            save_items(items)
+
+            page += 1
+            time.sleep(0.3)  # ⭐ API 배려
 
         print(f"===== 🌐 자료형태 [{shpCd or '기타'}] 완료 =====")
 
-
-
-    print("\n======= 안전자료 전체 크롤링 종료 =======")
+    from datetime import datetime
     end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"🕒 크롤링 종료 시간: {end_time}\n")
+    print("\n===== 안전자료 전체 크롤링 종료 =====")
+    print(f"🕒 종료 시간: {end_time}\n")
