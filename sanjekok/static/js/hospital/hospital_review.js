@@ -227,7 +227,7 @@
       return;
     }
 
-    console.error("리뷰 삭제 실패(서버 응답):", data);
+    window.location.reload();
   } catch (e) {
     console.error("리뷰 삭제 실패:", e);
   }
