@@ -1,12 +1,76 @@
-.loginbox {
-    background-color: rgb(216, 213, 213);
-    height: 300px;
-    border-radius: 15px;
+/* 전체 배경 */
+body {
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #e6ece9, #f4f6f5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Noto Sans KR', 'Pretendard', sans-serif;
 }
 
-.loginbox button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+
+/* 로그인 전체 감싸는 래퍼 */
+.login-wrapper {
     width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+
+/* 로그인 박스 */
+.loginbox {
+    background: #ffffff;
+    padding: 35px 30px 40px;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+}
+
+
+/* 제목 */
+.login-title {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 28px;
+    color: #23333d;
+}
+
+
+/* 라벨 */
+.loginbox .form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+}
+
+
+/* 인풋 */
+.loginbox .form-control {
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+}
+
+
+/* 포커스 효과 */
+.loginbox .form-control:focus {
+    border-color: #2fb34a;
+    box-shadow: 0 0 0 0.2rem rgba(47, 179, 74, 0.25);
+}
+
+
+/* 버튼 */
+.loginbox button {
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+}
+
+
+/* 버튼 hover */
+.loginbox button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(47, 179, 74, 0.35);
 }

@@ -1,6 +1,7 @@
 {% extends "manager_base.html" %}
 {% load static %}
 
+
 {% block contents %}
     <div>
         <h3>리뷰 관리</h3>
@@ -11,6 +12,7 @@
                 <option value="member" {% if request.GET.filter_by == "member" %}selected{% endif %}>작성자</option>
             </select>
 
+
             <input type="text"
                 name="keyword"
                 placeholder="검색어 입력"
@@ -18,12 +20,15 @@
                 class="form-control"
                 style="width: 200px;">
 
+
             <button type="submit" class="btn btn-primary">검색</button>
+
 
             {% if request.GET.filter_by or request.GET.keyword %}
                 <a href="{% url 'Manager:review' %}" class="btn btn-secondary">초기화</a>
             {% endif %}
         </form>
+
 
         <table class="table table-hover">
             <thead class="table-success">
@@ -32,23 +37,37 @@
                     <th>병원이름</th>
                     <th>작성자</th>
                     <th>작성일</th>
+                    <th>삭제</th>
                 </tr>
             </thead>
+
 
             <tbody>
             {% for review in r_list %}
                 <tr style="cursor: pointer;"
                     onclick="location.href='{% url 'Manager:detail' review.id %}'">
-                    <td>{{ review.id }}</td>
+                    <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
                     <td>{{ review.hospital.h_hospital_name }}</td>
                     <td>{{ review.member.m_username }}</td>
                     <td>{{ review.r_created_at|date:"Y-m-d" }}</td>
+                    <td><form method="post" action="{% url 'Manager:review_delete' review.id %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-delete"
+        onclick="return confirm('정말 삭제하시겠습니까?')">
+        삭제
+    </button>
+</form>
+
+
+</a></td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
 
+
         <div class="pagination justify-content-center mt-3">
+
 
         <!-- 이전 페이지 -->
         {% if page_obj.has_previous %}
@@ -59,6 +78,7 @@
         {% else %}
             <span class="btn btn-outline-secondary disabled mx-1">이전</span>
         {% endif %}
+
 
         <!-- 페이지 번호 -->
         {% for num in page_obj.paginator.page_range %}
@@ -72,6 +92,7 @@
             {% endif %}
         {% endfor %}
 
+
         <!-- 다음 페이지 -->
         {% if page_obj.has_next %}
             <a class="btn btn-outline-primary mx-1"
@@ -83,6 +104,35 @@
         {% endif %}
 
 
+
+
         </div>
     </div>
+
+
+<style>
+    .btn-delete {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+
+.btn-delete:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+
+.btn-delete:active {
+    transform: scale(0.97);
+}
+
+
+</style>
 {% endblock %}

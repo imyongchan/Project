@@ -121,6 +121,11 @@ def review(request):
     }
     return render(request, 'manager_review.html', context)
 
+def review_delete(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    review.delete()
+    return redirect('Manager:review')
+
 def stats(request):
     
     total_individual = Individual.objects.all()

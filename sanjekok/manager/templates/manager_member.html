@@ -1,6 +1,7 @@
 {% extends "manager_base.html" %}
 {% load static %}
 {% block contents %}
+    <h3>회원 관리</h3>
     <div>
         <table class="table table-hover">
             <thead class="table-info">
@@ -15,7 +16,7 @@
                     {% for member in page_obj %}
                 <tbody>
                     <tr>
-                        <td>{{ forloop.counter }}</td>
+                        <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
                         <td>{{ member.m_username}}</a> </td>
                         <td>{{ member.m_email }}</td>
                         <td>{{ member.m_created_at|date:"Y-m-d" }}</td>
