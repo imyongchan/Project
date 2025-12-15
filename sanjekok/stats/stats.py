@@ -665,22 +665,16 @@ def get_age_group(age):
         return "60대이상"
 
 
-def _calculate_gender_weight(industry_name, gender):
-    """
-    Stats2, Stats3에서 성별 비율 계산
-    Stats2: 일반 재해, Stats3: 사망 재해
-    """
-    # Stats2: 일반 재해 성별
+def _calculate_gender_weight(industry_name, gender, years):
     qs2 = Stats2.objects.filter(c1_nm=industry_name)
     
     if not qs2.exists():
-        return 0.5  # 데이터 없으면 50% 가정
+        return 0.5
     
     df2 = pd.DataFrame.from_records(qs2.values("prd_de", "c2_nm", "dt"))
     
-    # 최근 3년 데이터
-    years = sorted(df2["prd_de"].unique())
-    recent_years = years[-3:] if len(years) >= 3 else years
+    year_list = sorted(df2["prd_de"].unique())
+    recent_years = year_list[-years:] if len(year_list) >= years else year_list
     df2 = df2[df2["prd_de"].isin(recent_years)]
     
     pivot2 = df2.pivot_table(
@@ -697,28 +691,18 @@ def _calculate_gender_weight(industry_name, gender):
     if total == 0:
         return 0.5
     
-    if gender == "남자":
-        return total_male / total
-    else:
-        return total_female / total
+    return total_male / total if gender == "남자" else total_female / total
 
-
-def _calculate_age_weight(industry_name, age_group):
-    """
-    Stats4, Stats5에서 연령대 비율 계산
-    Stats4: 일반 재해, Stats5: 사망 재해
-    """
-    # Stats4: 일반 재해 연령대
+def _calculate_age_weight(industry_name, age_group, years):
     qs4 = Stats4.objects.filter(c1_nm=industry_name)
     
     if not qs4.exists():
-        return 1.0 / 6  # 데이터 없으면 6개 연령대 균등 가정
+        return 1.0 / 6
     
     df4 = pd.DataFrame.from_records(qs4.values("prd_de", "c2_nm", "dt"))
     
-    # 최근 3년 데이터
-    years = sorted(df4["prd_de"].unique())
-    recent_years = years[-3:] if len(years) >= 3 else years
+    year_list = sorted(df4["prd_de"].unique())
+    recent_years = year_list[-years:] if len(year_list) >= years else year_list
     df4 = df4[df4["prd_de"].isin(recent_years)]
     
     pivot4 = df4.pivot_table(
@@ -728,10 +712,8 @@ def _calculate_age_weight(industry_name, age_group):
         aggfunc="sum"
     ).fillna(0)
     
-    # '분류불능' 제거
     pivot4 = pivot4.drop(columns=["분류불능"], errors="ignore")
     
-    # 연령대 통합 (Stats4와 동일한 방식)
     age_data = pd.DataFrame(index=pivot4.index)
     age_data["18세미만"] = pivot4.get("18세 미만", 0)
     age_data["20대"] = pivot4.get("18~24세", 0) + pivot4.get("25~29세", 0)
@@ -740,41 +722,28 @@ def _calculate_age_weight(industry_name, age_group):
     age_data["50대"] = pivot4.get("50~54세", 0) + pivot4.get("55~59세", 0)
     age_data["60대이상"] = pivot4.get("60세 이상", 0)
     
-    # 전체 합계
     totals = age_data.sum(axis=0)
     total_sum = totals.sum()
     
     if total_sum == 0:
         return 1.0 / 6
     
-    # 해당 연령대 비율
-    age_weight = totals.get(age_group, 0) / total_sum
-    
-    return age_weight
+    return totals.get(age_group, 0) / total_sum
 
 
-def _get_weighted_top5(industry_name, model_list, weight):
-    """
-    여러 모델에서 데이터를 가져와 가중치를 적용하고 TOP 3 추출
-    
-    Args:
-        industry_name: 업종명
-        model_list: [Stats6, Stats7] 또는 [Stats8, Stats9]
-        weight: 성별*연령대 가중치
-    """
+
+def _get_weighted_top5(industry_name, model_list, weight, years):
     combined_series = pd.Series(dtype=float)
     
     for model in model_list:
         qs = model.objects.filter(c1_nm=industry_name)
-        
         if not qs.exists():
             continue
         
         df = pd.DataFrame.from_records(qs.values("prd_de", "c2_nm", "dt"))
         
-        # 최근 3년 데이터
-        years = sorted(df["prd_de"].unique())
-        recent_years = years[-3:] if len(years) >= 3 else years
+        year_list = sorted(df["prd_de"].unique())
+        recent_years = year_list[-years:] if len(year_list) >= years else year_list
         df = df[df["prd_de"].isin(recent_years)]
         
         pivot = df.pivot_table(
@@ -784,28 +753,18 @@ def _get_weighted_top5(industry_name, model_list, weight):
             aggfunc="sum"
         ).fillna(0)
         
-        # 전체 합계
         totals = pivot.sum(axis=0)
-        
-        # 기존 데이터에 추가
-        if combined_series.empty:
-            combined_series = totals
-        else:
-            combined_series = combined_series.add(totals, fill_value=0)
+        combined_series = totals if combined_series.empty else combined_series.add(totals, fill_value=0)
     
     if combined_series.empty:
         return []
     
-    # 가중치 적용
     weighted_series = combined_series * weight
-    
-    # 0보다 큰 값만 필터링 후 정렬
     filtered = weighted_series[weighted_series > 0].sort_values(ascending=False)
     
     if filtered.empty:
         return []
     
-    # TOP 5 추출
     top5 = filtered.head(5)
     total_weighted = filtered.sum()
     
@@ -815,19 +774,20 @@ def _get_weighted_top5(industry_name, model_list, weight):
         top5_list.append({
             "rank": rank,
             "name": name,
-            "count": int(weighted_count),  # 가중치 적용된 건수
+            "count": int(weighted_count),
             "percentage": round(percentage, 1)
         })
     
     return top5_list
 
-def get_risk_analysis(industry_name, age, gender):
+
+def get_risk_analysis(industry_name, age, gender,years=3):
 
     age_group = get_age_group(age)
     
     # 1. 성별/연령대 가중치 계산
-    gender_weight = _calculate_gender_weight(industry_name, gender)
-    age_weight = _calculate_age_weight(industry_name, age_group)
+    gender_weight = _calculate_gender_weight(industry_name, gender,years)
+    age_weight = _calculate_age_weight(industry_name, age_group,years)
     
     # 전체 가중치 (성별 * 연령대)
     total_weight = gender_weight * age_weight
@@ -836,19 +796,20 @@ def get_risk_analysis(industry_name, age, gender):
     injury_top5 = _get_weighted_top5(
         industry_name, 
         [Stats6, Stats7],  # 일반 재해 + 사망 재해
-        total_weight
+        total_weight,years
     )
     
     # 3. 질병형태별 위험 분석
     disease_top5 = _get_weighted_top5(
         industry_name,
         [Stats8, Stats9],  # 일반 질병 + 사망 질병
-        total_weight
+        total_weight,years
     )
     
     has_data = len(injury_top5) > 0 or len(disease_top5) > 0
     
     result = {
+        "period": f"{years}년",
         "age_group": age_group,
         "gender": gender,
         "industry": industry_name,

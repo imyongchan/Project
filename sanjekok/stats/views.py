@@ -164,17 +164,45 @@ def stats_home(request):
         else:
             return obj
 
-    risk_analysis = get_risk_analysis(
+    risk_analysis_1y = get_risk_analysis(
         industry_name=industry.i_industry_type2,
         age=age,
-        gender=member.m_sex
+        gender=member.m_sex,
+        years=1
     )
-    risk_analysis = convert_np(risk_analysis)
+    risk_analysis_2y = get_risk_analysis(
+        industry_name=industry.i_industry_type2,
+        age=age,
+        gender=member.m_sex,
+        years=2
+    )
+    risk_analysis_3y = get_risk_analysis(
+        industry_name=industry.i_industry_type2,
+        age=age,
+        gender=member.m_sex,
+        years=3
+    )
+
+
+    # 분석 기간별로 종합 위험도 분석
+    risk_analysis_1y = get_risk_analysis(industry.i_industry_type2, age, member.m_sex, years=1)
+    risk_analysis_2y = get_risk_analysis(industry.i_industry_type2, age, member.m_sex, years=2)
+    risk_analysis_3y = get_risk_analysis(industry.i_industry_type2, age, member.m_sex, years=3)
+
+    risk_analysis_json = {
+        "1": convert_np(risk_analysis_1y),
+        "2": convert_np(risk_analysis_2y),
+        "3": convert_np(risk_analysis_3y),
+    }
+   
+    
     # 9. JS에서 사용할 데이터는 JSON 직렬화
+    
     summary6_json = json.dumps(summary6, ensure_ascii=False)
     summary7_json = json.dumps(summary7, ensure_ascii=False)
     summary8_json = json.dumps(summary8, ensure_ascii=False)
     summary9_json = json.dumps(summary9, ensure_ascii=False)
+    
 
     # 10. 템플릿 렌더링
     return render(request, "stats/stats.html", {
@@ -193,6 +221,6 @@ def stats_home(request):
         "summary7_json": summary7_json,
         "summary8_json": summary8_json,
         "summary9_json": summary9_json,
-        "risk_analysis": risk_analysis,  
+        "risk_analysis_json": json.dumps(risk_analysis_json, ensure_ascii=False),
         "show_detail": show_detail,
     })

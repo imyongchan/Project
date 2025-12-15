@@ -5,6 +5,8 @@
 
 {% block script1 %}
 <link rel="stylesheet" href="{% static 'CSS/stats/stats.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
 {% endblock %}
 
 {% block contents %}
@@ -157,7 +159,8 @@
             data-has-selection="{% if show_detail and selected_individual %}1{% else %}0{% endif %}"
             data-selected-injury="{% if show_detail and selected_individual and selected_individual.i_injury %}{{ selected_individual.i_injury }}{% endif %}"
             data-selected-disease="{% if show_detail and selected_individual and selected_individual.i_disease_type %}{{ selected_individual.i_disease_type }}{% endif %}"
-            data-has-injury="{% if individual_list %}1{% else %}0{% endif %}">
+            data-has-injury="{% if individual_list %}1{% else %}0{% endif %}"
+            data-risk-analysis='{{ risk_analysis_json|safe }}'>
             
             <div class="visual-grid">
                 <!-- 내 업종 재해율 -->
@@ -191,14 +194,14 @@
                 <!-- 연령대별 재해 현황 (1열 전체 사용) -->
                 <div class="visual-card" id="card-age">
                     <h3>연령대별 현황</h3>
-                    <p id="ageSummary1"></p>
+                    <div id="ageSummary1" class="result-box" style="margin-top:10px;"></div>
                     <canvas id="ageChart1"></canvas>
                 </div>
 
                 <!-- 연령대별 사망 현황 (1열 전체 사용) -->
                 <div class="visual-card" id="card-age-fatal">
                     <h3>연령대별 사망현황</h3>
-                    <p id="ageSummary2"></p>
+                    <div id="ageSummary2" class="result-box" style="margin-top:10px;"></div>
                     <canvas id="ageChart2"></canvas>
                 </div>
 
@@ -232,94 +235,53 @@
 
                 <!-- 종합 위험도 평가 카드 -->
                 <div class="visual-card highlight" id="card-risk">
-                    <div class="risk-header">
-                        <h3 style="margin: 0;">종합 위험도 평가</h3>
-                    </div>
-                    
-                    {% if risk_analysis and risk_analysis.has_data %}
-                    <div class="risk-section">
-                        <p class="risk-condition">
-                            <span style="font-size:20px;"> 
-                            <strong>{{ risk_analysis.industry }}</strong>, 
-                            <strong>{{ risk_analysis.age_group }}</strong>, 
-                            <strong>{{ risk_analysis.gender }}</strong> 조건에서<br>
-                            최근 3년간 가장 많이 발생한 위험 요인입니다. 
-                            </span>
-                        </p>
-                        
-                        <div class="risk-grid">
-                            <!-- 발생형태 TOP 3 -->
-                            <div class="risk-category">
-                                <div class="risk-category-title">
-                                    <span class="risk-icon">⚠️</span>
-                                    발생형태 TOP 5
-                                </div>
-                                <div class="risk-category-inner">
-                                    <div class="risk-list">
-                                        {% for item in risk_analysis.injury_top5 %}
-                                        <div class="risk-item">
-                                            <span class="risk-rank rank-{{ item.rank }}">{{ item.rank }}</span>
-                                            <span class="risk-name">{{ item.name }}</span>
-                                            <span class="risk-percentage">{{ item.percentage }}%</span>
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="risk-chart-wrap">
-                                        <canvas id="riskAccidentPie"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- 질병형태 TOP 3 -->
-                            <div class="risk-category">
-                                <div class="risk-category-title">
-                                    <span class="risk-icon">🏥</span>
-                                    질병형태 TOP 5
-                                </div>
-                                <div class="risk-category-inner">
-                                    <div class="risk-list">
-                                        {% for item in risk_analysis.disease_top5 %}
-                                        <div class="risk-item">
-                                            <span class="risk-rank rank-{{ item.rank }}">{{ item.rank }}</span>
-                                            <span class="risk-name">{{ item.name }}</span>
-                                            <span class="risk-percentage">{{ item.percentage }}%</span>
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="risk-chart-wrap">
-                                        <canvas id="riskDiseasePie"></canvas>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="risk-header">
+                    <h3 style="margin: 0;">종합 위험도 평가</h3>
+                </div>
+
+                <div class="risk-section">
+                    <p class="risk-condition" id="riskConditionText"></p>
+
+                    <!-- ✅ 데이터 있을 때만 보여줄 영역 -->
+                    <div class="risk-grid" id="riskGrid" style="display:none;">
+                    <!-- 발생형태 TOP 5 -->
+                    <div class="risk-category">
+                        <div class="risk-category-title">
+                        <span class="risk-icon">⚠️</span>
+                        발생형태 TOP 5
+                        </div>
+                        <div class="risk-category-inner">
+                        <div class="risk-list" id="injuryRiskList"></div>
+                        <div class="risk-chart-wrap">
+                            <canvas id="riskAccidentPie"></canvas>
+                        </div>
                         </div>
                     </div>
-                    {% else %}
-                    <div class="risk-no-data" style="padding: 40px;">
-                        충분한 통계 데이터가 없습니다
+
+                    <!-- 질병형태 TOP 5 -->
+                    <div class="risk-category">
+                        <div class="risk-category-title">
+                        <span class="risk-icon">🏥</span>
+                        질병형태 TOP 5
+                        </div>
+                        <div class="risk-category-inner">
+                        <div class="risk-list" id="diseaseRiskList"></div>
+                        <div class="risk-chart-wrap">
+                            <canvas id="riskDiseasePie"></canvas>
+                        </div>
+                        </div>
                     </div>
-                    {% endif %}
+                    </div>
+
+                    <!-- ✅ 데이터 없을 때 표시 -->
+                    <div class="risk-no-data" id="riskNoData" style="display:block; padding:40px;">
+                    충분한 통계 데이터가 없습니다
+                    </div>
                 </div>
             </div>
-        </section>
-    </div>
+</div>
 
-{% if risk_analysis and risk_analysis.has_data %}
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Django context → JS 객체로 전달
-    const riskInjuryTop5 = {{ risk_analysis.injury_top5|safe }};
-    const riskDiseaseTop5 = {{ risk_analysis.disease_top5|safe }};
 
-   
-    if (window.RiskAccidentPieChart && riskInjuryTop5?.length) {
-        window.RiskAccidentPieChart(riskInjuryTop5);
-    }
-    if (window.RiskDiseasePieChart && riskDiseaseTop5?.length) {
-        window.RiskDiseasePieChart(riskDiseaseTop5);
-    }
-});
-</script>
-{% endif %}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>

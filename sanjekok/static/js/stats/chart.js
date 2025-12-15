@@ -150,29 +150,28 @@ function GenderChart1(male, female) {
                     position: "bottom",
                     labels: {
                         font: {
-                            size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
+                            size: 25,   // ← 범례 글씨 크기 키움 (기본 12~14)
                             weight: "600"
                         },
                         color: "#111827"  // 글자색 (선택사항)
-                    }
-                },
-                    
-            }
-        },
-        datalabels: {
-                color: "#ffffff",
-                font: {
-                        size: 15,
-                        weight: "300"
+                        }
                     },
-                    formatter: (value, ctx) => {
-                        const total = ctx.chart.data.datasets[0].data
-                            .reduce((a, b) => a + b, 0) || 1;
-                        const percent = value / total * 100;
-                        return `${percent.toFixed(1)}%`;
-                    }
+                    
+                    datalabels: {
+                            color: "#ffffff",
+                            font: {
+                                    size: 20,
+                                    weight: "300"
+                                },
+                                formatter: (value, ctx) => {
+                                    const total = ctx.chart.data.datasets[0].data
+                                        .reduce((a, b) => a + b, 0) || 1;
+                                    const percent = value / total * 100;
+                                    return `${percent.toFixed(1)}%`;
+                                }
+                        }
+            }
         }
-
     });
 }
 
@@ -193,7 +192,7 @@ function GenderChart2(maleFatal, femaleFatal) {
     charts.gender2 = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: ["남자 사망", "여자 사망"],
+            labels: ["남자", "여자"],
             datasets: [{
                 data,
                 backgroundColor: ["#23333d", "#f99b18"],
@@ -204,16 +203,30 @@ function GenderChart2(maleFatal, femaleFatal) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                 legend: {
+                  legend: {
                     position: "bottom",
                     labels: {
                         font: {
-                            size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
+                            size: 25,   // ← 범례 글씨 크기 키움 (기본 12~14)
                             weight: "600"
                         },
                         color: "#111827"  // 글자색 (선택사항)
-                    }
-                },
+                        }
+                    },
+                    
+                    datalabels: {
+                            color: "#ffffff",
+                            font: {
+                                    size: 20,
+                                    weight: "300"
+                                },
+                                formatter: (value, ctx) => {
+                                    const total = ctx.chart.data.datasets[0].data
+                                        .reduce((a, b) => a + b, 0) || 1;
+                                    const percent = value / total * 100;
+                                    return `${percent.toFixed(1)}%`;
+                                }
+                        }
             }
         }
     });
@@ -228,28 +241,90 @@ function AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p, highlightLabe
     const labels = ["18세 미만", "20대", "30대", "40대", "50대", "60대 이상"];
     const data   = [ageU18, age20s, age30s, age40s, age50s, age60p];
 
-    createHorizontalBarChart("age1", "ageChart1", labels, data, {
-        color: "#23333d",            // 연한 하늘색
+    // 데이터와 라벨을 함께 묶어서 정렬
+    const combined = labels.map((label, index) => ({
+        label: label,
+        value: data[index]
+    }));
+    
+    // 값 기준으로 내림차순 정렬
+    combined.sort((a, b) => b.value - a.value);
+    
+    // 정렬된 라벨과 데이터 분리
+    const sortedLabels = combined.map(item => item.label);
+    const sortedData = combined.map(item => item.value);
+
+    createHorizontalBarChart("age1", "ageChart1", sortedLabels, sortedData, {
+        color: "#23333d",
         label: "연령대별 재해자 수",
         labelVisible: false,
         highlightLabel,
         highlightColor: "#f99b18"
     });
+    const ageSummaryBox = document.getElementById("ageSummary1");
+    if (ageSummaryBox && highlightLabel) {
+        const highlightIndex = labels.indexOf(highlightLabel);
+        const highlightCount = data[highlightIndex];
+
+        // 최댓값 찾기
+        const maxValue = Math.max(...data);
+        const maxIndex = data.indexOf(maxValue);
+        const maxLabel = labels[maxIndex];
+
+        ageSummaryBox.innerHTML = `
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+                나의 연령대(<strong>${highlightLabel}</strong>)의 재해자 수는 <strong>${highlightCount}명</strong>입니다.<br>
+                가장 많이 발생한 연령대는 <strong>${maxLabel}</strong>입니다.
+            </div>
+        `;
+    }
 }
 
 function AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa, highlightLabel = null) {
     const labels = ["18세 미만", "20대", "30대", "40대", "50대", "60대 이상"];
     const data   = [ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa];
 
-    createHorizontalBarChart("age2", "ageChart2", labels, data, {
-        color: "#23333d",            // 진한 남색
+    // 데이터와 라벨을 함께 묶어서 정렬
+    const combined = labels.map((label, index) => ({
+        label: label,
+        value: data[index]
+    }));
+    
+    // 값 기준으로 내림차순 정렬
+    combined.sort((a, b) => b.value - a.value);
+    
+    // 정렬된 라벨과 데이터 분리
+    const sortedLabels = combined.map(item => item.label);
+    const sortedData = combined.map(item => item.value);
+
+    createHorizontalBarChart("age2", "ageChart2", sortedLabels, sortedData, {
+        color: "#23333d",
         label: "연령대별 사망자 수",
         labelVisible: false,
         highlightLabel,
         highlightColor: "#f99b18"
     });
-}
 
+    const ageSummaryBox = document.getElementById("ageSummary2");
+    if (ageSummaryBox && highlightLabel) {
+        const highlightIndex = labels.indexOf(highlightLabel);
+        const highlightCount = data[highlightIndex];
+
+        // 최댓값 찾기
+        const maxValue = Math.max(...data);
+        const maxIndex = data.indexOf(maxValue);
+        const maxLabel = labels[maxIndex];
+
+        ageSummaryBox.innerHTML = `
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+                나의 연령대(<strong>${highlightLabel}</strong>)의 재해자 수는 <strong>${highlightCount}명</strong>입니다.<br>
+                가장 많이 발생한 연령대는 <strong>${maxLabel}</strong>입니다.
+            </div>
+        `;
+    }
+}
 /* =========================
  *  3. 발생형태 / 질병형태 바 차트
  *     topList: [{ rank, name, count }, ...]
@@ -405,7 +480,7 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
                             size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
                             weight: "200"
                         },
-                        color: "#ffffff"  // 글자색 (선택사항)
+                        color: "#23333d"  // 글자색 (선택사항)
                     }
                 },
                 tooltip: {
@@ -414,7 +489,7 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
                             const total = ctx.dataset.data.reduce((a, b) => a + b, 0) || 1;
                             const val = ctx.raw ?? 0;
                             const percent = (val / total * 100).toFixed(1);
-                            return `${ctx.label}: ${percent}% (${val.toLocaleString()}명)`;
+                            return `${ctx.label}: ${percent}% `;
                         }
                     }
                 },
@@ -438,26 +513,40 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
 
 
 
-// 발생형태 TOP 파이차트
 function RiskAccidentPieChart(topList) {
-    const labels = (topList || []).map(item => item.name);
-    const data   = (topList || []).map(item => item.percentage || 0);
+  const labels = (topList || []).map(item => item.name);
+  const data   = (topList || []).map(item => Number(item.percentage || 0));
 
-    createPieChart("riskAccident", "riskAccidentPie", labels, data, {
-        colors: ["#dc2626 ", "#f99b18", "#FACC15", "#2fb34a", "#9cffafff"],
-        cutout: "55%"
-    });
+  const sum = data.reduce((a,b)=>a+b,0);
+  const etc = Math.max(0, +(100 - sum).toFixed(1)); // 소수 1자리 정리
+
+  if (etc > 0) {
+    labels.push("기타");
+    data.push(etc);
+  }
+
+  createPieChart("riskAccident", "riskAccidentPie", labels, data, {
+    colors: ["#dc2626", "#f99b18", "#FACC15", "#2fb34a", "#9cffaf", "#cbd5e1"], // 기타 색 하나 추가
+    cutout: "55%"
+  });
 }
 
-// 질병형태 TOP 파이차트
 function RiskDiseasePieChart(topList) {
-    const labels = (topList || []).map(item => item.name);
-    const data   = (topList || []).map(item => item.percentage || 0);
+  const labels = (topList || []).map(item => item.name);
+  const data   = (topList || []).map(item => Number(item.percentage || 0));
 
-    createPieChart("riskDisease", "riskDiseasePie", labels, data, {
-        colors: ["#dc2626 ", "#f99b18", "#FACC15", "#2fb34a", "#9cffafff"],
-        cutout: "55%"
-    });
+  const sum = data.reduce((a,b)=>a+b,0);
+  const etc = Math.max(0, +(100 - sum).toFixed(1));
+
+  if (etc > 0) {
+    labels.push("기타");
+    data.push(etc);
+  }
+
+  createPieChart("riskDisease", "riskDiseasePie", labels, data, {
+    colors: ["#dc2626", "#f99b18", "#FACC15", "#2fb34a", "#9cffaf", "#cbd5e1"],
+    cutout: "55%"
+  });
 }
 
 
