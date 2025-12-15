@@ -368,7 +368,7 @@
   color: #f99b18;
 }
 
-/* ✅ 차트 랩: 폭/높이 확보(여기가 차트 크기 결정 핵심) */
+/*  차트 랩: 폭/높이 확보(여기가 차트 크기 결정 핵심) */
 #card-risk .risk-chart-wrap{
   width: 520px;
   height: 360px;
@@ -377,7 +377,7 @@
   justify-content: center;
 }
 
-/* ✅ 위험도 도넛 차트만 크게(전역 canvas 규칙 덮어쓰기) */
+/* 위험도 도넛 차트만 크게(전역 canvas 규칙 덮어쓰기) */
 #card-risk .risk-chart-wrap canvas{
   width: 100% !important;
   height: 360px !important;
@@ -398,3 +398,21 @@
   }
 }
 
+.result-box {
+    background-color: #fff8e6;
+    border-left: 5px solid #f99b18;
+    padding: 16px 20px;
+    margin-top: 10px;
+    font-size: 20px;
+    color: #23333d;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    border-radius: 4px;
+}
+
+.result-box i {
+    color: #f99b18;
+    font-size: 18px;
+    margin-top: 2px;
+}

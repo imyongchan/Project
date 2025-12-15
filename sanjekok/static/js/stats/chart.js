@@ -478,7 +478,7 @@ function createPieChart(chartRefName, canvasId, labels, data, options = {}) {
                     labels: {
                         font: {
                             size: 18,   // ← 범례 글씨 크기 키움 (기본 12~14)
-                            weight: "200"
+                            weight: "500"
                         },
                         color: "#23333d"  // 글자색 (선택사항)
                     }
