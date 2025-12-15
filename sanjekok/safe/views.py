@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from .decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
-
+from django.db.models import F
 
 from .crawler.run import crawl_safe
 from .models import Safe
@@ -177,6 +177,12 @@ def safe_list(request):
 # 3) 안전자료 상세페이지
 def safe_detail(request, pk):
     safe = get_object_or_404(Safe, pk=pk)
+    
+    # 조회수 증가
+    Safe.objects.filter(pk=safe.pk).update(
+        s_view_count=F('s_view_count') + 1
+    )
+    safe.refresh_from_db()
 
     # -----------------------------
     # 최근 조회 기록 저장 (세션 기반)
