@@ -46,7 +46,28 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     });
-
-
-
 });
+
+    // ------------------------------------------
+    // 3) 최근 본 자료 슬라이드
+    // ------------------------------------------
+
+document.addEventListener("DOMContentLoaded", function () {
+  const slider = document.querySelector(".recent-slider");
+  const prevBtn = document.querySelector(".slider-btn.prev");
+  const nextBtn = document.querySelector(".slider-btn.next");
+
+  if (!slider || !prevBtn || !nextBtn) return;
+
+  const CARD_WIDTH = 220 + 16; // 카드 + gap
+  const STEP = CARD_WIDTH * 3; // 3개씩 이동
+
+  prevBtn.addEventListener("click", () => {
+    slider.scrollBy({ left: -STEP, behavior: "smooth" });
+  });
+
+  nextBtn.addEventListener("click", () => {
+    slider.scrollBy({ left: STEP, behavior: "smooth" });
+  });
+});
+

@@ -21,19 +21,30 @@
 
     <!-- 최근 본 자료  -->
     {% if recent_list %}   <!--처음 이용하는 사용자의 recent_list가 비어 있으므로 HTML 자체가 렌더링되지 않음-->
+
     <div class="recent-section mb-5">
       <h4 class="section-title">최근 본 자료</h4>
 
-      <div class="recent-slider">
-        {% for h in recent_list %}
+      <div class="recent-slider-wrapper">
+        <!-- 이전 버튼 -->
+        <button class="slider-btn prev" type="button">&lt;</button>
+
+        <!-- 슬라이드 트랙 -->
+        <div class="recent-slider">
+          {% for h in recent_list %}
           <a href="{% url 'Safe:safe_detail' h.safe.id %}" class="recent-card">
             <img src="{{ h.safe.s_image_url }}" alt="자료 이미지">
             <p class="recent-title">{{ h.safe.s_title }}</p>
           </a>
-        {% endfor %}
+          {% endfor %}
+        </div>
+
+        <!-- 다음 버튼 -->
+        <button class="slider-btn next" type="button">&gt;</button>
       </div>
     </div>
     {% endif %}
+
 
     <!-- ------------------------------ -->
     <!-- 필터 박스 전체 -->
