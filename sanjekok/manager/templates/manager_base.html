@@ -24,12 +24,22 @@
     {% endif %}
     
     <aside class="sidebar">
-        <li><a href="{% url 'Manager:dash' %}" class="dash">대시보드</a></li>
-        <li><a href="{% url 'Manager:member' %}" class="manage">회원관리</a></li>
-        <li><a href="{% url 'Manager:stats' %}" class="acc">회원 산재 조회</a></li>
-        <li><a href="{% url 'Manager:review' %}" class="review_manage">리뷰 관리</a></li>
-        <li><a href="{% url 'Manager:logout' %}" class="logout">로그아웃</a></li>
+        <li><a href="{% url 'Manager:dash' %}" 
+            class="{% if 'dash' in request.path %}active{% endif %}">대시보드</a></li>
+
+        <li><a href="{% url 'Manager:member' %}" 
+            class="{% if 'member' in request.path %}active{% endif %}">회원관리</a></li>
+
+        <li><a href="{% url 'Manager:stats' %}" 
+            class="{% if 'stats' in request.path %}active{% endif %}">회원 산재 조회</a></li>
+
+        <li><a href="{% url 'Manager:review' %}" 
+            class="{% if 'review' in request.path %}active{% endif %}">리뷰 관리</a></li>
+
+        <li><a href="{% url 'Manager:logout' %}" 
+            class="logout {% if 'logout' in request.path %}active{% endif %}">로그아웃</a></li>
     </aside>
+
 
     {% block contents %}
     {% endblock %}

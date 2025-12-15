@@ -32,30 +32,109 @@ body {
     color: #fff;
 }
 
+
+/* ===============================
+ Active 메뉴 표시
+================================ */
+.sidebar a.active {
+  background: #495057;
+  color: #fff;
+  font-weight: 600;
+  border-left: 4px solid #f99b18;
+  padding-left: 16px;
+  transition: all 0.3s ease;
+}
+
+/* 호버 시 active 유지 */
+.sidebar a.active:hover {
+  background: #ffae42;
+  color: #fff;
+}
+
+
+/* 로그아웃 강조 */
 .sidebar .logout {
-    color: #ffdd57;
-    font-weight: 600;
+  color: #ffdd57;
+  font-weight: 600;
+  margin-top: auto;
 }
 
-.info{
-    text-align: center; 
-    display: flex;
-    gap: 10px;
-    justify-content: center;
+.sidebar .logout:hover {
+  color: #fff;
 }
 
-.info div {
-    background-color: antiquewhite;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    padding: 10px;
+/* ===============================
+   3. 컨텐츠 영역
+================================ */
+.container {
+  padding: 30px 40px;
+  width: 100%;
 }
 
-.chart{
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    height: auto;
-    min-height: 50px;
-    max-height: 300px;
+h1, h2, h3 {
+  font-weight: 700;
+  color: #23333d;
+}
+
+
+
+.info {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.info-box {
+  background-color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 30px 40px;
+  text-align: center;
+  width: 220px;
+  transition: all 0.25s ease;
+}
+
+.info-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* 아이콘 */
+.info-box i {
+  font-size: 2rem;
+  color: #f99b18;
+  margin-bottom: 10px;
+}
+
+/* 제목 */
+.info-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #23333d;
+  margin-bottom: 6px;
+}
+
+/* 값 (숫자) */
+.info-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #23333d;
+}
+/* ===============================
+   5. 차트 박스
+================================ */
+.chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  margin: 0 auto;
+  min-height: 320px;
+  max-width:1500px;
 }

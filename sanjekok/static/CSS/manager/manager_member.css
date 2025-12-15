@@ -1,0 +1,169 @@
+body {
+  background-color: #f6f8f7;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  color: #23333d;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===============================
+   2. 전체 레이아웃
+================================ */
+.table-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 100px;
+  padding-bottom: 80px;
+  min-height: calc(100vh - 100px);
+  width: 100%;
+}
+
+/* ===============================
+   3. 페이지 제목
+================================ */
+h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #23333d;
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+h3::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 24px;
+  background-color: #f99b18;
+  border-radius: 3px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+/* ===============================
+   4. 테이블 스타일
+================================ */
+/* ===============================
+   📋 테이블 전체 시원하게 확장
+================================ */
+.table {
+  width: 95%;                  /* 🔹 전체 폭 확장 */
+  max-width: 1600px;           /* 너무 커지지 않게 최대폭 제한 */
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 0 10px;      /* 행 사이 여백 (살짝 띄워서 시원하게) */
+  background-color: transparent;
+}
+
+/* 테이블 헤더 */
+.table thead {
+  background-color: #f99b18 !important;
+  color: #fff;
+  border-radius: 10px;
+}
+
+.table thead th {
+  font-weight: 700;
+  text-align: center;
+  padding: 18px 14px;          /* 🔹 헤더 여백 넉넉하게 */
+  font-size: 1.05rem;
+}
+
+/* 본문 (행 + 셀) */
+.table tbody tr {
+  background-color: #ffffff;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.table tbody tr:hover {
+  transform: scale(1.01);
+  background-color: #fff8ef;   /* 🔹 hover 시 은은한 배경색 */
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.table td {
+  text-align: center;
+  padding: 16px 20px;          /* 🔹 내부 여백 넓힘 */
+  font-size: 1rem;
+  vertical-align: middle;
+  color: #23333d;
+}
+
+/* 각 행을 카드처럼 보여주기 위해 모서리 둥글게 */
+.table tbody tr td:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.table tbody tr td:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+/* ===============================
+   5. 버튼
+================================ */
+.btn-danger {
+  background-color: #e74c3c !important;
+  border: none;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  transition: background-color 0.25s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b !important;
+}
+
+/* ===============================
+   6. 페이지네이션
+================================ */
+.pagination {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pagination a,
+.pagination span {
+  min-width: 40px;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+}
+
+.btn-outline-secondary.disabled {
+  color: #aaa !important;
+  border-color: #ccc !important;
+  background-color: #f1f1f1 !important;
+  cursor: not-allowed;
+}
+
+/* 기본 버튼 */
+.btn-outline-primary {
+  border-color: #f99b18;
+  color: #f99b18;
+}
+
+.btn-outline-primary:hover {
+  background-color: #f99b18;
+  color: #fff;
+}
+
+/* 현재 페이지 */
+.btn-primary {
+  background-color: #23333d !important;
+  border: none;
+  color: #fff !important;
+  font-weight: 700;
+}

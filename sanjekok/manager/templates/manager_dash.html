@@ -1,34 +1,42 @@
 {% extends "manager_base.html" %}
 {% load static %}
 
+{% block script1 %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% endblock %}
+
 {% block contents %}
 
-    <main style="margin-top: 300px;">
+    <main style="margin-top: 100px;">
         <div class="info">
-            <div>
-                <p>전체 회원수</p>
-                <p>{{ member_count }}명</p>
+            <div class="info-box">
+            <i class="fa-solid fa-users"></i>
+            <p class="info-title">전체 회원수</p>
+            <p class="info-value">{{ member_count }}명</p>
             </div>
-            <div>
-                <p>오늘 신규 가입</p>
-                <p>{{ new_members_today }}명</p>
+            <div class="info-box">
+            <i class="fa-solid fa-user-plus"></i>
+            <p class="info-title">오늘 신규 가입</p>
+            <p class="info-value">{{ new_members_today }}명</p>
             </div>
-            <div >
-                <p>전체 산재 등록 수</p>
-                <p>{{ total_individual }}건</p>
+            <div class="info-box">
+            <i class="fa-solid fa-helmet-safety"></i>
+            <p class="info-title">전체 산재 등록 수</p>
+            <p class="info-value">{{ total_individual }}건</p>
             </div>
-            <div>
-                <p>전체 리뷰 수</p>
-                <p>{{ review_count }}개</p>
+            <div class="info-box">
+            <i class="fa-solid fa-star"></i>
+            <p class="info-title">전체 리뷰 수</p>
+            <p class="info-value">{{ review_count }}개</p>
             </div>
         </div>
+
         <div class="chart">
-            <canvas id="memberChart""></canvas>
+            <canvas id="memberChart"></canvas>
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
         const NEW_MEMBERS_TODAY = {{ new_members_today }};
 	    const TOTAL_INDIVIDUAL = {{ total_individual }};

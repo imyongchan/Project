@@ -2,6 +2,10 @@
 {% load static %}
 
 
+{% block script1 %}
+<link rel="stylesheet" href="{% static 'CSS/manager/manager_review.css' %}">
+{% endblock %}
+
 {% block contents %}
     <script>
         const params = new URLSearchParams(window.location.search);

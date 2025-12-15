@@ -1,62 +1,67 @@
 {% extends "manager_base.html" %}
 {% load static %}
+
+{% block script1 %}
+<link rel="stylesheet" href="{% static 'CSS/manager/manager_member.css' %}">
+{% endblock %}
 {% block contents %}
-    <h3>회원 관리</h3>
-    <div>
-        <table class="table table-hover">
-            <thead class="table-info">
-                <tr>
-                    <th>No.</th>
-                    <th>아이디</th>
-                    <th>이메일</th>
-                    <th>가입일</th>
-                    <th>삭제</th>
-                </tr>
-            </thead>
-                    {% for member in page_obj %}
-                <tbody>
+
+    <div class="table-container">
+        <h3>회원 관리</h3>
+            <table class="table table-hover">
+                <thead class="table-info">
                     <tr>
-                        <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
-                        <td>{{ member.m_username}}</a> </td>
-                        <td>{{ member.m_email }}</td>
-                        <td>{{ member.m_created_at|date:"Y-m-d" }}</td>
-                        <td>
-                            <a href="{% url 'Manager:delete' member.member_id %}" 
-                            class="btn btn-danger btn-sm"
-                            onclick="return confirm('정말 삭제하시겠습니까?');">
-                            삭제
-                            </a>
-                        </td>
+                        <th>No.</th>
+                        <th>아이디</th>
+                        <th>이메일</th>
+                        <th>가입일</th>
+                        <th>삭제</th>
                     </tr>
-                </tbody>
-                    {% endfor %}
-        </table>
-    
-        <div class="pagination justify-content-center mt-3">
+                </thead>
+                        {% for member in page_obj %}
+                    <tbody>
+                        <tr>
+                            <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                            <td>{{ member.m_username}}</a> </td>
+                            <td>{{ member.m_email }}</td>
+                            <td>{{ member.m_created_at|date:"Y-m-d" }}</td>
+                            <td>
+                                <a href="{% url 'Manager:delete' member.member_id %}" 
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('정말 삭제하시겠습니까?');">
+                                삭제
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                        {% endfor %}
+            </table>
+        
+            <div class="pagination justify-content-center mt-3">
 
-            <!-- 이전 페이지 -->
-            {% if page_obj.has_previous %}
-            <a class="btn btn-outline-primary mx-1" href="?page={{ page_obj.previous_page_number }}">이전</a>
-            {% else %}
-            <span class="btn btn-outline-secondary disabled mx-1">이전</span>
-            {% endif %}
-
-            <!-- 페이지 번호 -->
-            {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                    <span class="btn btn-primary mx-1">{{ num }}</span>
+                <!-- 이전 페이지 -->
+                {% if page_obj.has_previous %}
+                <a class="btn btn-outline-primary mx-1" href="?page={{ page_obj.previous_page_number }}">이전</a>
                 {% else %}
-                    <a class="btn btn-outline-primary mx-1" href="?page={{ num }}">{{ num }}</a>
+                <span class="btn btn-outline-secondary disabled mx-1">이전</span>
                 {% endif %}
-            {% endfor %}
 
-            <!-- 다음 페이지 -->
-            {% if page_obj.has_next %}
-            <a class="btn btn-outline-primary mx-1" href="?page={{ page_obj.next_page_number }}">다음</a>
-            {% else %}
-            <span class="btn btn-outline-secondary disabled mx-1">다음</span>
-            {% endif %}
+                <!-- 페이지 번호 -->
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <span class="btn btn-primary mx-1">{{ num }}</span>
+                    {% else %}
+                        <a class="btn btn-outline-primary mx-1" href="?page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
 
-        </div>
-    </div>
+                <!-- 다음 페이지 -->
+                {% if page_obj.has_next %}
+                <a class="btn btn-outline-primary mx-1" href="?page={{ page_obj.next_page_number }}">다음</a>
+                {% else %}
+                <span class="btn btn-outline-secondary disabled mx-1">다음</span>
+                {% endif %}
+
+            </div>
+    </div>   
 {% endblock %}

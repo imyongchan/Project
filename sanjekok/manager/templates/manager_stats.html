@@ -1,12 +1,18 @@
 {% extends "manager_base.html" %}
 {% load static %}
+
+
+{% block script1 %}
+<link rel="stylesheet" href="{% static 'CSS/manager/manager_stats.css' %}">
+{% endblock %}
+
 {% block contents %}
 
 
     <div>
         <h3>회원 산재 조회</h3>
 
-        <h4 style="margin-top: 50px;">검색/필터</h4>
+        
         <form method="get" class="row g-2 mb-3">
 
             <!-- 대분류 -->
@@ -54,7 +60,7 @@
             </div>
 
         </form>
-        <h4 style="margin-top: 40px;">회원 산재등록 목록</h4>
+ 
         <table class="table table-hover">
             <thead class="table-dark">
                 <tr style="white-space: nowrap;">
