@@ -15,27 +15,78 @@
     </div>
 </section>
 
-<section class="stats-section">
-        <h2>전국 산업재해 통계</h2>
+<!-- ================== 메인 콘텐츠 ================== -->
+<div class="contents">
 
-        <div class="chart">
-            <div class="chart-buttons">
-            <button onclick="showChart('age')">연령</button>
-            <button onclick="showChart('gender')">성별</button>
-            <button onclick="showChart('industry')">산업</button>
+    <!-- 왼쪽 : 차트 -->
+    <div class="contents1">
+        <section class="stats-section">
+            <h2>전국 산업재해 통계</h2>
+
+            <div class="chart">
+                <div class="chart-buttons">
+                    <button onclick="showChart('age')">연령</button>
+                    <button onclick="showChart('gender')">성별</button>
+                    <button onclick="showChart('industry')">산업</button>
+                </div>
+            </div>
+
+            <div id="chartArea">
+                <p>산출년도: 2021년~2023년</p>
+                <canvas id="mainChart"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <!-- 오른쪽 -->
+    <div class="contents2">
+
+        <!-- 오른쪽 상단 -->
+        <div class="right-top">
+            <div class="clock">
+                <div class="clock-date">
+                    {{ now|date:"Y.m.d" }}
+                    <span class="day">{{ now|date:"l"|cut:"day" }}</span>
+                </div>
+                <div class="clock-time">
+                    <span class="ampm">
+                        {% if now|date:"A" == "AM" %}오전{% else %}오후{% endif %}
+                    </span>
+                    <span class="time">{{ now|date:"h:i" }}</span>
+                </div>
+            </div>
+
+            <!-- poster (GRID 방식) -->
+            <div class="poster">
+                <div class="poster-wrap">
+                    <img src="{% static 'img/poster.png' %}" alt="오늘의 안전 글귀" class="poster-img">
+                    <div class="poster-text">
+                        <h4>오늘의 안전 글귀</h4>
+                        <p>
+                            안전한 삶을 만들기 전에 <br>
+                            완전한 삶을 이야기 하지 말라
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div id="chartArea">
-            <p>산출년도: 2021년~2023년</p>
-            <canvas id="mainChart"></canvas>
+        <!-- 오른쪽 하단 -->
+        <div class="right-bottom">
+            <div class="video-wrap">
+                <img src="https://images.stockcake.com/public/8/5/1/8516f929-1cae-4dfe-9f86-020c39b80f5b_large/construction-workers-smiling-stockcake.jpg" alt="">
+            </div>
         </div>
 
-        <!-- 기사 더보기 버튼 -->
-        <div class="stats-more">
-            <a href="{% url 'Stats:stats_home' %}" class="more-btn1">나만의 통계정보 보러가기 ▾</a>
-        </div>
-</section>
+    </div>
+</div>
+
+<!-- 통계 더보기 -->
+<div class="stats-more">
+    <a href="{% url 'Stats:stats_home' %}" class="more-btn1">
+        나만의 통계정보 보러가기 ▾
+    </a>
+</div>
 
 <section class="news-section">
         <div class="news-header">
@@ -43,7 +94,8 @@
             <h2>산재뉴스</h2>
         </div>
 
-        
+
+       
         <div class="news-grid">
             {% for news in list %}
             <article class="news-card">
