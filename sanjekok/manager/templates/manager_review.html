@@ -3,6 +3,14 @@
 
 
 {% block contents %}
+    <script>
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.get('error') === 'need_filter') {
+            alert('필터를 선택해주세요.');
+        }
+    </script>
+
     <div>
         <h3>리뷰 관리</h3>
         <form method="get" class="mb-3 d-flex" style="gap: 3px;">
