@@ -1,58 +1,17 @@
-<!-- 통계 더보기 -->
-<div class="stats-more">
-    <a href="{% url 'Stats:stats_home' %}" class="more-btn1">
-        나만의 통계정보 보러가기 ▾
-    </a>
-</div>
+html, body {
+  height: 100%;
+  margin: 0;
+}
 
-<section class="news-section">
-        <div class="news-header">
-            <p class="subtitle">산업재해 예방 정보</p>
-            <h2>산재뉴스</h2>
-        </div>
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
-
-       
-        <div class="news-grid">
-            {% for news in list %}
-            <article class="news-card">
-                <a href="{{ news.n_link }}" target="_blank">
-                    <div class="news-thumb">
-                    <img src="{{ news.n_image_url }}" alt="뉴스 이미지">
-                    </div>
-                </a>
-                <div class="news-body">
-                    <h3 class="news-title">
-                    <a href="{{ news.n_link }}" target="_blank">{{ news.n_title }}</a>
-                    </h3>
-                    <div class="news-meta">
-                    <span class="category">{{ news.n_writer }}</span>
-                    <span class="date">| {{ news.n_created_at }}</span>
-                    </div>
-                </div>
-            </article>
-            {% endfor %}
-        </div>
-
-        <!-- 기사 더보기 버튼 -->
-        <div class="news-more">
-            <a href="{% url 'News:news_list' %}" class="more-btn2">기사 더보기 ▾</a>
-        </div>
-</section>
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script src="{% static 'js/main/main_chart.js' %}"></script>
-<script>
-    const ageData = {{ age_total|safe }};
-    const genderData = {{ gender_total|safe }};
-    const industryData = {{ industry_total|safe }};
-</script>
-{% endblock %}
-html, body { height: 100%; }
-
+.page-contents {
+  flex: 1; /* 본문이 footer를 위로 밀어냄 */
+}
 
 body {
     margin: 0;
