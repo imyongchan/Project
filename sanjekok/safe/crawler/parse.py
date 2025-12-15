@@ -1,8 +1,4 @@
 # safe/crawler/parse.py
-from datetime import datetime, date, timedelta
-
-FIVE_YEARS_AGO = date.today() - timedelta(days=365 * 5) # 5년치 데이터만 갖고오기위해
-
 def parse_list(data, shpCd):
     """
     KOSHA API 응답(JSON)에서 안전자료 목록을 뽑아
@@ -24,19 +20,6 @@ def parse_list(data, shpCd):
 
         # 자료 등록일자
         reg_dt = item.get("contsRegYmd")
-        
-        if not reg_dt:
-            continue
-
-        try:
-            reg_dt = datetime.strptime(reg_dt, "%Y-%m-%d").date()
-        except ValueError:
-            continue
-        
-        # 🔴 5년 초과 자료 → 페이지 종료 신호
-        if reg_dt < FIVE_YEARS_AGO:
-            print(f"📅 {reg_dt} → 5년 초과, 크롤링 중단")
-            return []
    
         # 자료고유번호
         seq = item.get("medSeq") 
