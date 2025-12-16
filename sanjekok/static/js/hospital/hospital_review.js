@@ -130,6 +130,8 @@
     bodyP.className = "review-body";
     bodyP.textContent = item.contents;
 
+    bodyP.style.whiteSpace = "pre-line";
+
     // 평점 표시 (★/☆) – 반칸은 숫자로만 사용 중이면 그대로 둬도 됨
     const ratingP = document.createElement("p");
     ratingP.className = "review-rating-line";

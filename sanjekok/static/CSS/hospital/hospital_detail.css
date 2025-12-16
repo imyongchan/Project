@@ -307,6 +307,7 @@ body {
 /* 리뷰 별점 표시 (반칸 지원) */
 .review-rating-line {
   margin-bottom: 4px;
+  white-space: pre-line;
 }
 
 .review-star {
