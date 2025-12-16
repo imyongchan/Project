@@ -7,7 +7,6 @@ import traceback
 def crawl_news():
     """
     뉴스 전체 크롤링
-    fetch → parse → detail fetch → detail parse → save
     """
     print(f"\n===== 🟠 뉴스 크롤링 시작 🟠 =====")
 

@@ -16,10 +16,12 @@ def start_scheduler():
     if scheduler is None:
         scheduler = BackgroundScheduler()
         scheduler.add_job(crawl_news, 'interval', hours=12) 
-        print("🔄 APScheduler: 시작합니다...")
+        
         scheduler.start()
+        print("🔄 APScheduler(news): 시작합니다...")
     else:
-        print("이미 실행 중입니다:", scheduler)
+        print("이미 실행 중인 스케줄러 있음:", scheduler)
+
 
 
 def stop_scheduler():
@@ -27,6 +29,6 @@ def stop_scheduler():
     if scheduler:
         scheduler.shutdown()
         scheduler = None
-        print("🛑 APScheduler: 종료했습니다.")
+        print("🛑 APScheduler(news): 종료했습니다.")
     else:
         print("실행중인 스케줄러 없음")
