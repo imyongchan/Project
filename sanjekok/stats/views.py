@@ -65,8 +65,11 @@ def stats_home(request):
         messages.error(request, "로그인이 필요합니다.")
         return redirect('Member:login')
 
-    # 2. 회원 객체
-    member = get_object_or_404(Member, member_id=member_id)
+    member = Member.objects.filter(pk=member_id).first()
+    if not member:
+        request.session.flush()  # 세션 꼬인거/DB 비어있는거 정리
+        messages.error(request, "회원 정보가 없습니다. 다시 로그인해주세요.")
+        return redirect("Member:login")
 
     member_industries = member.industries.all()
     individual_list = (
