@@ -2,7 +2,6 @@ import time
 from .fetch import fetch_html
 from .parse import parse_list_page, parse_detail_page
 from .save import save_news
-import traceback
 
 def crawl_news():
     """
@@ -31,8 +30,7 @@ def crawl_news():
 
         except Exception as e:
             print("❌ 목록 페이지 수집 실패:", e)
-            traceback.print_exc()
-            break   # 뉴스는 여기서 끊는 게 안전
+            break   
 
         # 상세페이지 처리
         for art in articles:

@@ -1,4 +1,9 @@
 # safe/crawler/parse.py
+from datetime import date, timedelta, datetime
+
+# 최근 5년 기준일
+FIVE_YEARS_AGO = date.today() - timedelta(days=365 * 5)
+
 def parse_list(data, shpCd):
     """
     KOSHA API 응답(JSON)에서 안전자료 목록을 뽑아
@@ -8,6 +13,21 @@ def parse_list(data, shpCd):
     results = []
 
     for item in items:
+        # 자료 등록일자 (YYYY-MM-DD)
+        reg_dt = item.get("contsRegYmd")
+        if not reg_dt:
+            continue
+
+        try:
+            reg_date = datetime.strptime(reg_dt, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+
+        # ✅ 최근 5년 초과 자료는 제외
+        if reg_date < FIVE_YEARS_AGO:
+            continue
+        
+        # 자료 제목
         title = item.get("medName")
 
         # 썸네일 이미지
@@ -18,8 +38,6 @@ def parse_list(data, shpCd):
         # 자료형태(사람이 읽는 값, 예: PPT, 동영상 등)
         content_type = item.get("contsFbctnShpNm")
 
-        # 자료 등록일자
-        reg_dt = item.get("contsRegYmd")
    
         # 자료고유번호
         seq = item.get("medSeq") 
