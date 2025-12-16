@@ -15,11 +15,11 @@
         <section class="profile-box">
             <div class="profile-left">
                 <div class="profile-icon"></div>
-                <div class="profile-info">
+                <span class="profile-info">
                     <h2>{{ member.m_name }}님의 프로필</h2>
-                    <p><strong> 업종명</strong>  :  {{ industry.i_industry_type2 }}  
-                    <p><strong> 성별 </strong>  :  {{ member.m_sex }}</p>    
-                    <p><strong> 나이 </strong>  :  만 {{ age }}세</p>
+                    <p><strong> 업종명</strong>:  {{ industry.i_industry_type2 }}  
+                    <p><strong> 성별 </strong>:  {{ member.m_sex }}</p>    
+                    <p><strong> 나이 </strong>:  만 {{ age }}세</p>
                     <!-- 나의 산재 눌렀을 때 나오는 추가 상세 정보 -->
                     <div id="injuryDetail">
                         {% if show_detail and selected_individual %}
@@ -37,7 +37,7 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                </div>
+                </span>
             </div>
             <div class="profile-edit-btn">
                 <button id="myInjuryBtn">나의 산재 선택하기▼</button>
