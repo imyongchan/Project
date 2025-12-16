@@ -21,88 +21,86 @@
       <h2>회원 가입</h2>
       <p>회원 정보를 입력하고 가입을 완료하세요.</p>
     </div>
+    <div class="register-body">
+      <form action="" method="post">
+        {% csrf_token %}
 
-            <div class="mb-3">
-                <label for="m_name" class="form-label">*이름 :</label>
-                <input type="text" class="form-control" placeholder="이름을 입력해주세요." id="m_name" name="m_name" value="{{ form.m_name.value|default_if_none:'' }}">
+
+        <h4 class="section-title">회원 정보</h4>
+
+        <!-- 이름 -->
+        <div class="input-group-wrap">
+          <label for="m_name">*이름</label>
+          <input type="text" class="form-control" id="m_name" name="m_name" placeholder="이름을 입력해주세요." value="{{ form.m_name.value|default_if_none:'' }}">
+        </div>
+
+        <!-- 생년월일 -->
+        <div class="input-group-wrap">
+          <label for="m_birth_date">*생년월일</label>
+          <input type="text" class="form-control" id="m_birth_date" name="m_birth_date" placeholder="YYYY-MM-DD" value="{{ form.m_birth_date.value|default_if_none:'' }}">
+        </div>
+
+        <!-- 집 주소 -->
+        <div class="input-group-wrap">
+          <label for="m_address">*집 주소</label>
+          <div class="address-group">
+            <input type="text" class="form-control" id="m_address" name="m_address" placeholder="집 주소를 입력해주세요." readonly onclick="searchAddress('m_address')" value="{{ form.m_address.value|default_if_none:'' }}">
+            <button type="button" class="btn-addr" onclick="searchAddress('m_address')">주소검색</button>
+          </div>
+        </div>
+
+        <!-- 직장 주소 -->
+        <div class="input-group-wrap">
+          <label for="m_jaddress">*직장 주소</label>
+          <div class="address-group">
+            <input type="text" class="form-control" id="m_jaddress" name="m_jaddress" placeholder="직장 주소를 입력해주세요." readonly onclick="searchAddress('m_jaddress')" value="{{ form.m_jaddress.value|default_if_none:'' }}">
+            <button type="button" class="btn-addr" onclick="searchAddress('m_jaddress')">주소검색</button>
+          </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="m_phone" class="form-label">전화번호 :</label>
+            
+            <div class="d-flex gap-2">
+                <input type="text" class="form-control" name="cel1" id="cel1" maxlength="3" placeholder="010">
+                <span class="fs-4">-</span>
+
+                <input type="text" class="form-control" name="cel2_1" id="cel2_1" maxlength="4" placeholder="1234">
+                <span class="fs-4">-</span>
+
+                <input type="text" class="form-control" name="cel2_2" id="cel2_2" maxlength="4" placeholder="5678">
             </div>
-            <div class="mb-3">
-                <label for="m_birth_date" class="form-label">*생년월일 :</label>
-                <input 
-                    type="text" 
-                    id="m_birth_date" 
-                    name="m_birth_date"
-                    class="form-control"
-                    placeholder="YYYY-MM-DD"
-                    value="{{ form.m_birth_date.value|default_if_none:'' }}">
+        </div>
+        <div class="mb-3">
+            <label for="m_email" class="form-label">이메일 :</label>
+
+            <div class="d-flex gap-2 align-items-center">
+                <!-- 이메일 아이디 -->
+                <input type="text" class="form-control" id="email_id" name="email" placeholder="example" style="max-width: 150px;">
+
+                <span class="fs-4">@</span>
+
+                <!-- 이메일 도메인 직접입력 -->
+                <input type="text" class="form-control" id="email_dns" name="email_dns" placeholder="domain.com" style="max-width: 180px;">
+
+                <!-- 도메인 선택 -->
+                <select class="form-select" id="emailaddr" name="emailaddr" style="max-width: 150px;">
+                    <option value="">직접입력</option>
+                    <option value="daum.net">daum.net</option>
+                    <option value="empal.com">empal.com</option>
+                    <option value="gmail.com">gmail.com</option>
+                    <option value="hanmail.net">hanmail.net</option>
+                    <option value="msn.com">msn.com</option>
+                    <option value="naver.com">naver.com</option>
+                    <option value="nate.com">nate.com</option>
+                </select>
             </div>
-            <div class="mb-3">
-                <label for="m_address" class="form-label">*집 주소 :</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    id="m_address" 
-                    name="m_address" 
-                    placeholder="집 주소를 입력해주세요."
-                    readonly
-                    onclick="searchAddress('m_address')"
-                    value="{{ form.m_address.value|default_if_none:'' }}">
+
+            <!-- 에러 메시지 -->
+            <div id="EmailError" style="display:none;color:red;">
+                이메일 양식이 틀렸습니다.
             </div>
-            <div class="mb-3">
-                <label for="m_jaddress" class="form-label">*직장 주소 :</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    id="m_jaddress" 
-                    name="m_jaddress" 
-                    placeholder="직장 주소를 입력해주세요."
-                    readonly
-                    onclick="searchAddress('m_jaddress')"
-                    value="{{ form.m_jaddress.value|default_if_none:'' }}">
-            </div>
-            <div class="mb-3">
-                <label for="m_phone" class="form-label">전화번호 :</label>
-                
-                <div class="d-flex gap-2">
-                    <input type="text" class="form-control" name="cel1" id="cel1" maxlength="3" placeholder="010">
-                    <span class="fs-4">-</span>
-
-                    <input type="text" class="form-control" name="cel2_1" id="cel2_1" maxlength="4" placeholder="1234">
-                    <span class="fs-4">-</span>
-
-                    <input type="text" class="form-control" name="cel2_2" id="cel2_2" maxlength="4" placeholder="5678">
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="m_email" class="form-label">이메일 :</label>
-
-                <div class="d-flex gap-2 align-items-center">
-                    <!-- 이메일 아이디 -->
-                    <input type="text" class="form-control" id="email_id" name="email" placeholder="example" style="max-width: 150px;">
-
-                    <span class="fs-4">@</span>
-
-                    <!-- 이메일 도메인 직접입력 -->
-                    <input type="text" class="form-control" id="email_dns" name="email_dns" placeholder="domain.com" style="max-width: 180px;">
-
-                    <!-- 도메인 선택 -->
-                    <select class="form-select" id="emailaddr" name="emailaddr" style="max-width: 150px;">
-                        <option value="">직접입력</option>
-                        <option value="daum.net">daum.net</option>
-                        <option value="empal.com">empal.com</option>
-                        <option value="gmail.com">gmail.com</option>
-                        <option value="hanmail.net">hanmail.net</option>
-                        <option value="msn.com">msn.com</option>
-                        <option value="naver.com">naver.com</option>
-                        <option value="nate.com">nate.com</option>
-                    </select>
-                </div>
-
-                <!-- 에러 메시지 -->
-                <div id="EmailError" style="display:none;color:red;">
-                    이메일 양식이 틀렸습니다.
-                </div>
-            </div>
+        </div>
 
         <!-- 성별 -->
         <div class="input-group-wrap gender-group">
@@ -119,3 +117,4 @@
   </div>
 </div>
 {% endblock %}
+

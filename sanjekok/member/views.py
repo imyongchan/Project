@@ -66,22 +66,7 @@ def registers(request):
         return render(request, 'member/member_register2.html', {'form': form})
     
     elif request.method == "POST":
-        post_data = request.POST.copy()
-
-        # 이메일 조합
-        email_id = post_data.get('email', '')
-        email_dns = post_data.get('email_dns', '')
-        if email_id and email_dns:
-            post_data['m_email'] = f"{email_id}@{email_dns}"
-
-        # 전화번호 조합
-        cel1 = post_data.get('cel1', '')
-        cel2_1 = post_data.get('cel2_1', '')
-        cel2_2 = post_data.get('cel2_2', '')
-        if cel1 and cel2_1 and cel2_2:
-            post_data['m_phone'] = f"{cel1}{cel2_1}{cel2_2}"
-
-        form = Step2MemberForm(post_data)
+        form = Step2MemberForm(request.POST)
         if form.is_valid():
             member = form.save(commit=False)
             
@@ -116,12 +101,7 @@ def registers(request):
                 # 로컬 사용자
                 messages.success(request, f"{member.m_name}님, 회원가입을 환영합니다!")
                 return redirect('Main:main')
-
-        # 디버깅: 폼 에러 출력
-        print("----- Form Errors -----")
-        print(form.errors.as_json())
-        print("-----------------------")
-
+            
         first_error_field = next(iter(form.errors)) if form.errors else None
         context = {
             "form": form,
