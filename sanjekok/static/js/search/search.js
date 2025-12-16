@@ -79,7 +79,16 @@ function resetAccidentDropdownSelection() {
   const btn = document.getElementById("accidentDropdownBtn");
   const menu = document.getElementById("accidentDropdownMenu");
 
-  if (btn) btn.textContent = ACCIDENT_BTN_DEFAULT_TEXT;
+  if (btn) {
+  const icon = btn.querySelector("i");
+  const label = document.createElement("span");
+  label.textContent = ACCIDENT_BTN_DEFAULT_TEXT;
+
+  btn.innerHTML = ""; // 기존 내용 비우고
+  if (icon) btn.appendChild(icon); // 아이콘 유지
+  btn.appendChild(label);
+  }
+  
   if (menu) menu.style.display = "none";
 }
 
