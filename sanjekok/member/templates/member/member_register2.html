@@ -62,13 +62,13 @@
             <label for="m_phone" class="form-label">전화번호 :</label>
             
             <div class="d-flex gap-2">
-                <input type="text" class="form-control" name="cel1" id="cel1" maxlength="3" placeholder="010">
+                <input type="text" class="form-control" name="cel1" id="cel1" maxlength="3" placeholder="010" value="{{ form.initial.cel1 }}">
                 <span class="fs-4">-</span>
 
-                <input type="text" class="form-control" name="cel2_1" id="cel2_1" maxlength="4" placeholder="1234">
+                <input type="text" class="form-control" name="cel2_1" id="cel2_1" maxlength="4" placeholder="1234" value="{{ form.initial.cel2_1 }}">
                 <span class="fs-4">-</span>
 
-                <input type="text" class="form-control" name="cel2_2" id="cel2_2" maxlength="4" placeholder="5678">
+                <input type="text" class="form-control" name="cel2_2" id="cel2_2" maxlength="4" placeholder="5678" value="{{ form.initial.cel2_2 }}">
             </div>
         </div>
         <div class="mb-3">
@@ -76,12 +76,12 @@
 
             <div class="d-flex gap-2 align-items-center">
                 <!-- 이메일 아이디 -->
-                <input type="text" class="form-control" id="email_id" name="email" placeholder="example" style="max-width: 150px;" maxlength="50">
+                <input type="text" class="form-control" id="email_id" name="email" placeholder="example" style="max-width: 150px;" maxlength="50" value="{{ form.initial.email }}">
 
                 <span class="fs-4">@</span>
 
                 <!-- 이메일 도메인 직접입력 -->
-                <input type="text" class="form-control" id="email_dns" name="email_dns" placeholder="domain.com" style="max-width: 180px;" maxlength="50">
+                <input type="text" class="form-control" id="email_dns" name="email_dns" placeholder="domain.com" style="max-width: 180px;" maxlength="50" value="{{ form.initial.email_dns }}">
 
                 <!-- 도메인 선택 -->
                 <select class="form-select" id="emailaddr" name="emailaddr" style="max-width: 150px;">
