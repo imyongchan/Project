@@ -264,7 +264,7 @@ function AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p, highlightLabe
     const ageSummaryBox = document.getElementById("ageSummary1");
     if (ageSummaryBox && highlightLabel) {
         const highlightIndex = labels.indexOf(highlightLabel);
-        const highlightCount = data[highlightIndex];
+        const highlightCount = data[highlightIndex] || 0;
 
         // 최댓값 찾기
         const maxValue = Math.max(...data);
@@ -309,7 +309,7 @@ function AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa, highlig
     const ageSummaryBox = document.getElementById("ageSummary2");
     if (ageSummaryBox && highlightLabel) {
         const highlightIndex = labels.indexOf(highlightLabel);
-        const highlightCount = data[highlightIndex];
+        const highlightCount = data[highlightIndex] || 0;
 
         // 최댓값 찾기
         const maxValue = Math.max(...data);
