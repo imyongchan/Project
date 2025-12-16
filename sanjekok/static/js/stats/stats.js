@@ -186,14 +186,14 @@ document.addEventListener("DOMContentLoaded", () => {
              * ========================= */
             if (accidentSummary) {
                 const rateText = isNaN(accRate) ? "-" : accRate.toFixed(2);
-                accidentSummary.innerHTML = `<strong style="font-size:27px;color:#f99b18;">${rateText}‰ </strong>` +
+                accidentSummary.innerHTML = `<strong style="font-size:27px;color:#f99b18;">${rateText}%</strong>` +
                     `<span style="font-size:20px;color:#23333d;margin-left:6px;">
                      재해자수 ${accCount.toLocaleString()}명</span>`;
             }
 
             if (fatalSummary) {
                 const rateText = isNaN(fatalRate) ? "-" : fatalRate.toFixed(2);
-                fatalSummary.innerHTML = `<strong style="font-size:27px;color:#f99b18;">${rateText}%</strong>` +
+                fatalSummary.innerHTML = `<strong style="font-size:27px;color:#f99b18;">${rateText}‱ </strong>` +
                     `<span style="font-size:20px;color:#23333d;margin-left:6px;">
                      사망자수 ${fatalCount.toLocaleString()}명</span>`;
             }

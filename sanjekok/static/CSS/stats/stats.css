@@ -152,22 +152,28 @@
   border: 1px solid #f99b18;
 }
 
+
 /* 통계 영역 hidden 처리 */
 .stats-visual.hidden {
     display: none;
+}
+
+.hidden { 
+    display: none !important; 
 }
 
 /* =========================
    2. 카드/그리드 레이아웃
    ========================= */
 
-/* ✅ Grid가 자동으로 빈 공간을 채우도록 설정 */
+/* 카드들이 배치되는 그리드 */
 .visual-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);  /* 2열 고정 */
     gap: 24px;
     margin-top: 24px;
 }
+
 
 /* 기본 카드 스타일 */
 .visual-card {
@@ -179,29 +185,9 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    min-height: 120px; /* 기본 최소 높이 */
 }
 
-/* ✅ 데이터 없을 때 카드 높이 줄이기 */
-.visual-card.no-data {
-    min-height: auto;
-}
 
-/* ✅ 데이터 없을 때 차트 숨기기 */
-.visual-card.no-data canvas {
-    display: none !important;
-}
-
-/* ✅ 데이터 없음 메시지 스타일 */
-.no-data-message {
-    padding: 20px;
-    text-align: center;
-    color: #94a3b8;
-    font-size: 14px;
-    background: #f8fafc;
-    border-radius: 8px;
-    margin-top: 10px;
-}
 
 /* 카드 제목 */
 .visual-card h3 {
@@ -241,11 +227,40 @@
 #card-disease,
 #card-disease-fatal,
 #card-risk {
-    grid-column: 1 / 3;  /* 2열 전체 */
+    grid-column: 1 / 3 !important;  /* 2열 전체 */
 }
 
 /* =========================
-   3. 차트 크기 조정
+   3. 드롭다운
+   ========================= */
+.dropdown {
+    margin-top: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    width: 150px;
+    border-radius: 6px;
+    list-style: none;
+    padding: 5px;
+    position: absolute;
+    z-index: 10;
+}
+
+.dropdown.hidden {
+    display: none;
+}
+
+.dropdown li {
+    padding: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown li:hover {
+    background: #f0f0f0;
+}
+
+/* =========================
+   4. 차트 크기 조정
    ========================= */
 
 /* 모든 카드 안의 차트 */
@@ -262,12 +277,13 @@
 #card-injury canvas,
 #card-injury-fatal canvas,
 #card-disease canvas,
-#card-disease-fatal canvas {
-    height: 400px !important;
+#card-disease-fatal canvas
+#card-risk {
+    height: 500px !important;
 }
 
 /* =========================
-   4. 종합 위험도 카드 스타일
+   5. 종합 위험도 카드 스타일 (차트 크게/리스트 좁게 최종본)
    ========================= */
 
 #card-risk .risk-condition{
@@ -307,15 +323,15 @@
 
 #card-risk .risk-icon{ font-size: 18px; }
 
-/* 리스트(왼쪽) + 차트(오른쪽) */
+/* ✅ 리스트(왼쪽) + 차트(오른쪽) : grid로 고정, 차트 크게 */
 #card-risk .risk-category-inner{
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 520px;
+  grid-template-columns: minmax(0, 1fr) 520px;  /* ← 차트 영역 크게 */
   gap: 14px;
   align-items: center;
 }
 
-/* 리스트 컴팩트 */
+/* ✅ 리스트를 더 컴팩트하게 */
 #card-risk .risk-list{
   min-width: 0;
 }
@@ -324,10 +340,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 0;
+  padding: 6px 0;                 /* 줄 간격 줄임 */
   border-bottom: 1px solid #eef1f4;
 }
-
 #card-risk .risk-item:last-child{ border-bottom: 0; }
 
 #card-risk .risk-rank{
@@ -353,7 +368,7 @@
   color: #f99b18;
 }
 
-/* 차트 영역 */
+/*  차트 랩: 폭/높이 확보(여기가 차트 크기 결정 핵심) */
 #card-risk .risk-chart-wrap{
   width: 520px;
   height: 360px;
@@ -362,15 +377,27 @@
   justify-content: center;
 }
 
+/* 위험도 도넛 차트만 크게(전역 canvas 규칙 덮어쓰기) */
 #card-risk .risk-chart-wrap canvas{
   width: 100% !important;
   height: 360px !important;
   margin-top: 0 !important;
 }
 
-/* =========================
-   5. Result Box 스타일
-   ========================= */
+/* 반응형: 좁아지면 세로로 */
+@media (max-width: 900px){
+  #card-risk .risk-category-inner{
+    grid-template-columns: 1fr;
+  }
+  #card-risk .risk-chart-wrap{
+    width: 100%;
+    height: 320px;
+  }
+  #card-risk .risk-chart-wrap canvas{
+    height: 320px !important;
+  }
+}
+
 .result-box {
     background-color: #fff8e6;
     border-left: 5px solid #f99b18;
@@ -388,67 +415,4 @@
     color: #f99b18;
     font-size: 18px;
     margin-top: 2px;
-}
-
-/* =========================
-   6. 반응형 디자인
-   ========================= */
-
-/* 태블릿 */
-@media (max-width: 900px) {
-    .visual-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .visual-card,
-    .visual-card.small,
-    #card-injury,
-    #card-injury-fatal,
-    #card-disease,
-    #card-disease-fatal,
-    #card-age,
-    #card-age-fatal,
-    #card-risk {
-        grid-column: span 1 !important;
-    }
-    
-    #card-risk .risk-category-inner {
-        grid-template-columns: 1fr;
-    }
-    
-    #card-risk .risk-chart-wrap {
-        width: 100%;
-        height: 320px;
-    }
-    
-    #card-risk .risk-chart-wrap canvas {
-        height: 320px !important;
-    }
-}
-
-/* 모바일 */
-@media (max-width: 600px) {
-    .stats-container {
-        padding: 0 15px;
-        margin: 40px auto 60px;
-    }
-    
-    .profile-box {
-        flex-direction: column;
-        gap: 20px;
-        padding: 20px;
-    }
-    
-    .profile-left {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .period-buttons {
-        flex-direction: column;
-    }
-    
-    .period-btn {
-        width: 100%;
-    }
 }

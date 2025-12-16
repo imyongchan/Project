@@ -693,6 +693,7 @@ def _calculate_gender_weight(industry_name, gender, years):
     
     return total_male / total if gender == "남자" else total_female / total
 
+
 def _calculate_age_weight(industry_name, age_group, years):
     qs4 = Stats4.objects.filter(c1_nm=industry_name)
     
