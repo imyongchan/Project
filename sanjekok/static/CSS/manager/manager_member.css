@@ -14,7 +14,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 100px;
+  padding-top: 40px;
   padding-bottom: 80px;
   min-height: calc(100vh - 100px);
   width: 100%;
@@ -29,7 +29,7 @@ h3 {
   color: #23333d;
   text-align: center;
   margin-bottom: 40px;
-  position: relative;
+  margin-top: 0;
 }
 
 h3::before {
@@ -166,4 +166,8 @@ h3::before {
   border: none;
   color: #fff !important;
   font-weight: 700;
+}
+
+#paging a{
+  padding: 8px 1px;
 }

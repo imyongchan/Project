@@ -9,7 +9,7 @@
 {% block contents %}
 
 
-    <div>
+    <div class="stats">
         <h3>회원 산재 조회</h3>
 
         
@@ -40,7 +40,7 @@
             </div>
 
             <!-- 질병 -->
-            <div class="col-md-1">
+            <div class="col-md-2">
                 <label class="form-label">질병</label>
                 <select name="disease" id="i_disease" class="form-select">
                     <option value="">질병 선택</option>
@@ -52,7 +52,7 @@
                 <input type="text" name="accident_date" class="form-control" placeholder="날짜입력">
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label">    </label>
                 <br>
                 <button class="btn btn-primary">검색</button>
@@ -90,38 +90,64 @@
                     {% endfor %}
         </table>
     
-        <div class="pagination justify-content-center mt-3">
+<div class="pagination justify-content-center mt-3">
 
-            {% if page_obj.has_previous %}
-                <a class="btn btn-outline-primary mx-1"
-                href="?{{ query_string }}&page={{ page_obj.previous_page_number }}">
-                이전
-                </a>
-            {% else %}
-                <span class="btn btn-outline-secondary disabled mx-1">이전</span>
-            {% endif %}
+    {# ===== 처음 ===== #}
+    {% if page_obj.number > 1 %}
+        <a class="btn btn-outline-primary mx-1"
+           href="?{{ query_string }}&page=1">
+           처음
+        </a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled mx-1">처음</span>
+    {% endif %}
 
-            {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                    <span class="btn btn-primary mx-1">{{ num }}</span>
-                {% else %}
-                    <a class="btn btn-outline-primary mx-1"
-                    href="?{{ query_string }}&page={{ num }}">
-                    {{ num }}
-                    </a>
-                {% endif %}
-            {% endfor %}
+    {# ===== 이전 ===== #}
+    {% if prev_group_page %}
+        <a class="btn btn-outline-primary mx-1"
+        href="?{{ query_string }}&page={{ prev_group_page }}">
+        이전
+        </a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled mx-1">이전</span>
+    {% endif %}
 
-            {% if page_obj.has_next %}
-                <a class="btn btn-outline-primary mx-1"
-                href="?{{ query_string }}&page={{ page_obj.next_page_number }}">
-                다음
-                </a>
-            {% else %}
-                <span class="btn btn-outline-secondary disabled mx-1">다음</span>
-            {% endif %}
 
-        </div>
+    {# ===== 페이지 번호 (10개 단위) ===== #}
+    {% for num in page_range %}
+        {% if page_obj.number == num %}
+            <span class="btn btn-primary mx-1">{{ num }}</span>
+        {% else %}
+            <a class="btn btn-outline-primary mx-1"
+               href="?{{ query_string }}&page={{ num }}">
+               {{ num }}
+            </a>
+        {% endif %}
+    {% endfor %}
+
+    {# ===== 다음 ===== #}
+    {% if next_group_page %}
+        <a class="btn btn-outline-primary mx-1"
+        href="?{{ query_string }}&page={{ next_group_page }}">
+        다음
+        </a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled mx-1">다음</span>
+    {% endif %}
+
+
+    {# ===== 맨끝 ===== #}
+    {% if page_obj.number < page_obj.paginator.num_pages %}
+        <a class="btn btn-outline-primary mx-1"
+           href="?{{ query_string }}&page={{ page_obj.paginator.num_pages }}">
+           맨끝
+        </a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled mx-1">맨끝</span>
+    {% endif %}
+
+</div>
+
 
     <script>
         const INIT_FILTERS = {

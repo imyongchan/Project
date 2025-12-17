@@ -84,12 +84,37 @@ def dash(request):
 def member(request):
     members = Member.objects.filter(m_status=1).order_by('-member_id')
 
-    paginator = Paginator(members, 5)   # ▶ 한 페이지에 5개씩
-    page_number = request.GET.get('page')  # ▶ URL에서 page 값 받기
-    page_obj = paginator.get_page(page_number)  # ▶ 페이지 객체 생성
+    paginator = Paginator(members, 8)   # 페이지당 리뷰 5개
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    # ===== 10페이지 단위 계산 =====
+    page_group_size = 10
+    current_page = page_obj.number
+
+    start_page = ((current_page - 1) // page_group_size) * page_group_size + 1
+    end_page = start_page + page_group_size - 1
+
+    if end_page > paginator.num_pages:
+        end_page = paginator.num_pages
+
+    page_range = range(start_page, end_page + 1)
+
+    # 🔥 다음 / 이전 그룹 페이지 계산
+    prev_group_page = start_page - 1 if start_page > 1 else None
+    next_group_page = end_page + 1 if end_page < paginator.num_pages else None
+
+    # ===== 쿼리스트링 유지 =====
+    querydict = request.GET.copy()
+    querydict.pop("page", None)
+    query_string = querydict.urlencode()
 
     context = {
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'query_string': query_string,
+        'page_range': page_range,
+        "prev_group_page": prev_group_page,
+        "next_group_page": next_group_page,
     }
     return render(request, 'manager_member.html', context)
 
@@ -121,14 +146,43 @@ def review(request):
             member__m_username__icontains=keyword
         )
 
-    paginator = Paginator(reviews, 5)
-    page_number = request.GET.get('page')
+    # =============================
+    # 페이징
+    # =============================
+    paginator = Paginator(reviews, 10)   # 페이지당 리뷰 5개
+    page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
+
+    # ===== 10페이지 단위 계산 =====
+    page_group_size = 10
+    current_page = page_obj.number
+
+    start_page = ((current_page - 1) // page_group_size) * page_group_size + 1
+    end_page = start_page + page_group_size - 1
+
+    if end_page > paginator.num_pages:
+        end_page = paginator.num_pages
+
+    page_range = range(start_page, end_page + 1)
+
+    # 🔥 다음 / 이전 그룹 페이지 계산
+    prev_group_page = start_page - 1 if start_page > 1 else None
+    next_group_page = end_page + 1 if end_page < paginator.num_pages else None
+
+    # ===== 쿼리스트링 유지 =====
+    querydict = request.GET.copy()
+    querydict.pop("page", None)
+    query_string = querydict.urlencode()
 
     context = {
         'page_obj': page_obj,
-        'r_list': page_obj,
+        'r_list': page_obj,       # 기존 템플릿 호환
+        'page_range': page_range,
+        'query_string': query_string,
+        "prev_group_page": prev_group_page,
+        "next_group_page": next_group_page,
     }
+
     return render(request, 'manager_review.html', context)
 
 def review_delete(request, review_id):
@@ -193,13 +247,32 @@ def stats(request):
                 i_accident_date__lt=end_date
             )
 
-    paginator = Paginator(total_individual, 5)
-    page_number = request.GET.get("page")
+    # =============================
+    # 페이징
+    # =============================
+    paginator = Paginator(total_individual, 8)  # 페이지당 데이터 5개
+    page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
 
-    # 🔥 여기 핵심
+    # ===== 10페이지 단위 페이징 계산 =====
+    page_group_size = 10
+    current_page = page_obj.number
+
+    start_page = ((current_page - 1) // page_group_size) * page_group_size + 1
+    end_page = start_page + page_group_size - 1
+
+    if end_page > paginator.num_pages:
+        end_page = paginator.num_pages
+
+    page_range = range(start_page, end_page + 1)
+
+    # 🔥 다음 / 이전 그룹 페이지 계산
+    prev_group_page = start_page - 1 if start_page > 1 else None
+    next_group_page = end_page + 1 if end_page < paginator.num_pages else None
+
+    # ===== 쿼리스트링 유지 =====
     querydict = request.GET.copy()
-    querydict.pop("page", None)   # page 제거
+    querydict.pop("page", None)
     query_string = querydict.urlencode()
 
     return render(
@@ -207,7 +280,10 @@ def stats(request):
         "manager_stats.html",
         {
             "page_obj": page_obj,
+            "page_range": page_range,   # 🔥 추가
             "query_string": query_string,
+            "prev_group_page": prev_group_page,
+            "next_group_page": next_group_page,
         }
     )
 

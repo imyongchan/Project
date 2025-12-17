@@ -15,10 +15,10 @@
         }
     </script>
 
-    <div>
+    <div class="contents">
         <h3>리뷰 관리</h3>
         <form method="get" class="mb-3 d-flex" style="gap: 3px;">
-            <select name="filter_by" class="form-select" style="width: 150px;">
+            <select name="filter_by" class="form-select" style="width: 130px;">
                 <option value="">필터 선택</option>
                 <option value="hospital" {% if request.GET.filter_by == "hospital" %}selected{% endif %}>병원이름</option>
                 <option value="member" {% if request.GET.filter_by == "member" %}selected{% endif %}>작성자</option>
@@ -80,47 +80,53 @@
 
         <div class="pagination justify-content-center mt-3">
 
+    {% if page_obj.number > 1 %}
+        <a class="btn btn-outline-primary mx-1"
+           href="?{{ query_string }}&page=1">처음</a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled mx-1">처음</span>
+    {% endif %}
 
-        <!-- 이전 페이지 -->
-        {% if page_obj.has_previous %}
-            <a class="btn btn-outline-primary mx-1"
-            href="?page={{ page_obj.previous_page_number }}&filter_by={{ request.GET.filter_by }}&keyword={{ request.GET.keyword }}">
-            이전
-            </a>
+    {% if prev_group_page %}
+        <a class="btn btn-outline-primary mx-1"
+        href="?{{ query_string }}&page={{ prev_group_page }}">
+        이전
+        </a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled mx-1">이전</span>
+    {% endif %}
+
+    {% for num in page_range %}
+        {% if page_obj.number == num %}
+            <span class="btn btn-primary mx-1">{{ num }}</span>
         {% else %}
-            <span class="btn btn-outline-secondary disabled mx-1">이전</span>
-        {% endif %}
-
-
-        <!-- 페이지 번호 -->
-        {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-                <span class="btn btn-primary mx-1">{{ num }}</span>
-            {% else %}
-                <a class="btn btn-outline-primary mx-1"
-                href="?page={{ num }}&filter_by={{ request.GET.filter_by }}&keyword={{ request.GET.keyword }}">
-                {{ num }}
-                </a>
-            {% endif %}
-        {% endfor %}
-
-
-        <!-- 다음 페이지 -->
-        {% if page_obj.has_next %}
             <a class="btn btn-outline-primary mx-1"
-            href="?page={{ page_obj.next_page_number }}&filter_by={{ request.GET.filter_by }}&keyword={{ request.GET.keyword }}">
-            다음
+               href="?{{ query_string }}&page={{ num }}">
+               {{ num }}
             </a>
-        {% else %}
-            <span class="btn btn-outline-secondary disabled mx-1">다음</span>
         {% endif %}
+    {% endfor %}
+
+    {% if next_group_page %}
+        <a class="btn btn-outline-primary mx-1"
+        href="?{{ query_string }}&page={{ next_group_page }}">
+        다음
+        </a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled mx-1">다음</span>
+    {% endif %}
+
+    {% if page_obj.number < page_obj.paginator.num_pages %}
+        <a class="btn btn-outline-primary mx-1"
+           href="?{{ query_string }}&page={{ page_obj.paginator.num_pages }}">
+           맨끝
+        </a>
+    {% else %}
+        <span class="btn btn-outline-secondary disabled mx-1">맨끝</span>
+    {% endif %}
 
 
-
-
-        </div>
     </div>
-
 
 <style>
     .btn-delete {
