@@ -7,6 +7,11 @@ let infoOverlay = null;
 let selectedAccidentId = null;
 let pendingAccidentSelect = null;
 
+// ✅ (추가) 지도 줌/이동(idle)로 updateIncidents()가 연속 호출될 때,
+// 늦게 도착한 이전 응답이 최신 상태를 덮어쓰지 않도록 방지
+let incidentsRequestSeq = 0;
+let incidentsAbortController = null;
+
 const ctx = window.SEARCH_CONTEXT || { home: "", work: "", accidentList: [] };
 const DEFAULT_DETAIL_TEXT = "위치를 선택하거나 마커를 클릭하면 상세 정보가 표시됩니다.";
 const ACCIDENT_BTN_DEFAULT_TEXT = "사고지역";
@@ -51,10 +56,38 @@ const MY_ACCIDENT_IMG = makeSvgPinMarkerImage("#f99b18");    // red
 const OTHER_ACCIDENT_IMG = makeSvgPinMarkerImage("#bcbcbc"); // yellow
 const MY_PLACE_IMG = makeSvgPinMarkerImage("#23333d");       // blue
 
+function getDetailEl() {
+  // id가 없으면(class만 있는 경우)도 대비
+  return document.getElementById("detail") || document.querySelector(".detail-box");
+}
+
 function setDetail(htmlOrText) {
-  const detailEl = document.getElementById("detail");
+  const detailEl = getDetailEl();
   if (!detailEl) return;
   detailEl.innerHTML = htmlOrText;
+}
+
+// ✅ (추가) 안내 문구(DEFAULT_DETAIL_TEXT)는 항상 유지하고, 아래에 상세정보를 붙여서 표시
+function setDetailWithItem(item) {
+  const detailEl = getDetailEl();
+  if (!detailEl) return;
+
+  const infoHtml = `
+    <div style="margin-top:10px;">
+      <div style="font-weight:800; margin-bottom:6px; color:#2e7d32;">산업재해 상세</div>
+      <div><strong>업종(대분류):</strong> ${item.i_industry_type1 || "-"}</div>
+      <div><strong>업종(중분류):</strong> ${item.i_industry_type2 || "-"}</div>
+      <div><strong>재해일자:</strong> ${item.i_accident_date || "-"}</div>
+      <div><strong>발생형태:</strong> ${item.i_injury || "-"}</div>
+      <div><strong>질병:</strong> ${item.i_disease_type || "-"}</div>
+      <div><strong>발생주소:</strong> ${item.i_address || "-"}</div>
+    </div>
+  `;
+
+  detailEl.innerHTML = `
+    <div>${DEFAULT_DETAIL_TEXT}</div>
+    ${infoHtml}
+  `;
 }
 
 function clearIncidentInfo() {
@@ -80,15 +113,15 @@ function resetAccidentDropdownSelection() {
   const menu = document.getElementById("accidentDropdownMenu");
 
   if (btn) {
-  const icon = btn.querySelector("i");
-  const label = document.createElement("span");
-  label.textContent = ACCIDENT_BTN_DEFAULT_TEXT;
+    const icon = btn.querySelector("i");
+    const label = document.createElement("span");
+    label.textContent = ACCIDENT_BTN_DEFAULT_TEXT;
 
-  btn.innerHTML = ""; // 기존 내용 비우고
-  if (icon) btn.appendChild(icon); // 아이콘 유지
-  btn.appendChild(label);
+    btn.innerHTML = ""; // 기존 내용 비우고
+    if (icon) btn.appendChild(icon); // 아이콘 유지
+    btn.appendChild(label);
   }
-  
+
   if (menu) menu.style.display = "none";
 }
 
@@ -279,7 +312,8 @@ function renderOverlay(item, pos, layout, measuredHeightPx) {
   });
 
   infoOverlay.setMap(map);
-  setDetail(html);
+  // ✅ 안내 문구는 유지하고 상세정보만 추가
+  setDetailWithItem(item);
 }
 
 function showIncidentInfoWindow(item, markerPos) {
@@ -418,8 +452,7 @@ function moveToAddress(address, opts) {
     map.setCenter(pos);
     map.setLevel(5);
 
-    if (!showUserMarker) return;
-
+    if (showUserMarker) {
     if (!userMarker) {
       userMarker = new kakao.maps.Marker({
         map: map,
@@ -432,13 +465,27 @@ function moveToAddress(address, opts) {
       userMarker.setImage(MY_PLACE_IMG);
     }
 
-    // 파랑은 노랑보다 위, 빨강보단 아래
-    userMarker.setZIndex(5);
+      // 파랑은 노랑보다 위, 빨강보단 아래
+      userMarker.setZIndex(5);
+    } else {
+      // 사고지역 이동 등: 파란 마커를 표시하지 않음
+      clearUserMarker();
+    }
+
+    // ✅ 주소 이동 직후 건수 갱신
+    setTimeout(updateIncidents, 0);
   });
 }
 
 function updateIncidents() {
   if (!map) return;
+
+  // ✅ (추가) 이전 요청 취소 + 마지막 요청만 반영
+  if (incidentsAbortController) {
+    try { incidentsAbortController.abort(); } catch (e) { /* noop */ }
+  }
+  incidentsAbortController = (window.AbortController) ? new AbortController() : null;
+  const myReqSeq = ++incidentsRequestSeq;
 
   const bounds = map.getBounds();
   const sw = bounds.getSouthWest();
@@ -451,12 +498,19 @@ function updateIncidents() {
     "&neLat=" + ne.getLat() +
     "&neLng=" + ne.getLng();
 
-  fetch(url)
+  const fetchOpts = incidentsAbortController
+    ? { signal: incidentsAbortController.signal, cache: "no-store" }
+    : { cache: "no-store" };
+
+  fetch(url, fetchOpts)
     .then(function (res) {
       if (!res.ok) throw new Error("산재 조회 요청 실패 (status: " + res.status + ")");
       return res.json();
     })
     .then(function (data) {
+      // ✅ 오래된 응답이면 무시
+      if (myReqSeq !== incidentsRequestSeq) return;
+
       if (!data || data.error) {
         console.error("INCIDENT API ERROR:", data && data.error);
         return;
@@ -536,6 +590,7 @@ function updateIncidents() {
       }
     })
     .catch(function (err) {
+      if (err && err.name === "AbortError") return; // 정상: 이전 요청 취소
       console.error("INCIDENT FETCH ERROR:", err);
     });
 }

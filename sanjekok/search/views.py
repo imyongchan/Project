@@ -41,6 +41,7 @@ def search_page(request):
         messages.error(request, "로그인이 필요합니다.")
         return redirect('Member:login')
     
+
     if member_id:
         try:
             member = Member.objects.get(member_id=member_id)
@@ -62,7 +63,7 @@ def search_page(request):
         "KAKAO_JS_KEY": settings.KAKAO_JS_KEY,
 
         # ✅ 추가: JS 캐시 깨기용 버전(값은 아무 문자열이어도 됨)
-        "JS_VERSION": "v3",
+        "JS_VERSION": "v4",
     })
 
 # 단일 주소 좌표 변환 API (집/근무지/드롭다운 이동용으로 유지)
