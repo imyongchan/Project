@@ -23,12 +23,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const riskDetailsPanel = document.getElementById("riskDetailsPanel");
 
     if (toggleRiskDetailsBtn && riskDetailsPanel) {
-                toggleRiskDetailsBtn.addEventListener("click", () => {
-                    const isOpen = riskDetailsPanel.style.display !== "none";
-                    riskDetailsPanel.style.display = isOpen ? "none" : "block";
-                    toggleRiskDetailsBtn.textContent = isOpen ? "상세 보기 ▼" : "상세 닫기 ▲";
+        toggleRiskDetailsBtn.addEventListener("click", () => {
+            const isOpen = riskDetailsPanel.style.display === "block";
+
+            riskDetailsPanel.style.display = isOpen ? "none" : "block";
+            toggleRiskDetailsBtn.textContent = isOpen
+                ? "상세 보기 ▼"
+                : "상세 닫기 ▲";
         });
-     }
+    }
 
     
 
@@ -643,6 +646,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (breakdownBase) breakdownBase.textContent = `${base}점`;
                 if (breakdownPersonal) breakdownPersonal.textContent = `${personal}점`;
                 if (breakdownSeverity) breakdownSeverity.textContent = `${severity}점`;
+
+                const explanationListEl = document.getElementById("riskExplanationList");
+
+                if (explanationListEl) {
+                    const explanations = riskData.explanation || [];
+
+                    if (explanations.length === 0) {
+                        explanationListEl.innerHTML = `
+                            <li>현재 조건에서는 비교적 안정적인 위험 수준을 보이고 있습니다.</li>
+                        `;
+                    } else {
+                        explanationListEl.innerHTML = explanations
+                            .map(text => `<li>${text}</li>`)
+                            .join("");
+                    }
+                }
 
                 // ===== 4) details(토글) 값 채우기 =====
                 const accRate = riskData.details?.accident_rate ?? 0;

@@ -14,7 +14,9 @@
         <!-- 1. 프로필 영역 -->
         <section class="profile-box">
             <div class="profile-left">
-                <div class="profile-icon"></div>
+                <div class="profile-icon">
+                    <img src="{% static 'img/worker.png' %}" alt="근로자 아이콘">
+                </div>
                 <span class="profile-info">
                     <h2>{{ member.m_name }}님의 프로필</h2>
                     <p><strong> 업종명</strong>:  {{ industry.i_industry_type2 }}  
@@ -309,32 +311,43 @@
                         <!-- ✅ details 토글 (요청하신 “버튼 눌러야 열림”) -->
                         <div class="risk-details-toggle" style="margin-top:12px;">
                             <button type="button" id="toggleRiskDetailsBtn" class="details-toggle-btn">
-                            상세 보기 ▼
+                                상세 보기 ▼
                             </button>
 
-                            <div id="riskDetailsPanel" class="details-content" style="display:none; margin-top:10px;">
-                            <div class="detail-row">
-                                <span>재해율</span>
-                                <span id="detailAccidentRate">-</span>
+                            <!-- ✅ 토글 대상 -->
+                            <div id="riskDetailsPanel" style="display:none; margin-top:16px;">
+
+                                <!-- 📌 종합 위험도 계산 방식 설명 -->
+                                <div class="detail-block">
+                                    <h5 class="detail-title">📊 종합 위험도는 이렇게 계산됩니다</h5>
+                                    <ul class="detail-list">
+                                        <li>
+                                            <strong>기본 위험도 (최대 40점)</strong><br>
+                                            재해율(20점) + 사망만인율(20점)
+                                        </li>
+                                        <li>
+                                            <strong>개인화 위험도 (최대 40점)</strong><br>
+                                            발생형태·질병 유형 비중 반영
+                                        </li>
+                                        <li>
+                                            <strong>중증도 (최대 20점)</strong><br>
+                                            재해 대비 사망 비율
+                                        </li>
+                                    </ul>
+                                    <p class="detail-note">
+                                        ※ 최종 점수는 <strong>0~100점</strong>으로 산출됩니다.
+                                    </p>
+                                </div>
+
+                                <!-- 📌 내 점수 해석 -->
+                                <div class="detail-block" style="margin-top:16px;">
+                                    <h5 class="detail-title">🧠 현재 점수에 대한 해석</h5>
+                                    <ul id="riskExplanationList" class="detail-list">
+                                        <!-- JS에서 explanation 문장 삽입 -->
+                                    </ul>
+                                </div>
+
                             </div>
-                            <div class="detail-row">
-                                <span>사망만인율</span>
-                                <span id="detailDeathRate">-</span>
-                            </div>
-                            <div class="detail-row">
-                                <span>사망 비율</span>
-                                <span id="detailSeverityRatio">-</span>
-                            </div>
-                            <div class="detail-row">
-                                <span>성별 가중치</span>
-                                <span id="detailGenderFactor">-</span>
-                            </div>
-                            <div class="detail-row">
-                                <span>연령 가중치</span>
-                                <span id="detailAgeFactor">-</span>
-                            </div>
-                            </div>
-                        </div>
                         </div>
 
                         

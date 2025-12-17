@@ -68,10 +68,18 @@ body {
 
 .profile-left {
     display: flex;
-    align-items: flex-start;
-    gap: 25px;
+    align-items: center; 
+    gap: 30px;
 }
 
+.profile-icon img {
+    height: 100%;
+    width: auto;
+    max-width: 180px;  
+
+    object-fit: contain;
+    display: block;
+}
 
 
 .profile-info h2 {
@@ -616,39 +624,113 @@ body {
   transform: translateY(-2px);
 }
 
-/* 상세 내용 패널 */
+/* =========================
+   종합 위험도 상세보기 (개선 버전)
+   ========================= */
+
+.risk-details-toggle {
+    margin-top: 20px;
+}
+
+/* 상세 패널 전체 */
 #riskDetailsPanel {
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid #f0e4da;
-  margin-top: 18px;
-  padding: 20px 25px;
-  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.12);
-  transition: all 0.4s ease;
+    background: linear-gradient(180deg, #ffffff, #f9fafb);
+    border-radius: 18px;
+    padding: 28px 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--color-border);
 }
 
-#riskDetailsPanel .detail-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px dashed #eee0d0;
-  font-size: 18px;
-  color: #2c3e50;
+/* 공통 블록 */
+.detail-block {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    margin-bottom: 22px;
 }
 
-#riskDetailsPanel .detail-row:last-child {
-  border-bottom: none;
+/* 블록 제목 */
+.detail-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--color-text-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-#riskDetailsPanel .detail-row span:first-child {
-  color: #777;
+/* =========================
+   계산 방식 (카드형)
+   ========================= */
+
+.detail-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }
 
-#riskDetailsPanel .detail-row span:last-child {
-  font-size: 20px;
-  font-weight: 700;
-  color: #2c3e50;
+.detail-list li {
+    background: linear-gradient(180deg, #fffdf9, #fff7ec);
+    border-radius: 14px;
+    padding: 18px 16px;
+    box-shadow: 0 4px 14px rgba(255, 152, 0, 0.15);
+    font-size: 14px;
+    line-height: 1.6;
+    color: #23333d;
 }
+
+.detail-list li strong {
+    display: block;
+    font-size: 17px;
+    margin-bottom: 6px;
+    color: var(--color-primary);
+}
+
+/* 계산 방식 하단 주석 */
+.detail-note {
+    margin-top: 50px;
+    font-size: 15px;
+    color: var(--color-text-light);
+    text-align: right;
+}
+
+/* =========================
+   점수 해석 영역
+   ========================= */
+
+#riskExplanationList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#riskExplanationList li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    /* padding: 12px 0; */
+    border-bottom: 1px dashed var(--color-border);
+    font-size: 17px;
+    line-height: 1.7;
+    color: #23333d;
+}
+
+#riskExplanationList li::before {
+    content: "✔";
+    font-weight: 900;
+    color: var(--color-secondary);
+    margin-top: 2px;
+}
+
+#riskExplanationList li:last-child {
+    border-bottom: none;
+}
+
 
 
 /* =========================
