@@ -25,8 +25,54 @@ body {
   letter-spacing: -0.5px;
 }
 
+/* ===========================
+   3. 필터 박스 (추가)
+=========================== */
+.filter-wrapper {
+  background: #ffffff;
+  border: 1px solid #e3e6ea;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 24px 28px;
+  margin-bottom: 30px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.filter-label {
+  width: 90px;
+  font-weight: 700;
+  color: #23333d;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+}
+
+.search-input {
+  width: 320px;
+  border-radius: 8px;
+}
+
+.date-input {
+  width: 140px;
+  border-radius: 8px;
+}
+
 /* ================================
-   3. 뉴스 카드
+   4. 뉴스 카드
 ================================ */
 .news-card {
   background-color: #ffffff;
@@ -46,7 +92,7 @@ body {
 }
 
 /* ================================
-   4. 이미지 썸네일
+   5. 이미지 썸네일
 ================================ */
 .news-img {
   width: 130px;
@@ -76,7 +122,7 @@ body {
 }
 
 /* ================================
-   5. 뉴스 내용 영역
+   6. 뉴스 내용 영역
 ================================ */
 .news-info {
   flex: 1;
@@ -103,7 +149,8 @@ body {
   text-decoration: none;
 }
 
-.news-content a :hover {
+/* ✅ hover 버그 수정(클래스명은 그대로) */
+.news-content a:hover {
   color: #f99b18;
 }
 
@@ -113,7 +160,7 @@ body {
 }
 
 /* ================================
-   6. 페이지네이션
+   7. 페이지네이션
 ================================ */
 .pagination {
   margin-top: 40px;
@@ -143,7 +190,7 @@ body {
 }
 
 /* ================================
-   7. 반응형 조정
+   8. 반응형 조정
 ================================ */
 @media (max-width: 768px) {
   .news-card {
@@ -161,5 +208,23 @@ body {
 
   .news-info {
     width: 100%;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-label {
+    width: auto;
+    margin-bottom: 6px;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .date-input {
+    width: 140px;
   }
 }
