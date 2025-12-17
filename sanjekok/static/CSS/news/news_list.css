@@ -230,13 +230,17 @@ body {
     width: 140px;
   }
   /* 검색 영역: input 위, 버튼 아래 */
-  .search-box{
+  .search-box {
     display: flex;
     flex-direction: column;
     gap: 8px;
     width: 100%;
   }
-  .btn-search{
+  .btn-search {
+    display: block;
+    width: 100%;
+  }
+  .btn-outline-secondary{
     display: block;
     width: 100%;
   }

@@ -68,6 +68,7 @@
         <div class="filter-controls search-box">
           <input type="text" name="q" class="form-control search-input" placeholder="제목검색" value="{{ search_keyword }}">
           <button type="submit" class="btn btn-outline-secondary btn-search">검색</button>
+          <a href="{% url 'Safe:safe_list' %}" class="btn btn-outline-secondary">초기화</a>
         </div>
       </div>
     </form>
