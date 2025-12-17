@@ -235,52 +235,114 @@
 
                 <!-- 종합 위험도 평가 카드 -->
                 <div class="visual-card highlight" id="card-risk">
-                <div class="risk-header">
-                    <h3 style="margin: 0;">종합 위험도 평가</h3>
-                </div>
+                    <div class="risk-header">
+                        <h3 style="margin: 0;">종합 위험도 평가</h3>
+                    </div>
 
-                <div class="risk-section">
                     <p class="risk-condition" id="riskConditionText"></p>
 
-                    <!-- ✅ 데이터 있을 때만 보여줄 영역 -->
-                    <div class="risk-grid" id="riskGrid" style="display:none;">
-                    <!-- 발생형태 TOP 5 -->
-                    <div class="risk-category">
-                        <div class="risk-category-title">
-                        <span class="risk-icon">⚠️</span>
-                        발생형태 TOP 5
+                    <div class="risk-section">
+                        <!-- ✅ 점수 영역 (추가) -->
+                        <div class="risk-score-wrap" id="riskScoreWrap" style="display:none;">
+                        <div class="risk-score-main">
+                            <div class="risk-score-circle" id="riskScoreCircle">
+                            <span class="risk-score-number" id="riskScoreNumber">0</span>
+                            <span class="risk-score-unit">점</span>
+                            </div>
+
+                            <div class="risk-score-text">
+                            <p class="risk-level" id="riskLevelText">-</p>
+                           
+                            </div>
                         </div>
-                        <div class="risk-category-inner">
-                        <div class="risk-list" id="injuryRiskList"></div>
-                        <div class="risk-chart-wrap">
-                            <canvas id="riskAccidentPie"></canvas>
+
+                        <!-- ✅ breakdown(기본/개인화/중증도) (추가) -->
+                        <div class="risk-breakdown" id="riskBreakdown" style="margin-top:12px;">
+                            <div class="breakdown-item">
+                            <span class="breakdown-label">기본 위험도</span>
+                            <span class="breakdown-value" id="breakdownBase">0</span>
+                            </div>
+                            <div class="breakdown-item">
+                            <span class="breakdown-label">개인화 위험도</span>
+                            <span class="breakdown-value" id="breakdownPersonal">0</span>
+                            </div>
+                            <div class="breakdown-item">
+                            <span class="breakdown-label">중증도</span>
+                            <span class="breakdown-value" id="breakdownSeverity">0</span>
+                            </div>
                         </div>
+
+                        <!-- ✅ details 토글 (요청하신 “버튼 눌러야 열림”) -->
+                        <div class="risk-details-toggle" style="margin-top:12px;">
+                            <button type="button" id="toggleRiskDetailsBtn" class="details-toggle-btn">
+                            상세 지표 보기 ▼
+                            </button>
+
+                            <div id="riskDetailsPanel" class="details-content" style="display:none; margin-top:10px;">
+                            <div class="detail-row">
+                                <span>재해율</span>
+                                <span id="detailAccidentRate">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <span>사망만인율</span>
+                                <span id="detailDeathRate">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <span>사망 비율</span>
+                                <span id="detailSeverityRatio">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <span>성별 가중치</span>
+                                <span id="detailGenderFactor">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <span>연령 가중치</span>
+                                <span id="detailAgeFactor">-</span>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
+                        
+
+                        <!-- ✅ 데이터 있을 때만 보여줄 영역 -->
+                        <div class="risk-grid" id="riskGrid" style="display:none;">
+                        <!-- 발생형태 TOP 5 -->
+                        <div class="risk-category">
+                            <div class="risk-category-title">
+                            <span class="risk-icon">⚠️</span>
+                            발생형태 TOP 5
+                            </div>
+                            <div class="risk-category-inner">
+                            <div class="risk-list" id="injuryRiskList"></div>
+                            <div class="risk-chart-wrap">
+                                <canvas id="riskAccidentPie"></canvas>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- 질병형태 TOP 5 -->
+                        <div class="risk-category">
+                            <div class="risk-category-title">
+                            <span class="risk-icon">🏥</span>
+                            질병형태 TOP 5
+                            </div>
+                            <div class="risk-category-inner">
+                            <div class="risk-list" id="diseaseRiskList"></div>
+                            <div class="risk-chart-wrap">
+                                <canvas id="riskDiseasePie"></canvas>
+                            </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 질병형태 TOP 5 -->
-                    <div class="risk-category">
-                        <div class="risk-category-title">
-                        <span class="risk-icon">🏥</span>
-                        질병형태 TOP 5
-                        </div>
-                        <div class="risk-category-inner">
-                        <div class="risk-list" id="diseaseRiskList"></div>
-                        <div class="risk-chart-wrap">
-                            <canvas id="riskDiseasePie"></canvas>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-
-                    <!-- ✅ 데이터 없을 때 표시 -->
-                    <div class="risk-no-data" id="riskNoData" style="display:block; padding:40px;">
-                    충분한 통계 데이터가 없습니다
-                    </div>
-                </div>
+            <!-- ✅ 데이터 없을 때 표시 -->
+            <div class="risk-no-data" id="riskNoData" style="display:block; padding:40px;">
+                충분한 통계 데이터가 없습니다
             </div>
     </div>
 </div>
+
 
 
 

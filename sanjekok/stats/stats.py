@@ -414,13 +414,13 @@ def get_stats6(industry_name6):
         # 기간 컬럼 제거 후, 0보다 큰 것만 상위 10개
         numeric_row = row.drop(labels=[], errors="ignore")
         filtered_row = numeric_row[numeric_row > 0].sort_values(ascending=False)
-        top10 = filtered_row.head(10)
+        top7 = filtered_row.head(7)
 
-        top10_list = []
+        top7_list = []
         filtered_rank_series = filtered_row.rank(ascending=False, method="min")
 
-        for name, cnt in top10.items():
-            top10_list.append({
+        for name, cnt in top7.items():
+            top7_list.append({
                 "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
@@ -430,7 +430,7 @@ def get_stats6(industry_name6):
         rank_map = {name: int(r) for name, r in rank_series.items()}
 
         result[period] = {
-            "top10": top10_list,
+            "top7": top7_list,
             "rank_map": rank_map,
         }
 
@@ -484,13 +484,13 @@ def get_stats7(industry_name7):
     for period, row in summary.iterrows():
         numeric_row = row.drop(labels=[], errors="ignore")
         filtered_row = numeric_row[numeric_row > 0].sort_values(ascending=False)
-        top10 = filtered_row.head(10)
+        top7 = filtered_row.head(7)
 
-        top10_list = []
+        top7_list = []
         filtered_rank_series = filtered_row.rank(ascending=False, method="min")
 
-        for name, cnt in top10.items():
-            top10_list.append({
+        for name, cnt in top7.items():
+            top7_list.append({
                 "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
@@ -500,7 +500,7 @@ def get_stats7(industry_name7):
         rank_map = {name: int(r) for name, r in rank_series.items()}
 
         result[period] = {
-            "top10": top10_list,
+            "top7": top7_list,
             "rank_map": rank_map,
         }
 
@@ -556,13 +556,13 @@ def get_stats8(industry_name8):
     for period, row in summary.iterrows():
         numeric_row = row.drop(labels=[], errors="ignore")
         filtered_row = numeric_row[numeric_row > 0].sort_values(ascending=False)
-        top10 = filtered_row.head(10)
+        top7 = filtered_row.head(7)
 
-        top10_list = []
+        top7_list = []
         filtered_rank_series = filtered_row.rank(ascending=False, method="min")
 
-        for name, cnt in top10.items():
-            top10_list.append({
+        for name, cnt in top7.items():
+            top7_list.append({
                 "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
@@ -572,7 +572,7 @@ def get_stats8(industry_name8):
         rank_map = {name: int(r) for name, r in rank_series.items()}
 
         result[period] = {
-            "top10": top10_list,
+            "top7": top7_list,
             "rank_map": rank_map,
         }
 
@@ -625,13 +625,13 @@ def get_stats9(industry_name9):
     for period, row in summary.iterrows():
         numeric_row = row.drop(labels=[], errors="ignore")
         filtered_row = numeric_row[numeric_row > 0].sort_values(ascending=False)
-        top10 = filtered_row.head(10)
+        top7 = filtered_row.head(7)
 
-        top10_list = []
+        top7_list = []
         filtered_rank_series = filtered_row.rank(ascending=False, method="min")
 
-        for name, cnt in top10.items():
-            top10_list.append({
+        for name, cnt in top7.items():
+            top7_list.append({
                 "rank": int(filtered_rank_series[name]),
                 "name": name,
                 "count": int(cnt),
@@ -641,7 +641,7 @@ def get_stats9(industry_name9):
         rank_map = {name: int(r) for name, r in rank_series.items()}
 
         result[period] = {
-            "top10": top10_list,
+            "top7": top7_list,
             "rank_map": rank_map,
         }
 
@@ -782,104 +782,113 @@ def _get_weighted_top5(industry_name, model_list, weight, years):
     return top5_list
 
 
-def get_risk_analysis(industry_name, age, gender,years=3):
-
+def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
+    """
+    종합 위험도 분석 및 점수 계산
+    
+    반환값:
+    - 발생형태/질병 TOP 5
+    - 종합 위험도 점수 (0-100점)
+    - 세부 점수 분해 (기본/개인화/중증도)
+    - 상세 지표
+    """
+    
     age_group = get_age_group(age)
     
-    # 1. 성별/연령대 가중치 계산
-    gender_weight = _calculate_gender_weight(industry_name, gender,years)
-    age_weight = _calculate_age_weight(industry_name, age_group,years)
+    # ===== 1. 기본 통계 데이터 가져오기 =====
+    stats1 = get_stats1(industry_name)
+    
+    # 데이터가 없는 경우 기본값 반환
+    if not stats1:
+        return {
+            "period": f"{years}년",
+            "age_group": age_group,
+            "gender": gender,
+            "industry": industry_name,
+            "injury_top5": [],
+            "disease_top5": [],
+            "has_data": False,
+            "gender_weight_pct": 50.0,
+            "age_weight_pct": 16.7,
+            "message":  f"{member_name}님현재 조건에서충분한 통계 데이터가 없습니다.",
+            # 종합 위험도 점수
+            "total_score": 0,
+            "risk_level": "데이터 없음",
+            "color": "gray",
+            "breakdown": {
+                "base_score": 0,
+                "personal_score": 0,
+                "severity_score": 0
+            },
+            "details": {
+                "accident_rate": 0,
+                "death_rate": 0,
+                "severity_ratio": 0,
+                "gender_factor": 50.0,
+                "age_factor": 16.7
+            }
+        }
+    
+    # 해당 기간 데이터 추출
+    recent = next((s for s in stats1 if s.get("기간") == f"{years}년"), stats1[0])
+    
+    # ===== 2. 성별/연령대 가중치 계산 =====
+    gender_weight = _calculate_gender_weight(industry_name, gender, years)
+    age_weight = _calculate_age_weight(industry_name, age_group, years)
     
     # 전체 가중치 (성별 * 연령대)
     total_weight = gender_weight * age_weight
     
-    # 2. 발생형태별 위험 분석
+    # ===== 3. 발생형태별 위험 분석 (TOP 5) =====
     injury_top5 = _get_weighted_top5(
         industry_name, 
         [Stats6, Stats7],  # 일반 재해 + 사망 재해
-        total_weight,years
+        total_weight,
+        years
     )
     
-    # 3. 질병형태별 위험 분석
+    # ===== 4. 질병형태별 위험 분석 (TOP 5) =====
     disease_top5 = _get_weighted_top5(
         industry_name,
         [Stats8, Stats9],  # 일반 질병 + 사망 질병
-        total_weight,years
+        total_weight,
+        years
     )
     
     has_data = len(injury_top5) > 0 or len(disease_top5) > 0
     
-    result = {
-        "period": f"{years}년",
-        "age_group": age_group,
-        "gender": gender,
-        "industry": industry_name,
-        "injury_top5": injury_top5,
-        "disease_top5": disease_top5,
-        "has_data": has_data,
-        "gender_weight_pct": round(gender_weight * 100, 1),
-        "age_weight_pct": round(age_weight * 100, 1),
-        "message": f"귀하와 같은 조건({industry_name}, {age_group}, {gender})에서 최근 3년간 가장 많이 발생한 재해 유형입니다."
-    }
-    
-    return result
-
-
-
-def risk_score(industry_name, age, gender, years=3):
-    """
-    종합 위험도 점수 계산 (0-100점)
-    
-    구성 요소:
-    - 기본 위험도 (40점): 재해율 + 사망만인율
-    - 개인화 위험도 (40점): 성별/연령대 가중치 적용
-    - 중증도 (20점): 사망 비율
-    """
-    
-    # 1. 기본 통계 (40점)
-    stats1 = get_stats1(industry_name)
-    if not stats1:
-        return {"score": 0, "message": "데이터 없음"}
-    
-    recent = next((s for s in stats1 if s.get("기간") == f"{years}년"), stats1[0])
-    
-    # 재해율 정규화 (0-20점, 업종평균 대비)
+    # ===== 5. 기본 위험도 점수 계산 (40점) =====
     accident_rate = recent.get("재해율", 0)
-    accident_score = min(accident_rate * 10, 20)  # 2% 이상이면 만점
-    
-    # 사망만인율 정규화 (0-20점)
     death_rate = recent.get("사망만인율", 0)
-    death_rate_score = min(death_rate * 100, 20)  # 0.2 이상이면 만점
+    
+    # 재해율 점수 (0-20점)
+    accident_score = min(accident_rate * 10, 20)
+    
+    # 사망만인율 점수 (0-20점)
+    death_rate_score = min(death_rate * 100, 20)
     
     base_score = accident_score + death_rate_score
     
-    # 2. 개인화 위험도 (40점)
-    risk_analysis = get_risk_analysis(industry_name, age, gender, years)
-    
-    # 성별/연령 가중치 활용
-    gender_weight = risk_analysis.get("gender_weight_pct", 50) / 100
-    age_weight = risk_analysis.get("age_weight_pct", 16.7) / 100
-    
-    # 발생형태 위험도 (0-20점)
-    injury_top5 = risk_analysis.get("injury_top5", [])
+    # ===== 6. 개인화 위험도 점수 계산 (40점) =====
+    # 발생형태 위험도 (상위 3개 비율 합산)
     injury_risk = sum(item.get("percentage", 0) for item in injury_top5[:3]) / 100 * 20
     
-    # 질병 위험도 (0-20점)
-    disease_top5 = risk_analysis.get("disease_top5", [])
+    # 질병 위험도 (상위 3개 비율 합산)
     disease_risk = sum(item.get("percentage", 0) for item in disease_top5[:3]) / 100 * 20
     
+    # 개인화 점수 = (발생형태 + 질병) × (성별 가중치 + 연령 가중치)
     personal_score = (injury_risk + disease_risk) * (gender_weight + age_weight)
     
-    # 3. 중증도 점수 (20점)
+    # ===== 7. 중증도 점수 계산 (20점) =====
     total_accidents = recent.get("재해자수", 0)
     total_deaths = recent.get("사망자수", 0)
     severity_ratio = (total_deaths / total_accidents * 100) if total_accidents > 0 else 0
-    severity_score = min(severity_ratio * 2, 20)  # 10% 이상이면 만점
+    severity_score = min(severity_ratio * 2, 20)
     
-    # 종합 점수
+    # ===== 8. 종합 점수 계산 =====
     total_score = base_score + personal_score + severity_score
     
-    # 위험도 등급 분류
+    # ===== 9. 위험도 등급 분류 =====
     if total_score >= 70:
         risk_level = "매우 높음"
         color = "red"
@@ -893,7 +902,21 @@ def risk_score(industry_name, age, gender, years=3):
         risk_level = "낮음"
         color = "green"
     
-    return {
+    # ===== 10. 결과 반환 =====
+    result = {
+        # 기존 get_risk_analysis 반환값
+        "period": f"{years}년",
+        "age_group": age_group,
+        "gender": gender,
+        "industry": industry_name,
+        "injury_top5": injury_top5,
+        "disease_top5": disease_top5,
+        "has_data": has_data,
+        "gender_weight_pct": round(gender_weight * 100, 1),
+        "age_weight_pct": round(age_weight * 100, 1),
+        "message":  f"{member_name}님과 같은 조건({industry_name}, {age_group}, {gender})에서 최근 {years}년간 가장 많이 발생한 재해 유형입니다.",
+        
+        # 종합 위험도 점수 (새로 추가)
         "total_score": round(total_score, 1),
         "risk_level": risk_level,
         "color": color,
@@ -903,10 +926,12 @@ def risk_score(industry_name, age, gender, years=3):
             "severity_score": round(severity_score, 1)
         },
         "details": {
-            "accident_rate": accident_rate,
-            "death_rate": death_rate,
+            "accident_rate": round(accident_rate, 2),
+            "death_rate": round(death_rate, 2),
             "severity_ratio": round(severity_ratio, 2),
             "gender_factor": round(gender_weight * 100, 1),
             "age_factor": round(age_weight * 100, 1)
         }
     }
+    
+    return result

@@ -37,11 +37,14 @@ function createHorizontalBarChart(chartRefName, canvasId, labels, data, options 
     const ctx = canvas.getContext("2d");
     const existing = charts[chartRefName];
 
-    // 라벨별 색상 배열 (highlightLabel과 같은 라벨은 highlightColor)
-    const colors = labels.map(l =>
-        (highlightLabel && l === highlightLabel) ? highlightColor : color
-    );
+    const normalize = s => (s || "").replace(/\s+/g, "").toLowerCase();
 
+    const colors = labels.map(l =>
+        (highlightLabel && normalize(l) === normalize(highlightLabel))
+            ? highlightColor
+            : color
+    );
+    
     if (existing) {
         existing.data.labels = labels;
         existing.data.datasets[0].data = data;
@@ -241,18 +244,13 @@ function AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p, highlightLabe
     const labels = ["18세 미만", "20대", "30대", "40대", "50대", "60대 이상"];
     const data   = [ageU18, age20s, age30s, age40s, age50s, age60p];
 
-    // 데이터와 라벨을 함께 묶어서 정렬
-    const combined = labels.map((label, index) => ({
-        label: label,
-        value: data[index]
-    }));
-    
-    // 값 기준으로 내림차순 정렬
+    const normalize = (s) => (s || "").replace(/\s+/g, "").toLowerCase();
+
+    // 데이터/라벨 정렬(기존 그대로)
+    const combined = labels.map((label, index) => ({ label, value: data[index] }));
     combined.sort((a, b) => b.value - a.value);
-    
-    // 정렬된 라벨과 데이터 분리
     const sortedLabels = combined.map(item => item.label);
-    const sortedData = combined.map(item => item.value);
+    const sortedData   = combined.map(item => item.value);
 
     createHorizontalBarChart("age1", "ageChart1", sortedLabels, sortedData, {
         color: "#23333d",
@@ -261,9 +259,12 @@ function AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p, highlightLabe
         highlightLabel,
         highlightColor: "#f99b18"
     });
+
     const ageSummaryBox = document.getElementById("ageSummary1");
     if (ageSummaryBox && highlightLabel) {
-        const highlightIndex = labels.indexOf(highlightLabel);
+
+        // ✅ 여기만 변경: 정규화로 index 찾기
+        const highlightIndex = labels.findIndex(l => normalize(l) === normalize(highlightLabel));
         const highlightCount = data[highlightIndex] || 0;
 
         // 최댓값 찾기
@@ -284,23 +285,17 @@ function AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p, highlightLabe
 function AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa, highlightLabel = null) {
     const labels = ["18세 미만", "20대", "30대", "40대", "50대", "60대 이상"];
     const data   = [ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa];
+    const normalize = (s) => (s || "").replace(/\s+/g, "").toLowerCase();
 
-    // 데이터와 라벨을 함께 묶어서 정렬
-    const combined = labels.map((label, index) => ({
-        label: label,
-        value: data[index]
-    }));
-    
-    // 값 기준으로 내림차순 정렬
+    // 데이터/라벨 정렬(기존 그대로)
+    const combined = labels.map((label, index) => ({ label, value: data[index] }));
     combined.sort((a, b) => b.value - a.value);
-    
-    // 정렬된 라벨과 데이터 분리
     const sortedLabels = combined.map(item => item.label);
-    const sortedData = combined.map(item => item.value);
+    const sortedData   = combined.map(item => item.value);
 
     createHorizontalBarChart("age2", "ageChart2", sortedLabels, sortedData, {
         color: "#23333d",
-        label: "연령대별 사망자 수",
+        label: "연령대별 재해자 수",
         labelVisible: false,
         highlightLabel,
         highlightColor: "#f99b18"
@@ -308,7 +303,7 @@ function AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa, highlig
 
     const ageSummaryBox = document.getElementById("ageSummary2");
     if (ageSummaryBox && highlightLabel) {
-        const highlightIndex = labels.indexOf(highlightLabel);
+        const highlightIndex = labels.findIndex(l => normalize(l) === normalize(highlightLabel));
         const highlightCount = data[highlightIndex] || 0;
 
         // 최댓값 찾기
