@@ -204,8 +204,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (genderSummary1) {
                 const maleRateText = isNaN(maleRate) ? "-" : maleRate.toFixed(1);
                 const femaleRateText = isNaN(femaleRate) ? "-" : femaleRate.toFixed(1);
-                genderSummary1.innerHTML = `<p style="font-size:23px;color:#f99b18;"> 남자: ${maleRateText}%</p> ` +
-                    `<p style="font-size:23px;color:#f99b18;"> 여자:  ${femaleRateText}% </p>`;
+                genderSummary1.innerHTML = `<p style="font-size:20px;color:#23333d;"> 남자: ${maleRateText}%</p> ` +
+                    `<p style="font-size:20px;color:#23333d;"> 여자:  ${femaleRateText}% </p>`;
                 if (window.GenderChart1) {
                     window.GenderChart1(male, female);
                 }
@@ -214,8 +214,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (genderSummary2) {
                 const maleRateText2 = isNaN(maleRate2) ? "-" : maleRate2.toFixed(1);
                 const femaleRateText2 = isNaN(femaleRate2) ? "-" : femaleRate2.toFixed(1);
-                genderSummary2.innerHTML = `<p style="font-size:23px;color:#f99b18;"> 남자: ${maleRateText2}%</p> ` +
-                    `<p style="font-size:23px;color:#f99b18;"> 여자:  ${femaleRateText2}% </p>`;
+                genderSummary2.innerHTML = `<p style="font-size:20px;color:#23333d;"> 남자: ${maleRateText2}%</p> ` +
+                    `<p style="font-size:20px;color:#23333d;"> 여자:  ${femaleRateText2}% </p>`;
                 if (window.GenderChart2) {
                     window.GenderChart2(male2, female2);
                 }

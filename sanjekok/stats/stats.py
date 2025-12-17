@@ -823,3 +823,90 @@ def get_risk_analysis(industry_name, age, gender,years=3):
     }
     
     return result
+
+
+
+def risk_score(industry_name, age, gender, years=3):
+    """
+    종합 위험도 점수 계산 (0-100점)
+    
+    구성 요소:
+    - 기본 위험도 (40점): 재해율 + 사망만인율
+    - 개인화 위험도 (40점): 성별/연령대 가중치 적용
+    - 중증도 (20점): 사망 비율
+    """
+    
+    # 1. 기본 통계 (40점)
+    stats1 = get_stats1(industry_name)
+    if not stats1:
+        return {"score": 0, "message": "데이터 없음"}
+    
+    recent = next((s for s in stats1 if s.get("기간") == f"{years}년"), stats1[0])
+    
+    # 재해율 정규화 (0-20점, 업종평균 대비)
+    accident_rate = recent.get("재해율", 0)
+    accident_score = min(accident_rate * 10, 20)  # 2% 이상이면 만점
+    
+    # 사망만인율 정규화 (0-20점)
+    death_rate = recent.get("사망만인율", 0)
+    death_rate_score = min(death_rate * 100, 20)  # 0.2 이상이면 만점
+    
+    base_score = accident_score + death_rate_score
+    
+    # 2. 개인화 위험도 (40점)
+    risk_analysis = get_risk_analysis(industry_name, age, gender, years)
+    
+    # 성별/연령 가중치 활용
+    gender_weight = risk_analysis.get("gender_weight_pct", 50) / 100
+    age_weight = risk_analysis.get("age_weight_pct", 16.7) / 100
+    
+    # 발생형태 위험도 (0-20점)
+    injury_top5 = risk_analysis.get("injury_top5", [])
+    injury_risk = sum(item.get("percentage", 0) for item in injury_top5[:3]) / 100 * 20
+    
+    # 질병 위험도 (0-20점)
+    disease_top5 = risk_analysis.get("disease_top5", [])
+    disease_risk = sum(item.get("percentage", 0) for item in disease_top5[:3]) / 100 * 20
+    
+    personal_score = (injury_risk + disease_risk) * (gender_weight + age_weight)
+    
+    # 3. 중증도 점수 (20점)
+    total_accidents = recent.get("재해자수", 0)
+    total_deaths = recent.get("사망자수", 0)
+    severity_ratio = (total_deaths / total_accidents * 100) if total_accidents > 0 else 0
+    severity_score = min(severity_ratio * 2, 20)  # 10% 이상이면 만점
+    
+    # 종합 점수
+    total_score = base_score + personal_score + severity_score
+    
+    # 위험도 등급 분류
+    if total_score >= 70:
+        risk_level = "매우 높음"
+        color = "red"
+    elif total_score >= 50:
+        risk_level = "높음"
+        color = "orange"
+    elif total_score >= 30:
+        risk_level = "보통"
+        color = "yellow"
+    else:
+        risk_level = "낮음"
+        color = "green"
+    
+    return {
+        "total_score": round(total_score, 1),
+        "risk_level": risk_level,
+        "color": color,
+        "breakdown": {
+            "base_score": round(base_score, 1),
+            "personal_score": round(personal_score, 1),
+            "severity_score": round(severity_score, 1)
+        },
+        "details": {
+            "accident_rate": accident_rate,
+            "death_rate": death_rate,
+            "severity_ratio": round(severity_ratio, 2),
+            "gender_factor": round(gender_weight * 100, 1),
+            "age_factor": round(age_weight * 100, 1)
+        }
+    }

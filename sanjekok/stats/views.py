@@ -8,7 +8,7 @@ from member.models import Member, Individual
 from stats.stats import (
     get_stats1, get_stats2, get_stats3, get_stats4, get_stats5,
     get_stats6, get_stats7, get_stats8, get_stats9,
-    get_risk_analysis,get_age_group 
+    get_risk_analysis,get_age_group,risk_score 
 )
 
 
@@ -198,7 +198,31 @@ def stats_home(request):
         "3": convert_np(risk_analysis_3y),
     }
    
-    
+        # ===== 새로 추가: 종합 위험도 점수 계산 =====
+    risk_1y = risk_score(
+        industry_name=industry.i_industry_type2,
+        age=age,
+        gender=member.m_sex,
+        years=1
+    )
+    risk_2y = risk_score(
+        industry_name=industry.i_industry_type2,
+        age=age,
+        gender=member.m_sex,
+        years=2
+    )
+    risk_3y = risk_score(
+        industry_name=industry.i_industry_type2,
+        age=age,
+        gender=member.m_sex,
+        years=3
+    )
+
+    risk_json = {
+        "1": convert_np(risk_1y),
+        "2": convert_np(risk_2y),
+        "3": convert_np(risk_3y),
+    }
     # 9. JS에서 사용할 데이터는 JSON 직렬화
     
     summary6_json = json.dumps(summary6, ensure_ascii=False)
@@ -225,5 +249,6 @@ def stats_home(request):
         "summary8_json": summary8_json,
         "summary9_json": summary9_json,
         "risk_analysis_json": json.dumps(risk_analysis_json, ensure_ascii=False),
+        "risk_json": json.dumps(risk_json, ensure_ascii=False),  # 새로 추가
         "show_detail": show_detail,
     })
