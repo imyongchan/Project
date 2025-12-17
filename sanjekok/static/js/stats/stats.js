@@ -23,13 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const riskDetailsPanel = document.getElementById("riskDetailsPanel");
 
     if (toggleRiskDetailsBtn && riskDetailsPanel) {
-        toggleRiskDetailsBtn.addEventListener("click", () => {
-            const isOpen = riskDetailsPanel.style.display !== "none";
-            riskDetailsPanel.style.display = isOpen ? "none" : "block";
-            toggleRiskDetailsBtn.textContent = isOpen ? "상세 보기 ▼" : "상세 닫기 ▲";
+                toggleRiskDetailsBtn.addEventListener("click", () => {
+                    const isOpen = riskDetailsPanel.style.display !== "none";
+                    riskDetailsPanel.style.display = isOpen ? "none" : "block";
+                    toggleRiskDetailsBtn.textContent = isOpen ? "상세 보기 ▼" : "상세 닫기 ▲";
         });
-    }
+     }
 
+    
+
+     
     let injurySelected = false;
     let selectedInjuryType = null;
     let selectedDiseaseType = null;
@@ -41,12 +44,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (visualArea) {
         const hasSelection = visualArea.dataset.hasSelection === "1";
+
         if (hasSelection) {
             injurySelected = true;
-            if (visualArea.dataset.selectedInjury)
+            if (visualArea.dataset.selectedInjury) {
                 selectedInjuryType = visualArea.dataset.selectedInjury;
-            if (visualArea.dataset.selectedDisease)
+            }
+            if (visualArea.dataset.selectedDisease) {
                 selectedDiseaseType = visualArea.dataset.selectedDisease;
+            }
         }
     }
 
@@ -99,6 +105,74 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function updateKPIByRiskData(riskData, visualArea,accRate, fatalRate) {
+        if (!visualArea) return;
+
+        const selectedInjury = visualArea.dataset.selectedInjury || null;
+        const selectedDisease = visualArea.dataset.selectedDisease || null;
+
+        /* =====================
+        * KPI 재해율 (상단 카드와 동일 데이터)
+        * ===================== */
+        const accidentRateEl = document.getElementById("kpi-accident-rate");
+        if (accidentRateEl) {
+            accidentRateEl.textContent =
+                isNaN(accRate) ? "-" : `${accRate.toFixed(2)}%`;
+            accidentRateEl.parentElement.style.display = "block";
+        }
+
+        /* =====================
+        * KPI 사망만인율 (상단 카드와 동일 데이터)
+        * ===================== */
+        const fatalRateEl = document.getElementById("kpi-fatal-rate");
+        if (fatalRateEl) {
+            if ((selectedInjury && !selectedDisease) || (!selectedInjury && selectedDisease)) {
+                fatalRateEl.textContent =
+                    isNaN(fatalRate) ? "-" : `${fatalRate.toFixed(2)}‱`;
+                fatalRateEl.parentElement.style.display = "block";
+            } else {
+                fatalRateEl.parentElement.style.display = "none";
+            }
+        }
+
+
+        // ✅ 발생형태 TOP
+        const injuryTopEl = document.getElementById("kpi-injury-top");
+        if (injuryTopEl) {
+            injuryTopEl.textContent = selectedInjury
+                ? (riskData.injury_top5?.[0]?.name || "-")
+                : "-";
+            injuryTopEl.parentElement.style.display = selectedInjury ? "block" : "none";
+        }
+
+        // ✅ 질병 TOP
+        const diseaseTopEl = document.getElementById("kpi-disease-top");
+        if (diseaseTopEl) {
+            diseaseTopEl.textContent = selectedDisease
+                ? (riskData.disease_top5?.[0]?.name || "-")
+                : "-";
+            diseaseTopEl.parentElement.style.display = selectedDisease ? "block" : "none";
+        }
+
+        // ✅ 종합 위험도
+        const scoreEl = document.getElementById("kpi-risk-score");
+        if (scoreEl) {
+            scoreEl.textContent = `${riskData.total_score ?? 0}점`;
+            const card = scoreEl.closest(".kpi-card");
+            if (card) {
+                let sub = card.querySelector(".kpi-sub");
+                if (!sub) {
+                    sub = document.createElement("span");
+                    sub.className = "kpi-sub";
+                    card.appendChild(sub);
+                }
+                sub.textContent = riskData.risk_level ?? "-";
+            }
+        }
+    }
+
+
+
     /* ========================= 
      * 1. 나의 산재 드롭다운
      * ========================= */
@@ -113,7 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
         dropdown.querySelectorAll("li").forEach(item => {
             item.addEventListener("click", () => {
                 const accidentId = item.dataset.accidentId;
-                if (!accidentId) return;
+
+                if (!accidentId) {
+                    return;
+                }
+
                 const url = new URL(window.location.href);
                 url.searchParams.set("accident_id", accidentId);
                 window.location.href = url.toString();
@@ -126,6 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
      * ========================= */
     periodButtons.forEach(btn => {
         btn.addEventListener("click", () => {
+
             const hasInjury = visualArea ? visualArea.dataset.hasInjury === "1" : false;
 
             // 1) 산재 정보 자체가 없는 경우
@@ -206,7 +285,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const femaleRateText = isNaN(femaleRate) ? "-" : femaleRate.toFixed(1);
                 genderSummary1.innerHTML = `<p style="font-size:20px;color:#23333d;"> 남자: ${maleRateText}%</p> ` +
                     `<p style="font-size:20px;color:#23333d;"> 여자:  ${femaleRateText}% </p>`;
-                if (window.GenderChart1) window.GenderChart1(male, female);
+                if (window.GenderChart1) {
+                    window.GenderChart1(male, female);
+                }
             }
 
             if (genderSummary2) {
@@ -214,67 +295,356 @@ document.addEventListener("DOMContentLoaded", () => {
                 const femaleRateText2 = isNaN(femaleRate2) ? "-" : femaleRate2.toFixed(1);
                 genderSummary2.innerHTML = `<p style="font-size:20px;color:#23333d;"> 남자: ${maleRateText2}%</p> ` +
                     `<p style="font-size:20px;color:#23333d;"> 여자:  ${femaleRateText2}% </p>`;
-                if (window.GenderChart2) window.GenderChart2(male2, female2);
+                if (window.GenderChart2) {
+                    window.GenderChart2(male2, female2);
+                }
             }
 
             /* ========================= 
              * 2-3. 연령대별 현황 + 차트
              * ========================= */
-            if (window.AgeChart1)
+            if (window.AgeChart1) {
                 window.AgeChart1(ageU18, age20s, age30s, age40s, age50s, age60p, memberageband);
-            if (window.AgeChart2)
+            }
+            if (window.AgeChart2) {
                 window.AgeChart2(ageU18a, age20sa, age30sa, age40sa, age50sa, age60pa, memberageband);
+            }
+
+            /* ========================= 
+             * 발생형태 관련 통계
+             * ========================= */
+            if (selectedInjuryType) {
+                // 11) 발생형태 TOP7
+                if (cardInjury) cardInjury.style.display = "block";
+                
+                if (injurySummary1 && injuryStatsByPeriod) {
+                    const periodData = injuryStatsByPeriod[periodKey];
+                    if (!periodData || !periodData.top7 || periodData.top7.length === 0) {
+                        // ✅ 데이터가 없으면 카드에 no-data 클래스 추가
+                        if (cardInjury) cardInjury.classList.add("no-data");
+                        injurySummary1.innerHTML = '<div class="no-data-message">발생형태 데이터가 없습니다.</div>';
+                        // 차트 숨김
+                        const chart1 = document.getElementById("injuryChart1");
+                        if (chart1) chart1.style.display = "none";
+                    } else {
+                        // ✅ 데이터가 있으면 no-data 클래스 제거
+                        if (cardInjury) cardInjury.classList.remove("no-data");
+                        const chart1 = document.getElementById("injuryChart1");
+                        if (chart1) chart1.style.display = "block";
+                        const topList = periodData.top7;
+                        const rankMap = periodData.rank_map || {};
+                        let html = "";
+                        
+                        {
+                            const myRank = rankMap[selectedInjuryType];
+                            const inChart = topList.some(item => item.name === selectedInjuryType);
+                            if (myRank) {
+                                if (inChart) {
+                                    html = `<div class="result-box">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <div>
+                                                    나의 부상형태(<strong>${selectedInjuryType}</strong>)는 
+                                                    <strong>${myRank}위</strong> 입니다.
+                                                </div>
+                                            </div>`;
+                                } else {
+                                    html = `<div class="result-box">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <div>
+                                                    나의 부상형태(<strong>${selectedInjuryType}</strong>)는 
+                                                    순위에는 포함되지 않습니다.
+                                                </div>
+                                            </div>`;
+                                }
+                            } else {
+                                html = `<div class="result-box">
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                            <div>
+                                                나의 부상형태(<strong>${selectedInjuryType}</strong>)는 
+                                                해당 업종 통계에 집계되어 있지 않습니다.
+                                            </div>
+                                        </div>`;
+                            }
+                        }
+                        
+                        injurySummary1.innerHTML = html;
+                        if (window.InjuryChart1) {
+                            window.InjuryChart1(topList, selectedInjuryType);
+                        }
+                    }
+                }
+
+                // 12) 사망 발생형태
+                if (cardInjuryFatal) cardInjuryFatal.style.display = "block";
+                
+                if (injurySummary2 && fatalStatsByPeriod) {
+                    const periodData = fatalStatsByPeriod[periodKey];
+                    if (!periodData || !periodData.top7 || periodData.top7.length === 0) {
+                        // ✅ 데이터가 없으면 카드에 no-data 클래스 추가
+                        if (cardInjuryFatal) cardInjuryFatal.classList.add("no-data");
+                        injurySummary2.innerHTML = '<div class="no-data-message">사망 발생형태 데이터가 없습니다.</div>';
+                        // 차트 숨김
+                        const chart2 = document.getElementById("injuryChart2");
+                        if (chart2) chart2.style.display = "none";
+                    } else {
+                        // ✅ 데이터가 있으면 no-data 클래스 제거
+                        if (cardInjuryFatal) cardInjuryFatal.classList.remove("no-data");
+                        const chart2 = document.getElementById("injuryChart2");
+                        if (chart2) chart2.style.display = "block";
+                        const topList = periodData.top7;
+                        const rankMap = periodData.rank_map || {};
+                        let html = "";
+                        
+                        {
+                            const myRank = rankMap[selectedInjuryType];
+                            const inChart = topList.some(item => item.name === selectedInjuryType);
+
+                            if (myRank) {
+                                if (inChart ) {
+                                    html = `<div class="result-box">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <div>
+                                                    나의 부상형태(<strong>${selectedInjuryType}</strong>)는 
+                                                    <strong>${myRank}위</strong> 입니다.
+                                                </div>
+                                            </div>`;
+                                } else {
+                                    html = `<div class="result-box">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <div>
+                                                    나의 부상형태(<strong>${selectedInjuryType}</strong>)는 
+                                                    순위에는 포함되지 않습니다.
+                                                </div>
+                                            </div>`;
+                                }
+                            } else {
+                                html = `<div class="result-box">
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                            <div>
+                                                나의 부상형태(<strong>${selectedInjuryType}</strong>)는 
+                                                해당 업종 통계에 집계되어 있지 않습니다.
+                                            </div>
+                                        </div>`;
+                            }
+                        }
+                        
+                        injurySummary2.innerHTML = html;
+                        if (window.InjuryChart2) {
+                            window.InjuryChart2(topList, selectedInjuryType);
+                        }
+                    }
+                }
+            } else {
+                if (cardInjury) cardInjury.style.display = "none";
+                if (cardInjuryFatal) cardInjuryFatal.style.display = "none";
+            }
+
+            /* ========================= 
+             * 질병형태 관련 통계
+             * ========================= */
+            if (selectedDiseaseType) {
+                // 13) 질병형태별
+                if (cardDisease) cardDisease.style.display = "block";
+                
+                if (diseaseSummary1 && diseaseStatsByPeriod) {
+                    const periodData = diseaseStatsByPeriod[periodKey];
+                    if (!periodData || !periodData.top7 || periodData.top7.length === 0) {
+                        // ✅ 데이터가 없으면 카드에 no-data 클래스 추가
+                        if (cardDisease) cardDisease.classList.add("no-data");
+                        diseaseSummary1.innerHTML = '<div class="no-data-message">질병형태 데이터가 없습니다.</div>';
+                        // 차트 숨김
+                        const chart1 = document.getElementById("diseaseChart1");
+                        if (chart1) chart1.style.display = "none";
+                    } else {
+                        // ✅ 데이터가 있으면 no-data 클래스 제거
+                        if (cardDisease) cardDisease.classList.remove("no-data");
+                        const chart1 = document.getElementById("diseaseChart1");
+                        if (chart1) chart1.style.display = "block";
+                        const topList = periodData.top7;
+                        const rankMap = periodData.rank_map || {};
+                        let html = "";
+                        
+                        {
+                            const myRank = rankMap[selectedDiseaseType];
+                            const inChart = topList.some(item => item.name === selectedDiseaseType);
+                            if (myRank) {
+                                if (inChart) {
+                                    html = `<div class="result-box">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <div>
+                                                    나의 질병(<strong>${selectedDiseaseType}</strong>)은 
+                                                    <strong>${myRank}위</strong> 입니다.
+                                                </div>
+                                            </div>`;
+                                } else {
+                                    html = `<div class="result-box">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <div>
+                                                    나의 질병(<strong>${selectedDiseaseType}</strong>)은 
+                                                    순위에는 포함되지 않습니다.
+                                                </div>
+                                            </div>`;
+                                }
+                            } else {
+                                html = `<div class="result-box">
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                            <div>
+                                                나의 질병(<strong>${selectedDiseaseType}</strong>)는 
+                                                해당 업종 통계에 집계되어 있지 않습니다.
+                                            </div>
+                                        </div>`;
+                            }
+                        }
+                        
+                        diseaseSummary1.innerHTML = html;
+                        if (window.DiseaseChart1) {
+                            window.DiseaseChart1(topList, selectedDiseaseType);
+                        }
+                    }
+                }
+
+                // 14) 질병 사망형태
+                if (cardDiseaseFatal) cardDiseaseFatal.style.display = "block";
+                
+                if (diseaseSummary2 && diseaseFatalStatsByPeriod) {
+                    const periodData = diseaseFatalStatsByPeriod[periodKey];
+                    if (!periodData || !periodData.top7 || periodData.top7.length === 0) {
+                        // ✅ 데이터가 없으면 카드에 no-data 클래스 추가
+                        if (cardDiseaseFatal) cardDiseaseFatal.classList.add("no-data");
+                        diseaseSummary2.innerHTML = '<div class="no-data-message">질병 사망유형 데이터가 없습니다.</div>';
+                        // 차트 숨김
+                        const chart2 = document.getElementById("diseaseChart2");
+                        if (chart2) chart2.style.display = "none";
+                    } else {
+                        // ✅ 데이터가 있으면 no-data 클래스 제거
+                        if (cardDiseaseFatal) cardDiseaseFatal.classList.remove("no-data");
+                        const chart2 = document.getElementById("diseaseChart2");
+                        if (chart2) chart2.style.display = "block";
+                        const topList = periodData.top7;
+                        const rankMap = periodData.rank_map || {};
+                        let html = "";
+                        
+                        {
+                            const myRank = rankMap[selectedDiseaseType];
+                            const inChart = topList.some(item => item.name === selectedDiseaseType);
+                            if (myRank) {
+                                if (inChart) {
+                                    html = `<div class="result-box">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <div>
+                                                    나의 질병(<strong>${selectedDiseaseType}</strong>)은 
+                                                    <strong>${myRank}위</strong> 입니다.
+                                                </div>
+                                            </div>`;
+                                } else {
+                                    html = `<div class="result-box">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                                <div>
+                                                    나의 질병(<strong>${selectedDiseaseType}</strong>)은 
+                                                    순위에는 포함되지 않습니다.
+                                                </div>
+                                            </div>`;
+                                }
+                            } else {
+                                html = `<div class="result-box">
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                            <div>
+                                                나의 질병(<strong>${selectedDiseaseType}</strong>)는 
+                                                해당 업종 통계에 집계되어 있지 않습니다.
+                                            </div>
+                                        </div>`;
+                            }
+                        }
+                        
+                        diseaseSummary2.innerHTML = html;
+                        if (window.DiseaseChart2) {
+                            window.DiseaseChart2(topList, selectedDiseaseType);
+                        }
+                    }
+                }
+            } else {
+                if (cardDisease) cardDisease.style.display = "none";
+                if (cardDiseaseFatal) cardDiseaseFatal.style.display = "none";
+            }
+
 
             /* =========================
-            * 종합 위험도 평가
+            * 종합 위험도 평가 (점수 + details 토글)
             * ========================= */
             const riskData = riskDataByPeriod[yearFlag];
+            updateKPIByRiskData(riskData, visualArea, accRate, fatalRate);
+
             const riskGrid = document.getElementById("riskGrid");
             const riskNoData = document.getElementById("riskNoData");
+
+            // 점수/문구 영역
             const riskScoreWrap = document.getElementById("riskScoreWrap");
             const riskScoreNumber = document.getElementById("riskScoreNumber");
             const riskLevelText = document.getElementById("riskLevelText");
             const riskMessageText = document.getElementById("riskMessageText");
+
+            // breakdown
             const breakdownBase = document.getElementById("breakdownBase");
             const breakdownPersonal = document.getElementById("breakdownPersonal");
             const breakdownSeverity = document.getElementById("breakdownSeverity");
+
+            // details (토글 패널 내부)
             const detailAccidentRate = document.getElementById("detailAccidentRate");
             const detailDeathRate = document.getElementById("detailDeathRate");
             const detailSeverityRatio = document.getElementById("detailSeverityRatio");
             const detailGenderFactor = document.getElementById("detailGenderFactor");
             const detailAgeFactor = document.getElementById("detailAgeFactor");
 
+            // 토글 패널은 기간 바뀔 때 기본 닫힘으로 리셋
             const toggleBtn = document.getElementById("toggleRiskDetailsBtn");
             const detailsPanel = document.getElementById("riskDetailsPanel");
             if (detailsPanel) detailsPanel.style.display = "none";
             if (toggleBtn) toggleBtn.textContent = "상세 지표 보기 ▼";
+
+            // 점수 영역은 데이터 유무와 상관없이 보여주되(없으면 0점/메시지)
             if (riskScoreWrap) riskScoreWrap.style.display = "block";
 
+            // ✅ 메시지는 한 곳(riskConditionText)에만 출력해서 겹침 제거
             const conditionEl = document.getElementById("riskConditionText");
 
             if (!riskData) {
                 if (conditionEl) conditionEl.textContent = "충분한 통계 데이터가 없습니다.";
+
                 if (riskScoreNumber) riskScoreNumber.textContent = "0";
                 if (riskLevelText) riskLevelText.textContent = "데이터 없음";
+
+                // ✅ 여기엔 message 대신 짧은 안내만
                 if (riskMessageText) riskMessageText.textContent = `최근 ${yearFlag}년 분석`;
+
                 if (breakdownBase) breakdownBase.textContent = "0점";
                 if (breakdownPersonal) breakdownPersonal.textContent = "0점";
                 if (breakdownSeverity) breakdownSeverity.textContent = "0점";
+
                 if (riskGrid) riskGrid.style.display = "none";
                 if (riskNoData) riskNoData.style.display = "block";
             } else {
-                if (conditionEl)
+                // ===== 1) 상단 문구: 백엔드 message만 표시 =====
+                if (conditionEl) {
                     conditionEl.textContent = riskData.message || "충분한 통계 데이터가 없습니다.";
+                }
+
+                // ===== 2) 점수 표시 =====
                 const totalScore = (riskData.total_score ?? 0);
                 if (riskScoreNumber) riskScoreNumber.textContent = totalScore;
+
                 if (riskLevelText) riskLevelText.textContent = (riskData.risk_level ?? "-");
+
+
+                // ===== 3) breakdown 표시 =====
                 const base = riskData.breakdown?.base_score ?? 0;
                 const personal = riskData.breakdown?.personal_score ?? 0;
                 const severity = riskData.breakdown?.severity_score ?? 0;
+
                 if (breakdownBase) breakdownBase.textContent = `${base}점`;
                 if (breakdownPersonal) breakdownPersonal.textContent = `${personal}점`;
                 if (breakdownSeverity) breakdownSeverity.textContent = `${severity}점`;
 
+                // ===== 4) details(토글) 값 채우기 =====
                 const accRate = riskData.details?.accident_rate ?? 0;
                 const deathRate = riskData.details?.death_rate ?? 0;
                 const sevRatio = riskData.details?.severity_ratio ?? 0;
@@ -287,84 +657,45 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (detailGenderFactor) detailGenderFactor.textContent = `${genderFactor}%`;
                 if (detailAgeFactor) detailAgeFactor.textContent = `${ageFactor}%`;
 
+                // ===== 5) TOP5 + 파이차트 영역 (has_data가 true일 때만) =====
                 if (riskData.has_data) {
                     if (riskGrid) riskGrid.style.display = "grid";
                     if (riskNoData) riskNoData.style.display = "none";
 
-                    const renderRiskList = (id, list) => {
-                        const c = document.getElementById(id);
-                        if (!c) return;
-                        c.innerHTML = (list || []).map(item => `
+                    const renderRiskList = (containerId, list) => {
+                        const container = document.getElementById(containerId);
+                        if (!container) return;
+
+                        container.innerHTML = (list || []).map(item => `
                             <div class="risk-item">
                                 <span class="risk-rank rank-${item.rank}">${item.rank}</span>
                                 <span class="risk-name">${item.name}</span>
                                 <span class="risk-percentage">${item.percentage}%</span>
-                            </div>`).join("");
+                            </div>
+                        `).join("");
                     };
+
                     renderRiskList("injuryRiskList", riskData.injury_top5);
                     renderRiskList("diseaseRiskList", riskData.disease_top5);
-                    if (document.getElementById("riskAccidentPie")) window.RiskAccidentPieChart?.(riskData.injury_top5);
-                    if (document.getElementById("riskDiseasePie")) window.RiskDiseasePieChart?.(riskData.disease_top5);
+
+                    if (document.getElementById("riskAccidentPie")) {
+                        window.RiskAccidentPieChart?.(riskData.injury_top5);
+                    }
+                    if (document.getElementById("riskDiseasePie")) {
+                        window.RiskDiseasePieChart?.(riskData.disease_top5);
+                    }
                 } else {
                     if (riskGrid) riskGrid.style.display = "none";
                     if (riskNoData) riskNoData.style.display = "block";
+
                     const a = document.getElementById("injuryRiskList");
                     const b = document.getElementById("diseaseRiskList");
                     if (a) a.innerHTML = "";
                     if (b) b.innerHTML = "";
                 }
             }
-
-            /* =========================
-             * KPI 요약 카드 업데이트 
-             * ========================= */
-            if (riskData) {
-                const accidentRate = riskData.details?.accident_rate ?? "-";
-                const accidentRateEl = document.getElementById("kpi-accident-rate");
-                if (accidentRateEl)
-                    accidentRateEl.textContent = isNaN(accidentRate) ? "-" : `${accidentRate.toFixed(2)}%`;
-
-                const diseaseTop = riskData.disease_top5?.[0]?.name || "-";
-                const diseaseTopEl = document.getElementById("kpi-disease-top");
-                if (diseaseTopEl) diseaseTopEl.textContent = diseaseTop;
-
-                const injuryTop = riskData.injury_top5?.[0]?.name || "-";
-                const injuryTopEl = document.getElementById("kpi-injury-top");
-                if (injuryTopEl) injuryTopEl.textContent = injuryTop;
-
-                const totalScore = riskData.total_score ?? "-";
-                const riskLevel = riskData.risk_level ?? "-";
-                const color = riskData.color ?? "#999";
-                const scoreEl = document.getElementById("kpi-risk-score");
-                if (scoreEl) {
-                    scoreEl.textContent = `${totalScore}점`;
-                    scoreEl.style.color = color;
-                }
-                const riskCard = scoreEl ? scoreEl.closest(".kpi-card") : null;
-                if (riskCard) {
-                    let subEl = riskCard.querySelector(".kpi-sub");
-                    if (!subEl) {
-                        subEl = document.createElement("span");
-                        subEl.className = "kpi-sub";
-                        riskCard.appendChild(subEl);
-                    }
-                    subEl.textContent = riskLevel;
-                    subEl.style.color = color;
-                }
-            } else {
-                const reset = (id, text = "-") => {
-                    const el = document.getElementById(id);
-                    if (el) el.textContent = text;
-                };
-                reset("kpi-accident-rate");
-                reset("kpi-disease-top");
-                reset("kpi-injury-top");
-                reset("kpi-risk-score");
-            }
+            });
         });
-    });
-
-
 
     // 페이지 로드 시 산재가 선택되어 있으면 자동으로 1년 버튼 클릭
     if (visualArea && visualArea.dataset.hasSelection === "1") {
@@ -372,3 +703,4 @@ document.addEventListener("DOMContentLoaded", () => {
         defaultBtn?.click();
     }
 });
+
