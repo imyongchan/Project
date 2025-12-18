@@ -121,13 +121,15 @@
 
         {% if list.number > 1 %}
         <li class="page-item">
-            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page=1"><< 처음</a>
+            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page=1">
+              <span class="page-arrow">&laquo;</span> 처음</a>
         </li>
         {% endif %}
 
         {% if start_page > 1 %}
         <li class="page-item">
-            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ start_page|add:-1 }}">< 이전</a>
+            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ start_page|add:-1 }}">
+             <span class="page-arrow">&lsaquo;</span> 이전</a>
         </li>
         {% endif %}
 
@@ -143,13 +145,15 @@
 
         {% if list.paginator.num_pages > end_page %}
         <li class="page-item">
-            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ end_page|add:1 }}">다음 ></a>
+            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ end_page|add:1 }}">
+              다음 <span class="page-arrow">&rsaquo;</span></a>
         </li>
         {% endif %}
 
         {% if list.number < list.paginator.num_pages %}
         <li class="page-item">
-            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ list.paginator.num_pages }}">맨끝 >></a>
+            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ list.paginator.num_pages }}">
+              맨끝 <span class="page-arrow">&raquo;</span></a>
         </li>
         {% endif %}
 

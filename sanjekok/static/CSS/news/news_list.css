@@ -189,6 +189,13 @@ body {
   font-weight: 700;
 }
 
+.page-arrow {
+  font-size: 1.3rem;
+  line-height: 1;
+  transform: scale(1.15);  
+  display: inline-block; 
+}
+
 /* ================================
    8. 반응형 조정
 ================================ */

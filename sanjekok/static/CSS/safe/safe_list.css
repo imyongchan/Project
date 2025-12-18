@@ -199,6 +199,13 @@ body {
   font-weight: 700;
 }
 
+.page-arrow {
+  font-size: 1.3rem;
+  line-height: 1;
+  transform: scale(1.15);   
+  display: inline-block; 
+}
+
 .safe-section {
   min-height: calc(100vh - 300px);
   display: flex;

@@ -2,17 +2,16 @@
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q
+from .decorators import crawl_admin_required
 
 from .models import News
 from .crawler.run import crawl_news   # ← 크롤링 모듈만 가져오기
 
-def is_admin(user):
-    return user.is_staff or user.is_superuser
 
-@user_passes_test(is_admin)
+
 # 1) 관리자용: 수동 크롤링 실행
+@crawl_admin_required
 def crawl_news_view(request):
     """
     /news/crawl/ 로 접근했을 때 크롤링 실행
@@ -28,7 +27,6 @@ def crawl_news_view(request):
 
 
 # 2) 사용자용: 뉴스목록
-
 def news_list(request):
     qs = News.objects.all().order_by('-n_created_at') # 기사작성일 순 
     # id로 하면 새로운뉴스 insert될때 뒤에 붙는데 그게 앞에 안나옴

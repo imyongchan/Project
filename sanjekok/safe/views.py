@@ -1,22 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .decorators import login_required
-from django.contrib.auth.decorators import user_passes_test
 from django.db.models import F
+from .decorators import login_required, crawl_admin_required
 
 from .crawler.run import crawl_safe
 from .models import Safe
 from .models import History
 from member.models import Member
 
-def is_admin(user):
-    """
-    관리자 여부 판단
-    """
-    return user.is_staff or user.is_superuser
 
-@user_passes_test(is_admin)
+@crawl_admin_required
 # 1) 관리자용: 수동 크롤링 실행
 def crawl_safe_view(request):
     """
