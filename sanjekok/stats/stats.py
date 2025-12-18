@@ -1,5 +1,5 @@
 import pandas as pd
-
+import math
 from .models import (
     Stats1, Stats2, Stats3, Stats4, Stats5,
     Stats6, Stats7, Stats8, Stats9,
@@ -783,16 +783,7 @@ def _get_weighted_top5(industry_name, model_list, weight, years):
 
 
 def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
-    """
-    종합 위험도 분석 및 점수 계산
-    
-    반환값:
-    - 발생형태/질병 TOP 5
-    - 종합 위험도 점수 (0-100점)
-    - 세부 점수 분해 (기본/개인화/중증도)
-    - 상세 지표
-    """
-    
+
     age_group = get_age_group(age)
     
     # ===== 1. 기본 통계 데이터 가져오기 =====
@@ -860,13 +851,10 @@ def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
     # ===== 5. 기본 위험도 점수 계산 (40점) =====
     accident_rate = recent.get("재해율", 0)
     death_rate = recent.get("사망만인율", 0)
-    
-    # 재해율 점수 (0-20점)
-    accident_score = min(accident_rate * 10, 20)
-    
-    # 사망만인율 점수 (0-20점)
-    death_rate_score = min(death_rate * 100, 20)
-    
+
+    accident_score = min(math.sqrt(accident_rate) * 10, 14)
+    death_rate_score = min(math.log1p(death_rate) * 9, 26)
+
     base_score = accident_score + death_rate_score
     
     # ===== 6. 개인화 위험도 점수 계산 (40점) =====
@@ -946,64 +934,59 @@ def build_risk_explanation(
 ):
     explanation = []
 
-    # 1️⃣ 재해 발생 빈도 (기본 위험도 / 20점)
+    # 1️⃣ 재해 발생 빈도
     if accident_rate >= 1.5:
         explanation.append(
-            "해당 업종은 최근 통계 기준 재해 발생 빈도가 높은 편으로, "
-            "기본 위험도 점수 산정 시 주요 위험 요인으로 작용했습니다."
+            "이 업종은 사고가 비교적 자주 발생하는 편으로, "
+            "일상적인 작업 중에도 재해에 노출될 가능성이 있습니다."
         )
     elif accident_rate >= 1.0:
         explanation.append(
-            "재해 발생 수준이 업종 평균 이상으로 나타나, "
-            "기본 위험도 점수에 일정 부분 영향을 주고 있습니다."
+            "이 업종의 사고 발생 수준은 평균보다 약간 높은 편으로, "
+            "작업 시 기본적인 안전 관리가 특히 중요합니다."
         )
     else:
         explanation.append(
-            "재해 발생 빈도가 비교적 낮아, "
-            "기본 위험도는 낮은 수준으로 평가되었습니다."
+            "이 업종은 사고 발생 빈도가 낮은 편으로, "
+            "다른 업종에 비해 일상적인 재해 위험은 크지 않은 것으로 보입니다."
         )
 
-    # 2️⃣ 사망 위험 (기본 위험도 / 20점)
+    # 2️⃣ 사망 위험
     if death_rate >= 1.0:
         explanation.append(
-            "사망만인율이 높은 편으로, 사고 발생 시 중대한 결과로 이어질 가능성이 커 "
-            "기본 위험도 점수에 크게 반영되었습니다."
+            "사고가 발생할 경우 중대 사고로 이어질 가능성이 높은 업종입니다. "
+            "작은 사고라도 생명에 위협이 될 수 있어 각별한 주의가 필요합니다."
         )
     elif death_rate > 0:
         explanation.append(
-            "사망 사고 발생 사례가 일부 존재하여, "
-            "기본 위험도 점수에 보수적으로 반영되었습니다."
+            "드물지만 치명적인 사고 사례가 발생한 업종으로, "
+            "위험 상황에서는 사고의 결과가 심각해질 수 있습니다."
         )
 
-    # 3️⃣ 중증도 (중증도 점수 / 20점)
+    # 3️⃣ 중증도
     if severity_ratio >= 5:
         explanation.append(
-            "재해 발생 대비 사망 비율이 높아, "
-            "사고 발생 시 중증 사고로 이어질 가능성이 큰 것으로 평가되었습니다."
+            "전체 사고 중 사망으로 이어지는 비율이 높은 편으로, "
+            "사고가 발생하면 중증 사고로 이어질 가능성이 큽니다."
         )
     elif severity_ratio > 0:
         explanation.append(
-            "사망 비율이 낮은 편으로, "
-            "중증도 점수는 제한적으로 반영되었습니다."
+            "사고는 발생하지만 대부분은 경미한 사고에 그치는 경향이 있어, "
+            "중증 사고 위험은 상대적으로 낮은 편입니다."
         )
 
-    # 4️⃣ 개인화 위험 (개인화 점수 / 40점)
+    # 4️⃣ 개인화 위험
     if personal_score >= 30:
         explanation.append(
-            "선택하신 발생형태 또는 질병 유형이 업종 내에서 높은 비중을 차지하고 있어, "
-            "개인화 위험도가 종합 위험도 산정에 크게 반영되었습니다."
+            "회원님의 성별과 연령대에서 자주 발생하는 사고 유형이 "
+            "해당 업종의 주요 재해 유형과 겹쳐 개인적인 위험도가 높게 나타났습니다."
         )
     elif personal_score >= 15:
         explanation.append(
-            "개인 조건이 업종의 주요 위험 특성과 일부 일치하여, "
-            "개인화 위험도 점수에 일정 수준 반영되었습니다."
+            "회원님의 조건이 업종의 주요 위험 요소와 일부 겹쳐 "
+            "개인적인 주의가 필요한 수준으로 평가되었습니다."
         )
 
-    # 5️⃣ 전반적 안정 메시지 (보완용)
-    if not explanation:
-        explanation.append(
-            "모든 주요 지표가 낮은 수준으로 나타나, "
-            "현재 기준 종합 위험도는 비교적 안정적인 상태로 평가됩니다."
-        )
+
 
     return explanation
