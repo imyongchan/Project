@@ -54,14 +54,14 @@ def save_items(items):
 
         # 2) Safe 테이블에 저장
         safe, created = Safe.objects.update_or_create(
-            s_title=title,
+            s_link=link,
             defaults={
+                "s_title": title,
                 "s_type": type_name,
                 "s_image_url": img,
                 "s_contents": contents,
                 "s_created_at": created_at,
                 "s_view_count": views,
-                "s_link": link,
                 "s_language": language,
                 "s_publisher": publisher,
                 "s_video_url": clean_video_url,
