@@ -469,24 +469,41 @@ body {
     text-align: center;
 }
 
-
+/* 오늘의 안전글귀 (poster) 영역 */
 .poster {
-    display: inline-flex;
-    width: 65%;
-    margin-left: 0;
+  width: 65%;
+  display: flex;
+  align-items: center;
+}
+
+.poster-wrap {
+  position: relative;
+  width: 100%;
 }
 
 .poster-img {
-    width: 80%;
-    margin: 0 auto;
+    width: 100%;
+    display: block;
 }
 
-.poster-text {
-    display: block;
-    flex-direction: column;
-    justify-content: center;
-    padding-left: 12%;
+/* 이미지 위 글귀용 */
+.safety-quote-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
 }
+
+.quote-main {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1f2a33;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
 
 .video-wrap {
   width: 80%;
@@ -771,7 +788,6 @@ footer{
   }
 
   .clock,
-  .poster-wrap,
   .video-wrap {
     width: 100%;
   }

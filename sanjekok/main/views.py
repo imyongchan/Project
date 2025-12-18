@@ -3,10 +3,29 @@ from django.shortcuts import render
 from django.conf import settings
 from news.models import News
 from django.shortcuts import render
-from datetime import datetime
+from datetime import datetime, date
 import locale
 import calendar
+import random
 
+SAFETY_QUOTES = [
+    "오늘의 안전이 내일의 일상을 지킵니다",
+    "작은 부주의가 큰 사고가 됩니다",
+    "안전은 선택이 아니라 기본입니다",
+    "익숙함이 가장 위험합니다",
+    "오늘도 무사고, 그것이 최고의 성과입니다",
+    "당신의 안전이 가족의 행복입니다",
+    "안전에는 베테랑이 없습니다",
+    "안전은 끝이 아니라 시작입니다",
+    "찾았다 위험! 보인다 안전!",
+    "작업 전 안전점검은 생명을 지키는 습관입니다",
+    "내 일을 위한 위험성 평가는 나를 위한 준비입니다",
+    "오늘의 안전, 내일의 행복",
+]
+def get_today_safety_quote():
+    seed = date.today().toordinal()
+    random.seed(seed)
+    return random.choice(SAFETY_QUOTES)
 
 def main(request):
     api_key = settings.KOSIS_API_KEY
@@ -114,10 +133,6 @@ def main(request):
     now = datetime.now()  
 
 
-
-
-
-
     #뉴스
     news = News.objects.order_by('-n_created_at')[:8]
 
@@ -167,7 +182,9 @@ def main(request):
                 })
         calendar_with_holidays.append(week_data)
 
-
+    # 오늘의 안전글귀
+    today_quote = get_today_safety_quote()
+    
     context = {
         "gender_total": gender_total,
         "age_total": age_total,
@@ -177,6 +194,7 @@ def main(request):
         "year": year,
         "month_name": month_name,
         "calendar": calendar_with_holidays,
+        "today_quote": today_quote,   # ✅ 추가
     }
 
 
