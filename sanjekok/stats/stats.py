@@ -811,13 +811,6 @@ def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
                 "personal_score": 0,
                 "severity_score": 0
             },
-            "details": {
-                "accident_rate": 0,
-                "death_rate": 0,
-                "severity_ratio": 0,
-                "gender_factor": 50.0,
-                "age_factor": 16.7
-            }
         }
     
     # 해당 기간 데이터 추출
