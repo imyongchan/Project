@@ -852,10 +852,10 @@ def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
     
     # ===== 6. 개인화 위험도 점수 계산 (40점) =====
     # 발생형태 위험도 (상위 3개 비율 합산)
-    injury_risk = sum(item.get("percentage", 0) for item in injury_top5[:3]) / 100 * 20
+    injury_risk = sum(item.get("percentage", 0) for item in injury_top5[:5]) / 100 * 20
     
     # 질병 위험도 (상위 3개 비율 합산)
-    disease_risk = sum(item.get("percentage", 0) for item in disease_top5[:3]) / 100 * 20
+    disease_risk = sum(item.get("percentage", 0) for item in disease_top5[:5]) / 100 * 20
     
     # 개인화 점수 = (발생형태 + 질병) × (성별 가중치 + 연령 가중치)
     personal_score = (injury_risk + disease_risk) * (gender_weight + age_weight)
@@ -870,18 +870,21 @@ def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
     total_score = base_score + personal_score + severity_score
     
     # ===== 9. 위험도 등급 분류 =====
-    if total_score >= 70:
+    if total_score >= 85:
         risk_level = "매우 높음"
         color = "red"
-    elif total_score >= 50:
+    elif total_score >= 65:
         risk_level = "높음"
         color = "orange"
-    elif total_score >= 30:
+    elif total_score >= 50:
         risk_level = "보통"
         color = "yellow"
-    else:
+    elif total_score >= 25:
         risk_level = "낮음"
         color = "green"
+    else:
+        risk_level = "매우낮음"
+        color = "white"
 
     explanation = build_risk_explanation(
     accident_rate=accident_rate,
