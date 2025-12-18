@@ -29,6 +29,9 @@ const DEFAULT_MAX_H = 260;
 // ✅ 마커와 말풍선이 겹치지 않게 벌릴 간격(px)
 const OVERLAY_GAP_PX = 20;
 
+// ✅ 지도 축소(줌아웃) 제한: level이 클수록 더 축소됨
+const MAP_MAX_LEVEL = 12;
+
 function makeSvgPinMarkerImage(colorHex) {
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="38" viewBox="0 0 28 38">
@@ -374,11 +377,15 @@ function initMap() {
     level: 5
   });
 
+  
+
   // 클릭 + 드래그 + 줌 시작 시 말풍선/상세 닫기
   kakao.maps.event.addListener(map, "click", clearIncidentInfo);
   kakao.maps.event.addListener(map, "dragstart", clearIncidentInfo);
   kakao.maps.event.addListener(map, "zoom_start", clearIncidentInfo);
 
+  map.setMaxLevel(MAP_MAX_LEVEL);
+  
   // 지도 이동/줌 끝나면 산재 갱신
   kakao.maps.event.addListener(map, "idle", updateIncidents);
 
