@@ -30,7 +30,7 @@ const DEFAULT_MAX_H = 260;
 const OVERLAY_GAP_PX = 20;
 
 // ✅ 지도 축소(줌아웃) 제한: level이 클수록 더 축소됨
-const MAP_MAX_LEVEL = 12;
+const MAP_MAX_LEVEL = 9;
 
 function makeSvgPinMarkerImage(colorHex) {
   const svg =
@@ -385,7 +385,7 @@ function initMap() {
   kakao.maps.event.addListener(map, "zoom_start", clearIncidentInfo);
 
   map.setMaxLevel(MAP_MAX_LEVEL);
-  
+
   // 지도 이동/줌 끝나면 산재 갱신
   kakao.maps.event.addListener(map, "idle", updateIncidents);
 
