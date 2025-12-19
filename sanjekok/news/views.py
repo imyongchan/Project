@@ -132,21 +132,26 @@ def news_list(request):
 def image_proxy(request):
     url = request.GET.get("url")
     if not url:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest("no url")
 
     parsed = urlparse(url)
     if parsed.scheme not in ("http", "https"):
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest("bad scheme")
 
-    r = requests.get(
-        url,
-        timeout=5,
-        headers={"User-Agent": "Mozilla/5.0"}
-    )
+    try:
+        r = requests.get(
+            url,
+            timeout=5,
+            verify=False,
+            headers={"User-Agent": "Mozilla/5.0"},
+            stream=True
+        )
+    except requests.RequestException as e:
+        return HttpResponse(str(e), status=502)
 
     content_type = r.headers.get("Content-Type", "")
     if not content_type.startswith("image/"):
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest("not image")
 
     response = HttpResponse(r.content, content_type=content_type)
     response["Cache-Control"] = "public, max-age=86400"
