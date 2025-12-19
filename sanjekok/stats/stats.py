@@ -145,8 +145,6 @@ def get_stats2(industry_name2):
 def get_stats3(industry_name3):
     qs = Stats3.objects.filter(c1_nm=industry_name3)
 
-    if not qs.exists():
-        return []
 
     df = pd.DataFrame.from_records(
         qs.values("prd_de", "c2_nm", "dt")
@@ -223,7 +221,7 @@ def get_stats4(industry_name4):
     pivot = (
         df.pivot_table(
             index="prd_de",
-            columns="c2_nm",   # '18세 미만', '18~24세', ...
+            columns="c2_nm",   
             values="dt",
             aggfunc="sum",
         )
@@ -411,7 +409,7 @@ def get_stats6(industry_name6):
     result = {}
 
     for period, row in summary.iterrows():
-        # 기간 컬럼 제거 후, 0보다 큰 것만 상위 10개
+        # 기간 컬럼 제거 후, 0보다 큰 것만 상위 7개
         numeric_row = row.drop(labels=[], errors="ignore")
         filtered_row = numeric_row[numeric_row > 0].sort_values(ascending=False)
         top7 = filtered_row.head(7)
@@ -854,15 +852,14 @@ def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
 
     base_score = accident_score + death_rate_score
     
-    # ===== 6. 개인화 위험도 점수 계산 (40점) =====
-    # 발생형태 위험도 (상위 3개 비율 합산)
+    # ===== 6. 개인화 위험도 점수 계산 (최대 40점) =====
     injury_risk = sum(item.get("percentage", 0) for item in injury_top5[:5]) / 100 * 20
-    
-    # 질병 위험도 (상위 3개 비율 합산)
     disease_risk = sum(item.get("percentage", 0) for item in disease_top5[:5]) / 100 * 20
-    
-    # 개인화 점수 = (발생형태 + 질병) × (성별 가중치 + 연령 가중치)
-    personal_score = (injury_risk + disease_risk) * (gender_weight + age_weight)
+
+    weight_factor = (gender_weight + age_weight) / 2
+    raw_personal_score = (injury_risk + disease_risk) * weight_factor
+
+    personal_score = min(raw_personal_score, 40)
     
     # ===== 7. 중증도 점수 계산 (20점) =====
     total_accidents = recent.get("재해자수", 0)
