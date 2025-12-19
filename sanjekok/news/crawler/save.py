@@ -6,6 +6,7 @@ from django.utils import timezone
 
 import os
 import requests
+import time
 from django.conf import settings
 
 NEWS_IMG_DIR = os.path.join(settings.BASE_DIR, "static/img/news")
@@ -21,6 +22,9 @@ def download_news_image(img_url, filename):
             timeout=5,
             headers={"User-Agent": "Mozilla/5.0"}
         )
+        
+        # ✅ 여기 — 요청 1회 끝난 직후
+        time.sleep(0.3)
         
         # ⭐ 여기 한 줄 추가 # 100kb
         if int(r.headers.get("Content-Length", 0)) > 100_000:  

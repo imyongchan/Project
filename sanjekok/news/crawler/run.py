@@ -52,7 +52,7 @@ def crawl_news():
                 art["writer"] = detail.get("writer")
                 
                 # ✅ 여기 추가
-                if image_count < 10:
+                if image_count < 30:
                     art["img_url"] = download_news_image(
                         art.get("img_url"),
                         f"news_{image_count+1}.png"
@@ -67,7 +67,7 @@ def crawl_news():
                 print(f"❌ 상세페이지 실패: {art.get('link')}", e)
                 continue
 
-            time.sleep(0.2)  
+            time.sleep(0.3)  
 
         page += 1
         time.sleep(0.5)      # ⭐ 페이지 단위 휴식
