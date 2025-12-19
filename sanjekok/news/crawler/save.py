@@ -4,6 +4,39 @@ from news.models import News
 from datetime import datetime
 from django.utils import timezone
 
+import os
+import requests
+from django.conf import settings
+
+NEWS_IMG_DIR = os.path.join(settings.BASE_DIR, "static/img/news")
+DEFAULT_IMG = "img/news/default.png"
+
+def download_news_image(img_url, filename):
+    """
+    뉴스 이미지 로컬 저장
+    """
+    if not img_url:
+        return DEFAULT_IMG
+
+    try:
+        r = requests.get(
+            img_url,
+            timeout=5,
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+        if r.status_code == 200:
+            os.makedirs(NEWS_IMG_DIR, exist_ok=True)
+            file_path = os.path.join(NEWS_IMG_DIR, filename)
+
+            with open(file_path, "wb") as f:
+                f.write(r.content)
+
+            return f"img/news/{filename}"
+    except Exception:
+        pass
+
+    return DEFAULT_IMG
+
 def save_news(data):
     """
     파싱된 dict 데이터를 받아 DB에 저장

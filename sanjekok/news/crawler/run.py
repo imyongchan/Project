@@ -2,6 +2,7 @@ import time
 from .fetch import fetch_html
 from .parse import parse_list_page, parse_detail_page
 from .save import save_news
+from .save import save_news, download_news_image
 
 def crawl_news():
     """
@@ -10,6 +11,7 @@ def crawl_news():
     print(f"\n===== 🟠 뉴스 크롤링 시작 🟠 =====")
 
     page = 1
+    image_count = 0   # ⭐ 이미지 저장 개수 카운트
 
     while True:
         print(f"\n▶ 목록 페이지 {page} 수집 중...")
@@ -39,6 +41,17 @@ def crawl_news():
                 detail = parse_detail_page(detail_soup)
 
                 art["writer"] = detail.get("writer")
+                
+                # ✅ 여기 추가
+                if image_count < 20:
+                    art["img_url"] = download_news_image(
+                        art.get("img_url"),
+                        f"news_{image_count+1}.jpg"
+                    )
+                    image_count += 1
+                else:
+                    art["img_url"] = "img/news/default.png"
+                    
                 save_news(art)
 
             except Exception as e:
