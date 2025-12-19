@@ -42,24 +42,32 @@ def download_news_image(img_url, filename):
     return DEFAULT_IMG
 
 def save_news(data):
-    """
-    파싱된 dict 데이터를 받아 DB에 저장
-    """
-
-    # 작성일자(문자열) → 날짜(datetime) 변환
+    # 1️⃣ 작성일 처리
     try:
         created_at = datetime.strptime(data["created_at_raw"], "%Y-%m-%d")
-
     except:
-        created_at = timezone.now() # 작성일자 값이 없으면 DB저장날짜로
+        created_at = timezone.now()
 
-    News.objects.update_or_create(
-        n_link=data["link"],   # 중복 체크. 상세링크 기준 
+    # 2️⃣ 뉴스 먼저 저장 (이미지 제외)
+    news, created = News.objects.update_or_create(
+        n_link=data["link"],   # 상세 링크 기준 중복 체크
         defaults={
             "n_title": data["title"],
             "n_writer": data["writer"],
             "n_contents": data["content"],
-            "n_image_url": data["img_url"],
             "n_created_at": created_at,
         }
     )
+
+    # 3️⃣ PK 기반 이미지 파일명
+    filename = f"news_{news.id}.png"
+
+    # 4️⃣ 이미지 다운로드
+    image_path = download_news_image(
+        data.get("img_url"),
+        filename
+    )
+
+    # 5️⃣ 이미지 경로 DB 반영
+    news.n_image_url = image_path
+    news.save(update_fields=["n_image_url"])
