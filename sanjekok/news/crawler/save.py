@@ -21,6 +21,10 @@ def download_news_image(img_url, filename):
             timeout=5,
             headers={"User-Agent": "Mozilla/5.0"}
         )
+        
+        # ⭐ 여기 한 줄 추가
+        if int(r.headers.get("Content-Length", 0)) > 500_000:
+            return DEFAULT_IMG
 
         content_type = r.headers.get("Content-Type", "")
         if r.status_code == 200 and content_type.startswith("image/"):
