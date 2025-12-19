@@ -14,6 +14,7 @@ from .crawler.run import crawl_news   # ← 크롤링 모듈만 가져오기
 import requests
 from django.http import HttpResponse, HttpResponseBadRequest
 from urllib.parse import urlparse
+from django.http import StreamingHttpResponse
 
 # 1) 관리자용: 수동 크롤링 실행
 @crawl_admin_required
@@ -141,10 +142,10 @@ def image_proxy(request):
     try:
         r = requests.get(
             url,
-            timeout=5,
+            stream=True,            
+            timeout=10,             
             verify=False,
             headers={"User-Agent": "Mozilla/5.0"},
-            stream=True
         )
     except requests.RequestException as e:
         return HttpResponse(str(e), status=502)
@@ -153,6 +154,14 @@ def image_proxy(request):
     if not content_type.startswith("image/"):
         return HttpResponseBadRequest("not image")
 
-    response = HttpResponse(r.content, content_type=content_type)
+    def generate():
+        for chunk in r.iter_content(chunk_size=8192):
+            if chunk:
+                yield chunk
+
+    response = StreamingHttpResponse(
+        generate(),
+        content_type=content_type
+    )
     response["Cache-Control"] = "public, max-age=86400"
     return response
