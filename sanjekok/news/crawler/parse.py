@@ -1,5 +1,6 @@
 # 정보 추출
 from .fetch import absolute_url
+from datetime import datetime
 
 # 목록페이지
 def parse_list_page(soup):
@@ -38,9 +39,18 @@ def parse_list_page(soup):
     return results
 
 # 상세페이지 - 작성자 정보만..
-def parse_detail_page(soup):
+def parse_detail_page(soup, created_at_raw=None):
     writer_tag = soup.select_one("div.titleWrap > div.else-area > p")
     writer = writer_tag.text.strip() if writer_tag else None
+    
+    published_at = None
+    if created_at_raw:
+        try:
+            published_at = datetime.strptime(created_at_raw, "%Y-%m-%d")
+            
+        except ValueError:
+            pass
     return {
-        "writer": writer
+        "writer": writer,
+        "published_at": published_at,  # ✅ datetime 객체
         }

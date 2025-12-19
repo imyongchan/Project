@@ -3,12 +3,14 @@ from .fetch import fetch_html
 from .parse import parse_list_page, parse_detail_page
 from .save import save_news
 from .save import save_news, download_news_image
-
+from datetime import datetime, timedelta
 def crawl_news():
     """
-    뉴스 전체 크롤링
+    뉴스 전체 크롤링 (최근 1년)
     """
     print(f"\n===== 🟠 뉴스 크롤링 시작 🟠 =====")
+    
+    one_year_ago = datetime.now() - timedelta(days=365)
 
     page = 1
     image_count = 0   # ⭐ 이미지 저장 개수 카운트
@@ -38,7 +40,14 @@ def crawl_news():
         for art in articles:
             try:
                 detail_soup = fetch_html(art["link"])
-                detail = parse_detail_page(detail_soup)
+                detail = parse_detail_page(detail_soup, art.get("created_at_raw"))
+                
+                # ✅ [여기에 추가] 날짜 기준 컷
+                published_at = detail.get("published_at")
+
+                if published_at and published_at < one_year_ago:
+                    print("⏹ 1년 이전 기사 도달 → 크롤링 종료")
+                    return   # crawl_news 전체 종료
 
                 art["writer"] = detail.get("writer")
                 
@@ -63,7 +72,6 @@ def crawl_news():
         page += 1
         time.sleep(0.5)      # ⭐ 페이지 단위 휴식
 
-    from datetime import datetime
     end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"\n====== 뉴스 전체 크롤링 완료 =====")
     print(f"🕒 종료 시간: {end_time}")
