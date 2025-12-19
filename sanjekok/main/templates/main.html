@@ -154,7 +154,7 @@
             <article class="news-card">
                 <a href="{{ news.n_link }}" target="_blank">
                     <div class="news-thumb">
-                    <img src="/news/image-proxy/?url={{ news.n_image_url|urlencode }}" alt="뉴스 이미지">
+                    <img src="{% static news.n_image_url %}" alt="뉴스 이미지">
                     </div>
                 </a>
                 <div class="news-body">

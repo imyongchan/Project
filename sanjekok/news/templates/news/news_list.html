@@ -60,13 +60,9 @@
   {% for n in list %}
   <div class="news-card">
     <div class="news-img">
-      {% if n.n_image_url %}
         <a href="{{ n.n_link }}" target="_blank">
-          <img src="/news/image-proxy/?url={{ n.n_image_url|urlencode }}" alt="썸네일">
+          <img src="{% static n.n_image_url %}" alt="뉴스이미지">
         </a>
-      {% else %}
-        <div class="no-image">이미지 없음</div>
-      {% endif %}
     </div>
 
     <div class="news-info">

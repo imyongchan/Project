@@ -114,10 +114,6 @@ def main(request):
     now = datetime.now()  
 
 
-
-
-
-
     #뉴스
     news = News.objects.order_by('-n_created_at')[:8]
 
