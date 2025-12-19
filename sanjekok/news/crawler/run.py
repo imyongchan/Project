@@ -52,7 +52,7 @@ def crawl_news():
                 art["writer"] = detail.get("writer")
                 
                 # ✅ 여기 추가
-                if image_count < 101:
+                if image_count < 10:
                     art["img_url"] = download_news_image(
                         art.get("img_url"),
                         f"news_{image_count+1}.png"
