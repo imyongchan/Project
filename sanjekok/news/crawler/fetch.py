@@ -13,7 +13,7 @@ HEADERS = {
 }
 
 def fetch_html(url: str):
-    response = requests.get(url, headers=HEADERS)
+    response = requests.get(url, headers=HEADERS, timeout=10)
     response.raise_for_status()
     return BeautifulSoup(response.text, "lxml")
 
