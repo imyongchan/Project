@@ -29,12 +29,15 @@ header {
 
 .nav-item .nav-link {
   position: relative;
+  display: inline;
   font-weight: 500;
   color: #444 !important;
   font-size: 0.95rem;
   padding: 6px 4px;
   transition: color 0.2s ease;
 }
+
+
 
 /* hover 효과 */
 .nav-item .nav-link:hover {
