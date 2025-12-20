@@ -853,10 +853,10 @@ def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
     base_score = accident_score + death_rate_score
     
     # ===== 6. 개인화 위험도 점수 계산 (최대 40점) =====
-    injury_risk = sum(item.get("percentage", 0) for item in injury_top5[:5]) / 100 * 20
-    disease_risk = sum(item.get("percentage", 0) for item in disease_top5[:5]) / 100 * 20
+    injury_risk = sum(item.get("percentage", 0) for item in injury_top5[:3]) / 100 * 20
+    disease_risk = sum(item.get("percentage", 0) for item in disease_top5[:3]) / 100 * 20
 
-    weight_factor = (gender_weight + age_weight) / 2
+    weight_factor = (gender_weight * 0.2) + (age_weight * 0.8)
     raw_personal_score = (injury_risk + disease_risk) * weight_factor
 
     personal_score = min(raw_personal_score, 40)
@@ -889,10 +889,14 @@ def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
         color = "white"
 
     explanation = build_risk_explanation(
+    base_score= base_score,
+    personal_score = personal_score,
+    severity_score= severity_score,
     accident_rate=accident_rate,
     death_rate=death_rate,
+    gender_weight_pct=gender_weight * 100,
+    age_weight_pct=age_weight * 100,
     severity_ratio=severity_ratio,
-    personal_score=personal_score,
 )    
     
     # ===== 10. 결과 반환 =====
@@ -925,66 +929,113 @@ def get_risk_analysis(industry_name, age, gender, years=3, member_name=None):
     return result
 
 def build_risk_explanation(
-    accident_rate,
-    death_rate,
-    severity_ratio,
+    base_score,
     personal_score,
+    severity_score,
+    accident_rate=None,
+    death_rate=None,
+    gender_weight_pct=None,
+    age_weight_pct=None,
+    severity_ratio=None,
 ):
     explanation = []
 
-    # 1️⃣ 재해 발생 빈도
-    if accident_rate >= 1.5:
-        explanation.append(
-            "이 업종은 사고가 비교적 자주 발생하는 편으로, "
-            "일상적인 작업 중에도 재해에 노출될 가능성이 있습니다."
+    # =========================
+    # 1) 기본 위험도(0~40) 설명
+    # =========================
+    if base_score >= 32:
+        msg = (
+            f"기본 위험도 점수는 {base_score:.1f}/40으로 매우 높은 구간입니다. "
+            "즉, 업종 자체의 재해 발생 빈도와 치명 사고 위험이 모두 높은 편이라 "
+            "개인 조건과 무관하게 기본적으로 위험도가 크게 반영됩니다."
         )
-    elif accident_rate >= 1.0:
-        explanation.append(
-            "이 업종의 사고 발생 수준은 평균보다 약간 높은 편으로, "
-            "작업 시 기본적인 안전 관리가 특히 중요합니다."
+    elif base_score >= 24:
+        msg = (
+            f"기본 위험도 점수는 {base_score:.1f}/40으로 높은 구간입니다. "
+            "업종 자체에서 사고가 자주 발생하거나, 발생 시 치명도로 이어질 가능성이 있어 "
+            "안전수칙·보호구 착용 같은 기본 안전 관리가 특히 중요합니다."
+        )
+    elif base_score >= 14:
+        msg = (
+            f"기본 위험도 점수는 {base_score:.1f}/40으로 보통 구간입니다. "
+            "업종 자체의 위험 신호가 일부 존재하지만, 작업 환경과 안전관리 수준에 따라 "
+            "체감 위험이 달라질 수 있는 수준입니다."
         )
     else:
-        explanation.append(
-            "이 업종은 사고 발생 빈도가 낮은 편으로, "
-            "다른 업종에 비해 일상적인 재해 위험은 크지 않은 것으로 보입니다."
+        msg = (
+            f"기본 위험도 점수는 {base_score:.1f}/40으로 낮은 구간입니다. "
+            "통계상 업종 자체의 사고 빈도와 치명 사고 위험이 상대적으로 크지 않은 편입니다."
         )
 
-    # 2️⃣ 사망 위험
-    if death_rate >= 1.0:
-        explanation.append(
-            "사고가 발생할 경우 중대 사고로 이어질 가능성이 높은 업종입니다. "
-            "작은 사고라도 생명에 위협이 될 수 있어 각별한 주의가 필요합니다."
+    # 보조 근거(있으면 추가)
+    if accident_rate is not None and death_rate is not None:
+        msg += f" (참고: 재해율 {accident_rate:.2f}%, 사망만인율 {death_rate:.2f}‰)"
+    explanation.append(msg)
+
+    # =========================
+    # 2) 개인화 위험도(0~40) 설명
+    # =========================
+    if personal_score >= 32:
+        msg = (
+            f"개인화 위험도 점수는 {personal_score:.1f}/40으로 매우 높은 구간입니다. "
+            "회원님의 연령대/성별에서 많이 발생하는 재해·질병 패턴이 "
+            "해당 업종의 주요 위험 요인과 강하게 겹친다는 의미입니다. "
+            "즉 ‘업종 위험’이 ‘개인 조건’에서 더 증폭되는 케이스입니다."
         )
-    elif death_rate > 0:
-        explanation.append(
-            "드물지만 치명적인 사고 사례가 발생한 업종으로, "
-            "위험 상황에서는 사고의 결과가 심각해질 수 있습니다."
+    elif personal_score >= 24:
+        msg = (
+            f"개인화 위험도 점수는 {personal_score:.1f}/40으로 높은 구간입니다. "
+            "회원님의 조건(연령대/성별)이 업종의 주요 재해·질병 분포와 일부 겹쳐 "
+            "개인적으로 주의해야 할 포인트가 뚜렷하게 존재합니다."
+        )
+    elif personal_score >= 14:
+        msg = (
+            f"개인화 위험도 점수는 {personal_score:.1f}/40으로 보통 구간입니다. "
+            "업종의 주요 위험 요소와 회원님의 조건이 부분적으로만 겹치며, "
+            "작업 형태/직무에 따라 위험도가 달라질 수 있습니다."
+        )
+    else:
+        msg = (
+            f"개인화 위험도 점수는 {personal_score:.1f}/40으로 낮은 구간입니다. "
+            "회원님의 조건이 업종 내에서 상대적으로 높은 위험 패턴과 크게 겹치지 않아 "
+            "개인 조건에 의한 위험 증폭은 크지 않은 편입니다."
         )
 
-    # 3️⃣ 중증도
-    if severity_ratio >= 5:
-        explanation.append(
-            "전체 사고 중 사망으로 이어지는 비율이 높은 편으로, "
-            "사고가 발생하면 중증 사고로 이어질 가능성이 큽니다."
+    # 가중치 근거(있으면 추가)
+    if gender_weight_pct is not None and age_weight_pct is not None:
+        msg += f" (참고: 성별 {gender_weight_pct:.1f}%, 연령 {age_weight_pct:.1f}%)"
+    explanation.append(msg)
+
+    # =========================
+    # 3) 중증도(0~20) 설명
+    # =========================
+    if severity_score >= 16:
+        msg = (
+            f"중증도 점수는 {severity_score:.1f}/20으로 매우 높은 구간입니다. "
+            "사고가 한 번 발생했을 때 사망으로 이어질 가능성이 높다는 의미로, "
+            "‘사고 빈도’보다 ‘사고 결과의 심각도’가 위험도를 크게 끌어올립니다."
         )
-    elif severity_ratio > 0:
-        explanation.append(
-            "사고는 발생하지만 대부분은 경미한 사고에 그치는 경향이 있어, "
-            "중증 사고 위험은 상대적으로 낮은 편입니다."
+    elif severity_score >= 10:
+        msg = (
+            f"중증도 점수는 {severity_score:.1f}/20으로 높은 구간입니다. "
+            "재해 대비 사망 비율이 무시하기 어려운 수준이라, "
+            "위험 작업 공정에서는 추가적인 보호장비/안전 프로세스가 필요합니다."
+        )
+    elif severity_score >= 4:
+        msg = (
+            f"중증도 점수는 {severity_score:.1f}/20으로 보통 구간입니다. "
+            "사망 사고가 발생하긴 하지만, 전체 재해 대비 비중은 제한적입니다. "
+            "다만 특정 작업 상황에서 중대사고가 발생할 수 있어 예방 조치가 중요합니다."
+        )
+    else:
+        msg = (
+            f"중증도 점수는 {severity_score:.1f}/20으로 낮은 구간입니다. "
+            "통계상 사망으로 이어지는 비율이 낮아, 사고가 발생해도 "
+            "치명도 측면의 위험은 상대적으로 작습니다."
         )
 
-    # 4️⃣ 개인화 위험
-    if personal_score >= 30:
-        explanation.append(
-            "회원님의 성별과 연령대에서 자주 발생하는 사고 유형이 "
-            "해당 업종의 주요 재해 유형과 겹쳐 개인적인 위험도가 높게 나타났습니다."
-        )
-    elif personal_score >= 15:
-        explanation.append(
-            "회원님의 조건이 업종의 주요 위험 요소와 일부 겹쳐 "
-            "개인적인 주의가 필요한 수준으로 평가되었습니다."
-        )
-
-
+    if severity_ratio is not None:
+        msg += f" (참고: 재해 대비 사망비율 {severity_ratio:.1f}%)"
+    explanation.append(msg)
 
     return explanation
