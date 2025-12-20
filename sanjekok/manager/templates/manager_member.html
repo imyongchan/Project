@@ -23,7 +23,7 @@
                         <tr>
                             <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
                             <td>{{ member.m_username}}</a> </td>
-                            <td>{{ member.m_email }}</td>
+                            <td>{{ member.m_email|default:"입력안함" }}</td>
                             <td>{{ member.m_created_at|date:"Y-m-d" }}</td>
                             <td>
                                 <a href="{% url 'Manager:delete' member.member_id %}" 

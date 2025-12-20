@@ -81,8 +81,8 @@
                         <td>{{ stats.member_industry.member.m_name }}</td>
                         <td>{{ stats.member_industry.i_industry_type1 }}</td>
                         <td>{{ stats.member_industry.i_industry_type2 }}</td>
-                        <td>{{ stats.i_injury }}</td>
-                        <td>{{ stats.i_disease_type}}</td>
+                        <td>{{ stats.i_injury |default:"해당없음" }}</td>
+                        <td>{{ stats.i_disease_type | default:"해당없음" }}</td>
                         <td>{{ stats.i_accident_date|date:"Y-m-d" }}</td>
                         <td>{{ stats.i_address }}</td>
                     </tr>

@@ -10,6 +10,8 @@ from django.utils.dateparse import parse_date
 from django.db.models.functions import Cast
 from django.db.models import CharField
 from django.urls import reverse
+from django.utils import timezone
+import pytz
 
 def login(request):
     if request.method == "GET":
@@ -38,11 +40,17 @@ def dash(request):
 
 
     # 오늘 신규 가입
-    today = date.today()
-    days_ago = today - timedelta(days=6)
+    kst = pytz.timezone('Asia/Seoul')
+    today = timezone.now().astimezone(kst).date()
+
+    now = timezone.now().astimezone(kst)
+
+    start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_today = start_of_today + timedelta(days=1)
 
     new_members_today = Member.objects.filter(
-        m_created_at__date=today
+        m_created_at__gte=start_of_today,
+        m_created_at__lt=end_of_today
     ).count()
 
 	# 전체 산재 수
@@ -55,20 +63,24 @@ def dash(request):
     days = []
     counts = []
 
-    for i in range(6, -1, -1):  # 6일 전 ~ 오늘
-        day = today - timedelta(days=i)
-        days.append(day.strftime("%m-%d"))
-        
-        # 해당 날짜 가입자 수 세기
-        count = Member.objects.filter(m_created_at__date=day).exclude(m_status=0).count()
+    for i in range(6, -1, -1):
+        day = start_of_today - timedelta(days=i)
+        next_day = day + timedelta(days=1)
+
+        count = Member.objects.filter(
+            m_created_at__gte=day,
+            m_created_at__lt=next_day
+        ).count()
+
+        days.append(day.strftime('%m-%d'))
         counts.append(count)
 
 
     context = {
         'member_count': member_count,
         'new_members_today': new_members_today,
-        'review_count' : review_count,
-        'total_individual' : total_individual,
+        'total_individual': total_individual,
+        'review_count': review_count,
         'days': days,
         'counts': counts,
     }
