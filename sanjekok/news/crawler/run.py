@@ -1,77 +1,62 @@
+# run.py (SERVER)
 import time
 from .fetch import fetch_html
 from .parse import parse_list_page, parse_detail_page
 from .save import save_news
-from .save import save_news, download_news_image
 from datetime import datetime, timedelta
-def crawl_news():
-    """
-    뉴스 전체 크롤링 (최근 1년)
-    """
-    print(f"\n===== 🟠 뉴스 크롤링 시작 🟠 =====")
-    
-    one_year_ago = datetime.now() - timedelta(days=365)
 
+def crawl_news():
+    print(f"\n===== 🟠 뉴스 크롤링 시작 (이미지 제외) 🟠 =====")
+
+    one_year_ago = datetime.now() - timedelta(days=365)
     page = 1
-    image_count = 0   # ⭐ 이미지 저장 개수 카운트
 
     while True:
         print(f"\n▶ 목록 페이지 {page} 수집 중...")
 
         try:
-            list_url = f"http://sanjaenews.co.kr/news/list.php?&mcode=m641vf2&vg=&page={page}"
-
-            # 1) 목록 HTML 수집
+            list_url = (
+                f"http://sanjaenews.co.kr/news/list.php?"
+                f"&mcode=m641vf2&vg=&page={page}"
+            )
             list_soup = fetch_html(list_url)
-
-            # 2) 목록 파싱
             articles = parse_list_page(list_soup)
 
-            # 종료 조건
             if not articles:
-                print("🌐 더 이상 기사 없음 → 크롤링 종료")
+                print("🌐 기사 없음 → 종료")
                 break
 
         except Exception as e:
-            print("❌ 목록 페이지 수집 실패:", e)
-            break   
+            print("❌ 목록 수집 실패:", e)
+            break
 
-        # 상세페이지 처리
         for art in articles:
             try:
                 detail_soup = fetch_html(art["link"])
-                detail = parse_detail_page(detail_soup, art.get("created_at_raw"))
-                
-                # ✅ [여기에 추가] 날짜 기준 컷
-                published_at = detail.get("published_at")
+                detail = parse_detail_page(
+                    detail_soup,
+                    art.get("created_at_raw")
+                )
 
+                published_at = detail.get("published_at")
                 if published_at and published_at < one_year_ago:
-                    print("⏹ 1년 이전 기사 도달 → 크롤링 종료")
-                    return   # crawl_news 전체 종료
+                    print("⏹ 1년 이전 기사 → 종료")
+                    return
 
                 art["writer"] = detail.get("writer")
-                
-                # ✅ 여기 추가
-                if image_count < 30:
-                    art["img_url"] = download_news_image(
-                        art.get("img_url"),
-                        f"news_{image_count+1}.png"
-                    )
-                    image_count += 1
-                else:
-                    art["img_url"] = "img/news/default.png"
-                    
+
+                # ✅ 이미지 다운로드 안 함
+                # 원본 이미지 URL 그대로 저장
+                art["img_url"] = art.get("img_url")
+
                 save_news(art)
 
             except Exception as e:
-                print(f"❌ 상세페이지 실패: {art.get('link')}", e)
-                continue
+                print(f"❌ 상세 실패: {art['link']}", e)
 
-            time.sleep(0.3)  
+            time.sleep(0.3)
 
         page += 1
-        time.sleep(0.5)      # ⭐ 페이지 단위 휴식
+        time.sleep(0.5)
 
-    end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"\n====== 뉴스 전체 크롤링 완료 =====")
-    print(f"🕒 종료 시간: {end_time}")
+    print("✅ 뉴스 텍스트 크롤링 완료")
