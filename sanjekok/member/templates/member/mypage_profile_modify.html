@@ -32,7 +32,11 @@
             <div class="mb-3">
                 <label for="m_name" class="form-label">*이름 :</label>
                 <input type="text" class="form-control" placeholder="이름을 입력해주세요." id="m_name" name="m_name" value="{{ form.m_name.value|default_if_none:'' }}">
+                <div class="invalid-feedback" id="m_name-error" {% if form.m_name.errors %}style="display: block;"{% endif %}>
+                    {% if form.m_name.errors %}{{ form.m_name.errors.as_text }}{% endif %}
+                </div>
             </div>
+
             <div class="mb-3">
                 <label for="m_birth_date" class="form-label">*생년월일 :</label>
                 <input 
@@ -43,7 +47,11 @@
                     class="form-control"
                     placeholder="YYYY-MM-DD"
                     >
+                <div class="invalid-feedback" id="m_birth_date-error" {% if form.m_birth_date.errors %}style="display: block;"{% endif %}>
+                    {% if form.m_birth_date.errors %}{{ form.m_birth_date.errors.as_text }}{% endif %}
+                </div>
             </div>
+
             <div class="mb-3">
                 <label for="m_address" class="form-label">*집 주소 :</label>
                 <input 
@@ -57,6 +65,9 @@
                     onclick="searchAddress('m_address')"
                     maxlength="150"
                     >
+                <div class="invalid-feedback" id="m_address-error" {% if form.m_address.errors %}style="display: block;"{% endif %}>
+                    {% if form.m_address.errors %}{{ form.m_address.errors.as_text }}{% endif %}
+                </div>
             </div>
             <div class="mb-3">
                 <label for="m_jaddress" class="form-label">*직장 주소 :</label>
@@ -70,18 +81,24 @@
                     onclick="searchAddress('m_jaddress')"
                     value="{{ form.m_jaddress.value|default_if_none:'' }}"
                     maxlength="150">
+                    <div class="invalid-feedback" id="m_jaddress-error" {% if form.m_jaddress.errors %}style="display: block;"{% endif %}>
+                        {% if form.m_jaddress.errors %}{{ form.m_jaddress.errors.as_text }}{% endif %}
+                    </div>
             </div>
             <div class="mb-3">
                 <label for="m_phone" class="form-label">전화번호 :</label>
-                
+            
                 <div class="d-flex gap-2">
-                    <input type="text" class="form-control" name="cel1" id="cel1" maxlength="3" placeholder="010" value="{{ form.initial.cel1 }}">
+                    <input type="text" class="form-control {% if form.m_phone.errors %}is-invalid{% endif %}" name="cel1" id="cel1" maxlength="3" placeholder="010" value="{{ form.initial.cel1 }}">
                     <span class="fs-4">-</span>
 
-                    <input type="text" class="form-control" name="cel2_1" id="cel2_1" maxlength="4" placeholder="1234" value="{{ form.initial.cel2_1 }}">
+                    <input type="text" class="form-control {% if form.m_phone.errors %}is-invalid{% endif %}" name="cel2_1" id="cel2_1" maxlength="4" placeholder="1234" value="{{ form.initial.cel2_1 }}">
                     <span class="fs-4">-</span>
 
-                    <input type="text" class="form-control" name="cel2_2" id="cel2_2" maxlength="4" placeholder="5678" value="{{ form.initial.cel2_2 }}">
+                    <input type="text" class="form-control {% if form.m_phone.errors %}is-invalid{% endif %}" name="cel2_2" id="cel2_2" maxlength="4" placeholder="5678" value="{{ form.initial.cel2_2 }}">
+                </div>
+                <div class="invalid-feedback" id="m_phone-error" {% if form.m_phone.errors %}style="display: block;"{% endif %}>
+                    {% if form.m_phone.errors %}{{ form.m_phone.errors.as_text }}{% endif %}
                 </div>
             </div>
             <div class="mb-3">
@@ -101,22 +118,29 @@
                         <option value="">직접입력</option>
                         <option value="daum.net">daum.net</option>
                         <option value="empal.com">empal.com</option>
-                        <option value="gmail.com">gmail.com</.option>
+                        <option value="gmail.com">gmail.com</option>
                         <option value="hanmail.net">hanmail.net</option>
                         <option value="msn.com">msn.com</option>
                         <option value="naver.com">naver.com</option>
                         <option value="nate.com">nate.com</option>
                     </select>
+                    <div class="invalid-feedback" id="m_email-error" {% if form.email.errors %}style="display: block;"{% endif %}>
+                        {% if form.email.errors %}{{ form.email.errors.as_text }}{% endif %}
+                    </div>
+                    <!-- 에러 메시지 -->
+                    <div id="EmailError" style="display:none;color:red;">
+                        이메일 양식이 틀렸습니다.
+                    </div>
                 </div>
             <div class="mb-3">
                 <label class="form-label">*성별 :</label>
 
                 <div>
                     <input type="radio" id="sex_male" name="m_sex" value="남성" {% if form.m_sex.value == "남성" %}checked{% endif %}>
-                    <label for="sex_male">남</label>
+                    <label for="sex_male">남성</label>
 
                     <input type="radio" id="sex_female" name="m_sex" value="여성" {% if form.m_sex.value == "여성" %}checked{% endif %}>
-                    <label for="sex_female">여</label>
+                    <label for="sex_female">여성</label>
                 </div>
             </div>
 

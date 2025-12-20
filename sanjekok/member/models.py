@@ -20,8 +20,8 @@ class Member(models.Model):
     
     # 한글, 영어, 숫자만 허용, 1~20자
     name_validator = RegexValidator(
-        regex=r'^[가-힣a-zA-Z0-9]{1,20}$',
-        message='이름은 한글, 영어, 숫자만 입력 가능하며 1~20글자까지 가능합니다.'
+        regex=r'^(?=.*[가-힣a-zA-Z0-9])[가-힣a-zA-Z0-9_](?:[가-힣a-zA-Z0-9_ ]{0,18}[가-힣a-zA-Z0-9_])?$',
+        message='이름은 한글, 영어, 숫자, _, 공백만 입력 가능하며 1~20글자까지 가능합니다.'
     )
 
     m_name = models.CharField(

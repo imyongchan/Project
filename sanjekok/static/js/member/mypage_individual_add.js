@@ -3,6 +3,7 @@ $(document).ready(function () {
     flatpickr("#i_accident_date", {
         locale: "ko",
         dateFormat: "Y-m-d",
+        mindate: "1900-01-01",
         maxDate: "today",
     });
 

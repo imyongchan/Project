@@ -8,6 +8,8 @@ from .decorators import login_required, mypage_auth_required
 from . import services
 from django.conf import settings
 import urllib.parse
+import json
+
 # Create your views here.
 
 # 약관 동의
@@ -107,9 +109,8 @@ def registers(request):
             "form": form,
             "first_error_field": first_error_field,
         }
-        messages.error(request, "입력값이 올바르지 않습니다. 다시 입력해주세요.")
         return render(request, "member/member_register2.html", context)
-    
+
 # 로그인
 def login(request):
     if request.method == "GET":
@@ -308,7 +309,6 @@ def mypage_profile_modify(request):
             'member': member,
             'first_error_field': first_error_field
         }
-        messages.error(request, "입력값이 잘못되었습니다. 다시 확인해주세요.")
         return render(request, 'member/mypage_profile_modify.html', context)
     
 # 마이페이지 - 산재 관리

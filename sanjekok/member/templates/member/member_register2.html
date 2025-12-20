@@ -31,21 +31,30 @@
         <!-- 이름 -->
         <div class="input-group-wrap">
           <label for="m_name">*이름</label>
-          <input type="text" class="form-control" id="m_name" name="m_name" placeholder="이름을 입력해주세요." value="{{ form.m_name.value|default_if_none:'' }}">
+          <input type="text" class="form-control {% if form.m_name.errors %}is-invalid{% endif %}" id="m_name" name="m_name" placeholder="이름을 입력해주세요." value="{{ form.m_name.value|default_if_none:'' }}">
+          <div class="invalid-feedback" id="m_name-error" {% if form.m_name.errors %}style="display: block;"{% endif %}>
+              {% if form.m_name.errors %}{{ form.m_name.errors.as_text }}{% endif %}
+          </div>
         </div>
 
         <!-- 생년월일 -->
         <div class="input-group-wrap">
           <label for="m_birth_date">*생년월일</label>
-          <input type="text" class="form-control" id="m_birth_date" name="m_birth_date" placeholder="YYYY-MM-DD" value="{{ form.m_birth_date.value|default_if_none:'' }}">
+          <input type="text" class="form-control {% if form.m_birth_date.errors %}is-invalid{% endif %}" id="m_birth_date" name="m_birth_date" placeholder="YYYY-MM-DD" value="{{ form.m_birth_date.value|default_if_none:'' }}">
+          <div class="invalid-feedback" id="m_birth_date-error" {% if form.m_birth_date.errors %}style="display: block;"{% endif %}>
+              {% if form.m_birth_date.errors %}{{ form.m_birth_date.errors.as_text }}{% endif %}
+          </div>
         </div>
 
         <!-- 집 주소 -->
         <div class="input-group-wrap">
           <label for="m_address">*집 주소</label>
           <div class="address-group">
-            <input type="text" class="form-control" id="m_address" name="m_address" placeholder="집 주소를 입력해주세요." readonly onclick="searchAddress('m_address')" value="{{ form.m_address.value|default_if_none:'' }}" maxlength="150">
+            <input type="text" class="form-control {% if form.m_address.errors %}is-invalid{% endif %}" id="m_address" name="m_address" placeholder="집 주소를 입력해주세요." readonly onclick="searchAddress('m_address')" value="{{ form.m_address.value|default_if_none:'' }}" maxlength="150">
             <button type="button" class="btn-addr" onclick="searchAddress('m_address')">주소검색</button>
+          </div>
+          <div class="invalid-feedback" id="m_address-error" {% if form.m_address.errors %}style="display: block;"{% endif %}>
+              {% if form.m_address.errors %}{{ form.m_address.errors.as_text }}{% endif %}
           </div>
         </div>
 
@@ -53,8 +62,11 @@
         <div class="input-group-wrap">
           <label for="m_jaddress">*직장 주소</label>
           <div class="address-group">
-            <input type="text" class="form-control" id="m_jaddress" name="m_jaddress" placeholder="직장 주소를 입력해주세요." readonly onclick="searchAddress('m_jaddress')" value="{{ form.m_jaddress.value|default_if_none:'' }}" maxlength="150">
+            <input type="text" class="form-control {% if form.m_jaddress.errors %}is-invalid{% endif %}" id="m_jaddress" name="m_jaddress" placeholder="직장 주소를 입력해주세요." readonly onclick="searchAddress('m_jaddress')" value="{{ form.m_jaddress.value|default_if_none:'' }}" maxlength="150">
             <button type="button" class="btn-addr" onclick="searchAddress('m_jaddress')">주소검색</button>
+          </div>
+          <div class="invalid-feedback" id="m_jaddress-error" {% if form.m_jaddress.errors %}style="display: block;"{% endif %}>
+              {% if form.m_jaddress.errors %}{{ form.m_jaddress.errors.as_text }}{% endif %}
           </div>
         </div>
 
@@ -62,13 +74,16 @@
             <label for="m_phone" class="form-label">전화번호 :</label>
             
             <div class="d-flex gap-2">
-                <input type="text" class="form-control" name="cel1" id="cel1" maxlength="3" placeholder="010" value="{{ form.initial.cel1 }}">
+                <input type="text" class="form-control {% if form.m_phone.errors %}is-invalid{% endif %}" name="cel1" id="cel1" maxlength="3" placeholder="010" value="{{ form.initial.cel1 }}">
                 <span class="fs-4">-</span>
 
-                <input type="text" class="form-control" name="cel2_1" id="cel2_1" maxlength="4" placeholder="1234" value="{{ form.initial.cel2_1 }}">
+                <input type="text" class="form-control {% if form.m_phone.errors %}is-invalid{% endif %}" name="cel2_1" id="cel2_1" maxlength="4" placeholder="1234" value="{{ form.initial.cel2_1 }}">
                 <span class="fs-4">-</span>
 
-                <input type="text" class="form-control" name="cel2_2" id="cel2_2" maxlength="4" placeholder="5678" value="{{ form.initial.cel2_2 }}">
+                <input type="text" class="form-control {% if form.m_phone.errors %}is-invalid{% endif %}" name="cel2_2" id="cel2_2" maxlength="4" placeholder="5678" value="{{ form.initial.cel2_2 }}">
+            </div>
+            <div class="invalid-feedback" id="m_phone-error" {% if form.m_phone.errors %}style="display: block;"{% endif %}>
+                {% if form.m_phone.errors %}{{ form.m_phone.errors.as_text }}{% endif %}
             </div>
         </div>
         <div class="mb-3">
@@ -76,12 +91,12 @@
 
             <div class="d-flex gap-2 align-items-center">
                 <!-- 이메일 아이디 -->
-                <input type="text" class="form-control" id="email_id" name="email" placeholder="example" style="max-width: 150px;" maxlength="50" value="{{ form.initial.email }}">
+                <input type="text" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="email_id" name="email" placeholder="example" style="max-width: 150px;" maxlength="50" value="{{ form.initial.email }}">
 
                 <span class="fs-4">@</span>
 
                 <!-- 이메일 도메인 직접입력 -->
-                <input type="text" class="form-control" id="email_dns" name="email_dns" placeholder="domain.com" style="max-width: 180px;" maxlength="50" value="{{ form.initial.email_dns }}">
+                <input type="text" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="email_dns" name="email_dns" placeholder="domain.com" style="max-width: 180px;" maxlength="50" value="{{ form.initial.email_dns }}">
 
                 <!-- 도메인 선택 -->
                 <select class="form-select" id="emailaddr" name="emailaddr" style="max-width: 150px;">
@@ -94,6 +109,9 @@
                     <option value="naver.com">naver.com</option>
                     <option value="nate.com">nate.com</option>
                 </select>
+            </div>
+            <div class="invalid-feedback" id="m_email-error" {% if form.email.errors %}style="display: block;"{% endif %}>
+                {% if form.email.errors %}{{ form.email.errors.as_text }}{% endif %}
             </div>
 
             <!-- 에러 메시지 -->
@@ -108,6 +126,9 @@
           <div class="gender-options">
             <label><input type="radio" id="sex_male" name="m_sex" value="남성" {% if form.m_sex.value|default:"남성" == "남성" %}checked{% endif %}> 남성</label>
             <label><input type="radio" id="sex_female" name="m_sex" value="여성" {% if form.m_sex.value == "여성" %}checked{% endif %}> 여성</label>
+          </div>
+          <div class="invalid-feedback" id="m_sex-error" {% if form.m_sex.errors %}style="display: block;"{% endif %}>
+              {% if form.m_sex.errors %}{{ form.m_sex.errors.as_text }}{% endif %}
           </div>
         </div>
 

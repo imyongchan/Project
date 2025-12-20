@@ -1,32 +1,40 @@
 $(document).ready(function() {
-    // 체크박스 및 버튼 요소 선택
+    // 체크박스 요소 선택
     const $agreeAll = $('#agree_all');
     const $agreeCheckboxes = $('.required-agree');
-    const $nextButton = $('#submitBtn');
+    const $agreeForm = $('#agreeForm');
+    const $errorMsg = $('#agree-error-msg');
 
-    function updateNextButtonState() {
-        let allRequiredChecked = true;
-        $agreeCheckboxes.each(function() {
-            if (!$(this).is(':checked')) {
-                allRequiredChecked = false;
-                return false;
-            }
-        });
-        $nextButton.prop('disabled', !allRequiredChecked);
-    }
-
+    // '전체 동의' 체크박스 클릭 이벤트
     $agreeAll.on('click', function() {
         $agreeCheckboxes.prop('checked', $(this).is(':checked'));
-        updateNextButtonState();
     });
 
+    // 개별 필수 동의 체크박스 클릭 이벤트
     $agreeCheckboxes.on('click', function() {
         if ($('.required-agree:checked').length === $agreeCheckboxes.length) {
             $agreeAll.prop('checked', true);
         } else {
             $agreeAll.prop('checked', false);
         }
-        updateNextButtonState();
+    });
+
+    // 폼 제출 이벤트
+    $agreeForm.on('submit', function(e) {
+        let allRequiredChecked = true;
+        $agreeCheckboxes.each(function() {
+            if (!$(this).is(':checked')) {
+                allRequiredChecked = false;
+                return false; // each 루프 중단
+            }
+        });
+
+        if (!allRequiredChecked) {
+            e.preventDefault(); // 폼 제출 중단
+            $errorMsg.show(); // 에러 메시지 표시
+        } else {
+            $errorMsg.hide(); // 에러 메시지 숨김
+        }
     });
 
     // 모달 로직
@@ -56,7 +64,4 @@ $(document).ready(function() {
             $(this).removeClass('is-active');
         }
     });
-
-    // 초기 상태 설정
-    updateNextButtonState();
 });
