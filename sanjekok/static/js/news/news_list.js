@@ -5,17 +5,22 @@ document.addEventListener("DOMContentLoaded", function () {
   const startEl = document.querySelector("#startDate");
   const endEl = document.querySelector("#endDate");
 
+   const commonOptions = {
+    locale: "ko",
+    dateFormat: "Y-m-d",
+    maxDate: "today",
+
+    monthSelectorType: "dropdown",   // 월 dropdown
+    yearSelectorType: "dropdown",    // 연도 dropdown
+    yearRange: [1990, new Date().getFullYear()],
+    allowInput: false
+  };
+
   if (startEl) {
-    flatpickr(startEl, {
-      dateFormat: "Y-m-d",
-      maxDate: "today"
-    });
+    flatpickr(startEl, commonOptions);
   }
 
   if (endEl) {
-    flatpickr(endEl, {
-      dateFormat: "Y-m-d",
-      maxDate: "today"
-    });
+    flatpickr(endEl, commonOptions);
   }
 });
