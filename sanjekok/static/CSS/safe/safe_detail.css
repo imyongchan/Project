@@ -224,6 +224,30 @@
   cursor: pointer;
 }
 
+/* ==============================
+   목록으로 버튼
+============================== */
+.list-btn-wrapper {
+  display: flex;
+  justify-content: flex-end; /* ✅ 오른쪽 정렬 */
+}
+
+.btn-list {
+  background-color: #23333d;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-list:hover {
+  background-color: #f99b18;
+  color: #fff;
+}
+
 /* ================================
    9. 반응형
 ================================ */
