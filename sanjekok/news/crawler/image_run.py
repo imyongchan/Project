@@ -48,11 +48,16 @@ def download_news_image(url, save_name, max_size_kb=100):
 
 
 def crawl_news_images(limit=30, max_size_kb=100):
+# def crawl_news_images(max_size_kb=100):
     print("\n===== 🟢 뉴스 이미지 다운로드 시작 =====")
 
     qs = News.objects.filter(
         n_image_url__startswith="http"
     ).order_by("-n_created_at")[:limit]
+
+    # qs = News.objects.filter(
+    #     n_image_url__startswith="http"
+    # ).order_by("-n_created_at")
 
     for idx, news in enumerate(qs, start=1):
         print(f"🖼 이미지 {idx} 다운로드 중...")
