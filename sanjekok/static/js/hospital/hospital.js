@@ -12,6 +12,21 @@ const ctx = window.HOSPITAL_CONTEXT || {
   accidents: []   // [{ id, title, address }, ...]
 };
 
+// 활성 버튼 UI 업데이트
+function updateActiveButton(activeBtn) {
+  const btnHome = document.getElementById("btn-home");
+  const btnWork = document.getElementById("btn-work");
+  const btnAcc = document.getElementById("btn-accident");
+
+  if (btnHome) btnHome.classList.remove("active");
+  if (btnWork) btnWork.classList.remove("active");
+  if (btnAcc) btnAcc.classList.remove("active");
+
+  if (activeBtn) {
+    activeBtn.classList.add("active");
+  }
+}
+
 // 메시지 출력 (오류 상황 등에만 사용)
 function setMessage(text) {
   const msgEl = document.getElementById("hospital-message");
@@ -20,11 +35,14 @@ function setMessage(text) {
 }
 
 // 특정 주소를 기준 위치로 사용 (지오코딩 없이 주소만 넘김)
-function useAddress(address, label) {
+function useAddress(address, label, buttonElement) {
   if (!address || address.trim() === "") {
     alert(`${label} 주소가 등록되어 있지 않습니다.`);
     return;
   }
+
+  // 활성 버튼 업데이트
+  updateActiveButton(buttonElement);
 
   // 기준 주소 설정
   currentBaseAddress = address;
@@ -52,6 +70,10 @@ function useAccident(accident) {
     return;
   }
 
+  // 활성 버튼 업데이트
+  const btnAcc = document.getElementById("btn-accident");
+  updateActiveButton(btnAcc);
+
   // 기준 주소 설정
   currentBaseAddress = accident.address;
 
@@ -63,7 +85,6 @@ function useAccident(accident) {
   }
 
   // 사고지역 버튼에 산재 제목 표시
-  const btnAcc = document.getElementById("btn-accident");
   if (btnAcc) {
     const title = accident.title || "사고지역";
     btnAcc.textContent = title + " ▼";
@@ -187,7 +208,7 @@ function initUIEvents() {
   // 집 버튼
   if (btnHome) {
     if (ctx.home && ctx.home.trim() !== "") {
-      btnHome.addEventListener("click", () => useAddress(ctx.home, "집"));
+      btnHome.addEventListener("click", (e) => useAddress(ctx.home, "집", e.currentTarget));
     } else {
       btnHome.addEventListener("click", () =>
         alert("등록된 집 주소가 없습니다.")
@@ -199,7 +220,7 @@ function initUIEvents() {
   // 근무지 버튼
   if (btnWork) {
     if (ctx.work && ctx.work.trim() !== "") {
-      btnWork.addEventListener("click", () => useAddress(ctx.work, "근무지"));
+      btnWork.addEventListener("click", (e) => useAddress(ctx.work, "근무지", e.currentTarget));
     } else {
       btnWork.addEventListener("click", () =>
         alert("등록된 근무지 주소가 없습니다.")

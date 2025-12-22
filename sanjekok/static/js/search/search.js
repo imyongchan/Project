@@ -32,6 +32,21 @@ const OVERLAY_GAP_PX = 20;
 // ✅ 지도 축소(줌아웃) 제한: level이 클수록 더 축소됨
 const MAP_MAX_LEVEL = 9;
 
+// 활성 버튼 UI 업데이트
+function updateActiveButton(activeBtn) {
+  const btnHome = document.getElementById("btnHome");
+  const btnWork = document.getElementById("btnWork");
+  const btnAcc = document.getElementById("accidentDropdownBtn");
+
+  if (btnHome) btnHome.classList.remove("active");
+  if (btnWork) btnWork.classList.remove("active");
+  if (btnAcc) btnAcc.classList.remove("active");
+
+  if (activeBtn) {
+    activeBtn.classList.add("active");
+  }
+}
+
 function makeSvgPinMarkerImage(colorHex) {
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="38" viewBox="0 0 28 38">
@@ -118,7 +133,7 @@ function resetAccidentDropdownSelection() {
   if (btn) {
     const icon = btn.querySelector("i");
     const label = document.createElement("span");
-    label.textContent = ACCIDENT_BTN_DEFAULT_TEXT;
+    label.textContent = " " + ACCIDENT_BTN_DEFAULT_TEXT;
 
     btn.innerHTML = ""; // 기존 내용 비우고
     if (icon) btn.appendChild(icon); // 아이콘 유지
@@ -393,29 +408,39 @@ function initMap() {
   const workBtn = document.getElementById("btnWork");
 
   if (ctx.home && ctx.home.trim() !== "") {
-    homeBtn.onclick = function () {
+    homeBtn.addEventListener("click", function (e) {
+      updateActiveButton(e.currentTarget);
       resetAccidentDropdownSelection();
       clearIncidentInfo();
       moveToAddress(ctx.home, { showUserMarker: true });
-    };
+    });
   } else {
-    homeBtn.onclick = function () { alert("등록된 집 주소가 없습니다."); };
+    homeBtn.addEventListener("click", function () { alert("등록된 집 주소가 없습니다."); });
     homeBtn.classList.add("btn-disabled");
   }
 
   if (ctx.work && ctx.work.trim() !== "") {
-    workBtn.onclick = function () {
+    workBtn.addEventListener("click", function (e) {
+      updateActiveButton(e.currentTarget);
       resetAccidentDropdownSelection();
       clearIncidentInfo();
       moveToAddress(ctx.work, { showUserMarker: true });
-    };
+    });
   } else {
-    workBtn.onclick = function () { alert("등록된 근무지 주소가 없습니다."); };
+    workBtn.addEventListener("click", function () { alert("등록된 근무지 주소가 없습니다."); });
     workBtn.classList.add("btn-disabled");
   }
 
   initAccidentDropdown();
-  updateIncidents();
+
+  // 초기 로딩 시 집 또는 근무지 버튼 클릭
+  if (homeBtn && !homeBtn.classList.contains("btn-disabled")) {
+    homeBtn.click();
+  } else if (workBtn && !workBtn.classList.contains("btn-disabled")) {
+    workBtn.click();
+  } else {
+    updateIncidents();
+  }
 }
 
 function geocode(address, callback) {
@@ -608,7 +633,9 @@ function initAccidentDropdown() {
   if (!btn || !menu) return;
 
   if (!ctx.accidentList || ctx.accidentList.length === 0) {
-    btn.textContent = "등록된 사고지역 없음";
+    const label = document.createElement("span");
+    label.textContent = " 등록된 사고지역 없음";
+    btn.appendChild(label);
     btn.disabled = true;
     btn.classList.add("btn-disabled");
     return;
@@ -621,23 +648,31 @@ function initAccidentDropdown() {
     d.className = "dropdown-item";
     d.textContent = ac.alias;
 
-    d.onclick = function () {
+    d.addEventListener("click", function () {
+      updateActiveButton(btn);
       clearIncidentInfo();
       clearUserMarker(); // 사고지역은 파란 마커 표시하지 않음
 
-      btn.textContent = ac.alias;
+      // 드롭다운 버튼 텍스트 업데이트
+      const icon = btn.querySelector("i");
+      const label = document.createElement("span");
+      label.textContent = " " + ac.alias;
+      btn.innerHTML = "";
+      if (icon) btn.appendChild(icon);
+      btn.appendChild(label);
+      
       menu.style.display = "none";
 
       pendingAccidentSelect = { address: ac.address };
       moveToAddress(ac.address, { showUserMarker: false });
-    };
+    });
 
     menu.appendChild(d);
   });
 
-  btn.onclick = function () {
+  btn.addEventListener("click", function () {
     menu.style.display = menu.style.display === "block" ? "none" : "block";
-  };
+  });
 
   document.addEventListener("click", function (e) {
     if (!btn.contains(e.target) && !menu.contains(e.target)) {
