@@ -523,6 +523,23 @@ body {
   display: block;
 }
 
+/* 차트 */
+
+.chart-btn {
+    padding: 8px 16px;
+    border: 1px solid #23333D;
+    background: #fff;
+    color: #23333D;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chart-btn:hover,
+.chart-btn.active {
+    background: #23333D;
+    color: #fff;
+}
+
 /* 내용 */
 .news-body {
   padding: 15px 16px 18px;

@@ -1,10 +1,17 @@
+// ⭐ datalabels 플러그인 등록 (필수)
+Chart.register(ChartDataLabels);
+
 let currentChart;
 
+function showChart(type, btn) {
+    // ⭐ 버튼 active 처리
+    document.querySelectorAll('.chart-btn').forEach(b => {
+        b.classList.remove('active');
+    });
+    if (btn) btn.classList.add('active');
 
-function showChart(type) {
     let labels = [];
     let data = [];
-
 
     if (type === 'age') {
         labels = Object.keys(ageData);
@@ -15,38 +22,70 @@ function showChart(type) {
     } else if (type === 'industry') {
         labels = Object.keys(industryData);
         data = Object.values(industryData);
-    }  
-        if (currentChart) {
-            currentChart.destroy();
-        }  
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        currentChart = new Chart(ctx, {
-            type: 'doughnut',  // 도넛 모양으로 변경
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '사고 수',
-                    data: data,
-                    backgroundColor: [
-                        '#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#8dd1e1',
-                        '#a4de6c', '#d0ed57', '#d88884', '#a28dd1', '#ca82c9'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'right'
+    }
+
+    const ctx = document.getElementById('mainChart').getContext('2d');
+
+    // ⭐ 이미 차트가 있으면 데이터만 교체
+    if (currentChart) {
+        currentChart.data.labels = labels;
+        currentChart.data.datasets[0].data = data;
+        currentChart.update();
+        return;
+    }
+
+    // ⭐ 최초 1회 차트 생성
+    currentChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '사고 수',
+                data: data,
+                backgroundColor: [
+                    '#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#8dd1e1',
+                    '#a4de6c', '#d0ed57', '#d88884', '#a28dd1', '#ca82c9'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'right' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percent = ((value / total) * 100).toFixed(1);
+                            return `${context.label}: ${percent}% (${value}건)`;
+                        }
+                    }
+                },
+                datalabels: {
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    },
+                    formatter: (value, ctx) => {
+                        const dataArr = ctx.chart.data.datasets[0].data;
+                        const total = dataArr.reduce((a, b) => a + b, 0);
+                        return ((value / total) * 100).toFixed(1) + '%';
                     }
                 }
             }
-        });
-    }  
-    // 페이지 로드 시 연령별 차트 표시
-    window.onload = function() {
-        showChart('age');
-    };
+        }
+    });
+}
+
+// ⭐ 페이지 로드 시 연령 버튼 자동 active
+window.onload = function() {
+    const firstBtn = document.querySelector('.chart-btn');
+    showChart('age', firstBtn);
+};
+
+
 
 
 function updateDateTime() {

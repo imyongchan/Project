@@ -107,9 +107,9 @@
 
             <div class="chart">
                 <div class="chart-buttons">
-                    <button onclick="showChart('age')">연령</button>
-                    <button onclick="showChart('gender')">성별</button>
-                    <button onclick="showChart('industry')">업종</button>
+                  <button class="chart-btn" onclick="showChart('age', this)">연령</button>
+                  <button class="chart-btn" onclick="showChart('gender', this)">성별</button>
+                  <button class="chart-btn" onclick="showChart('industry', this)">업종</button>
                 </div>
             </div>
 
@@ -177,8 +177,8 @@
 </section>
 
 
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="{% static 'js/main/main_chart.js' %}"></script>
 <script>
