@@ -62,54 +62,49 @@ def registers(request):
 
     if request.method == "GET":
         initial_data = {}
+
         if social_signup_data:
             initial_data['m_name'] = social_signup_data.get('m_name')
+            
         form = Step2MemberForm(initial=initial_data)
         return render(request, 'member/member_register2.html', {'form': form})
     
     elif request.method == "POST":
         form = Step2MemberForm(request.POST)
-        if form.is_valid():
-            member = form.save(commit=False)
-            
-            if social_signup_data:
-                member.m_username = social_signup_data['m_username']
-                member.m_provider = social_signup_data['m_provider']
-                member.m_provider_id = social_signup_data.get('m_provider_id')
-                member.m_password = make_password(None)
-                if 'social_signup_data' in request.session:
-                    del request.session['social_signup_data']
-            elif signup_data:
-                member.m_username = signup_data['m_username']
-                member.m_password = signup_data['m_password']
-                if 'signup_data' in request.session:
-                    del request.session['signup_data']
-            
-            member.save()
 
-            messages.success(request, "회원가입이 완료되었습니다.")
-            
-            # 세션에 사용자 정보 저장
-            request.session['member_id'] = int(member.member_id)
-            request.session['member_username'] = member.m_username
-            request.session['member_name'] = member.m_name
-            request.session['member_provider'] = member.m_provider
+        if not form.is_valid():
+            first_error_field = next(iter(form.errors)) if form.errors else None
+            return render(
+                request,
+                "member/member_register2.html",
+                {
+                    "form": form,
+                    "first_error_field": first_error_field,
+                }
+            )
 
-            if member.m_provider != 'local':
-                # 소셜 사용자
-                messages.success(request, f"{member.m_name}님 환영합니다!")
-                return redirect("Main:main")
-            else:
-                # 로컬 사용자
-                messages.success(request, f"{member.m_name}님, 회원가입을 환영합니다!")
-                return redirect('Main:main')
-            
-        first_error_field = next(iter(form.errors)) if form.errors else None
-        context = {
-            "form": form,
-            "first_error_field": first_error_field,
-        }
-        return render(request, "member/member_register2.html", context)
+        member = form.save(commit=False)
+
+        if social_signup_data:
+            member.m_username = social_signup_data['m_username']
+            member.m_provider = social_signup_data['m_provider']
+            member.m_provider_id = social_signup_data.get('m_provider_id')
+            # 랜덤 salt를 사용해 해시 문자열을 생성
+            member.m_password = make_password(None)
+            request.session.pop('social_signup_data', None)
+
+        else:  # local signup
+            member.m_username = signup_data['m_username']
+            member.m_password = signup_data['m_password']
+            request.session.pop('signup_data', None)
+
+        member.save()
+
+        request.session['member_id'] = member.member_id
+        request.session['member_provider'] = member.m_provider
+
+        messages.success(request, f"{member.m_name}님 환영합니다!")
+        return redirect("Main:main")
 
 # 로그인
 def login(request):
@@ -125,9 +120,8 @@ def login(request):
         if not member or not check_password(m_password, member.m_password) or member.m_status == 99:
             messages.error(request, "아이디 또는 비밀번호가 일치하지 않습니다.")
             return render(request, "member/member_login.html")
-
+        
         request.session['member_id'] = int(member.member_id)
-        request.session['member_name'] = member.m_name
         request.session['member_provider'] = member.m_provider
 
         messages.success(request, f"{member.m_name}님 환영합니다!")
@@ -252,9 +246,7 @@ def check_username(request):
 # 마이페이지 - 비밀번호 확인
 @login_required
 def mypage_check(request):
-    member_id = request.session.get('member_id')
-    member = get_object_or_404(Member, member_id=member_id)
-
+    member = request.member
     # 소셜 로그인 사용자는 이 페이지에 접근할 이유가 없음
     if member.m_provider != 'local':
         request.session['mypage_authorized'] = True
@@ -278,8 +270,7 @@ def mypage_check(request):
 # 마이페이지 - 프로필
 @mypage_auth_required
 def mypage_profile(request):
-    member_id = request.session.get('member_id')
-    member = get_object_or_404(Member, member_id=member_id)
+    member = request.member
     return render(request, 'member/mypage_profile.html', {'member': member})
 
 
@@ -287,8 +278,7 @@ def mypage_profile(request):
 # 마이페이지 - 프로필 수정
 @mypage_auth_required
 def mypage_profile_modify(request):
-    member_id = request.session.get('member_id')
-    member = get_object_or_404(Member, member_id=member_id)
+    member = request.member
     
     if request.method == "GET":
         form = Step2MemberForm(instance=member)
@@ -314,8 +304,7 @@ def mypage_profile_modify(request):
 # 마이페이지 - 산재 관리
 @mypage_auth_required
 def mypage_individual_list(request):
-    member_id = request.session.get('member_id')
-    member = get_object_or_404(Member, member_id=member_id)
+    member = request.member
     member_industries = member.industries.all()
     individuals = Individual.objects.filter(member_industry__in=member_industries)
 
@@ -324,8 +313,7 @@ def mypage_individual_list(request):
 # 마이페이지 - 산재 추가
 @mypage_auth_required
 def mypage_individual_add(request):
-    member_id = request.session.get('member_id')
-    member = get_object_or_404(Member, member_id=member_id)
+    member = request.member
 
     if request.method == "GET":
         return render(request, 'member/mypage_individual_add.html', {
@@ -358,12 +346,12 @@ def mypage_individual_add(request):
 # 마이페이지 - 산재 삭제
 @mypage_auth_required
 def mypage_individual_delete(request, individual_id):
-    member_id = request.session.get('member_id')
+    member = request.member
     individual = get_object_or_404(Individual, accident_id=individual_id)
     
     try:
         # 해당 산재 정보가 현재 로그인한 사용자의 것인지 확인
-        Member_industry.objects.get(member=member_id, industries__accident_id=individual_id)
+        Member_industry.objects.get(member=member, industries__accident_id=individual_id)
     except Member_industry.DoesNotExist:
         messages.error(request, "삭제할 권한이 없습니다.")
         return redirect('Member:mypage_individual_list')
@@ -378,7 +366,7 @@ def mypage_individual_delete(request, individual_id):
 # 마이페이지 - 산재 다중 삭제
 @mypage_auth_required
 def mypage_individual_bulk_delete(request):
-    member_id = request.session.get('member_id')
+    member = request.member
 
     if request.method == "POST":
         selected_ids = request.POST.getlist('selected_ids')
@@ -386,7 +374,7 @@ def mypage_individual_bulk_delete(request):
             messages.warning(request, "삭제할 항목을 선택해주세요.")
             return redirect('Member:mypage_individual_list')
 
-        count = services.delete_individual_accidents(member_id, selected_ids)
+        count = services.delete_individual_accidents(member.id, selected_ids)
         
         if count > 0:
             messages.success(request, f"{count}개의 산재 정보가 삭제되었습니다.")
@@ -400,17 +388,10 @@ def mypage_individual_bulk_delete(request):
 # 로그아웃
 @login_required
 def logout(request):
-    member_id = request.session.get('member_id')
-    provider = 'local' 
+    member = request.member
+    provider = member.m_provider
 
-    if member_id:
-        try:
-            member = Member.objects.get(member_id=member_id)
-            provider = member.m_provider
-        except Member.DoesNotExist:
-            pass 
-
-    # 세션 데이터를 삭제하여 우리 앱에서 로그아웃
+    # 세션 데이터를 삭제하여 우리 앱에서 로그아웃(구글 포함)
     request.session.flush()
     messages.success(request, "성공적으로 로그아웃되었습니다.", extra_tags='logout-alert')
 
@@ -441,8 +422,7 @@ def mypage_password_change(request):
         messages.error(request, "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.")
         return redirect("Member:mypage_profile")
         
-    member_id = request.session.get('member_id')
-    member = get_object_or_404(Member, member_id=member_id)
+    member = request.member
 
     if request.method == "GET":
         return render(request, 'member/mypage_password_change.html', {'member': member})
@@ -472,8 +452,7 @@ def mypage_password_change(request):
 # 마이페이지 - 회원 탈퇴
 @mypage_auth_required
 def mypage_withdrawal(request):
-    member_id = request.session.get('member_id')
-    member = get_object_or_404(Member, member_id=member_id)
+    member = request.member
     
     if request.method == "POST":
         member.m_status = 99

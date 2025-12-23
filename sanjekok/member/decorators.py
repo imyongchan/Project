@@ -1,13 +1,21 @@
 from functools import wraps
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
+from member.models import Member
 
 def login_required(function):
     @wraps(function)
     def wrap(request, *args, **kwargs):
-        if 'member_id' not in request.session:
+        member_id = request.session.get('member_id')
+
+        if not member_id:
             messages.error(request, "로그인이 필요합니다.")
             return redirect('Member:login')
+
+        member = get_object_or_404(Member, member_id=member_id)
+        request.member = member
+
         return function(request, *args, **kwargs)
     return wrap
 
@@ -15,12 +23,18 @@ def mypage_auth_required(function):
     @wraps(function)
     def wrap(request, *args, **kwargs):
         # 1. 로그인 확인 (login_required와 동일)
-        if 'member_id' not in request.session:
+        member_id = request.session.get('member_id')
+
+        if not member_id :
             messages.error(request, "로그인이 필요합니다.")
             return redirect('Member:login')
+        
+        member = get_object_or_404(Member, member_id=member_id)
+        request.member = member
 
         # 2. 소셜 로그인 사용자는 비밀번호 확인 절차 면제
-        if request.session.get('member_provider') != 'local':
+        if member.m_provider != 'local':
+            request.session['mypage_authorized'] = True
             return function(request, *args, **kwargs)
 
         # 3. 마이페이지 인증 여부 확인
