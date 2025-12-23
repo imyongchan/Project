@@ -22,9 +22,14 @@ $(document).ready(function () {
     /* =========================
        생년월일 Flatpickr
     ========================= */
+    // 기존 input의 value 값을 Flatpickr의 기본값으로 사용
+    const birthDateInput = document.getElementById('m_birth_date');
+    const initialBirthDate = birthDateInput ? birthDateInput.value : null;
+
     flatpickr("#m_birth_date", {
         locale: "ko",
         dateFormat: "Y-m-d",
+        defaultDate: initialBirthDate,
         minDate: "1900-01-01",
         maxDate: "today",
         onChange: function () {

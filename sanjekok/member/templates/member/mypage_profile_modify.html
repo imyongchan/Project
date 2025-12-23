@@ -8,6 +8,8 @@
 <script src="{% static 'js/member/member_register2.js' %}"></script>
 <script>
     window.firstErrorField = '{{ first_error_field|default_if_none:"" }}';
+    // console.log(document.getElementById("m_name").value);
+    console.log("{{ form.m_birth_date.value | date:'Y-m-d' }}");
 </script>
 {% endblock %}
 {% block mypage_contents %}
@@ -40,7 +42,7 @@
             <div class="mb-3">
                 <label for="m_birth_date" class="form-label">*생년월일 :</label>
                 <input 
-                    value="{{ form.m_birth_date.value|default_if_none:'' }}"
+                    value="{{ form.m_birth_date.value | date:'Y-m-d' }}"
                     type="text" 
                     id="m_birth_date" 
                     name="m_birth_date"

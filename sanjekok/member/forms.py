@@ -67,6 +67,10 @@ class Step2MemberForm(forms.ModelForm):
                 self.initial['cel2_1'] = self.instance.m_phone[3:7]
                 self.initial['cel2_2'] = self.instance.m_phone[7:]
 
+            # 생년월일 필드 값을 명시적으로 초기화
+            if self.instance.m_birth_date:
+                self.initial['m_birth_date'] = self.instance.m_birth_date
+
     def clean(self):
         cleaned_data = super().clean()
         email = cleaned_data.get('email')
